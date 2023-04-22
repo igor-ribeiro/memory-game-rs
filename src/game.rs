@@ -1,12 +1,12 @@
 use rand::prelude::*;
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 use yew::Reducible;
 
 #[derive(Default, Clone, Copy, Debug, Eq)]
 pub struct Card {
     pub id: i32,
     pub value: i32,
-    pub opened: bool,
+    pub flipped: bool,
 }
 
 impl PartialEq for Card {
@@ -30,14 +30,13 @@ impl Player {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Game {
     pub guess: (Option<usize>, Option<usize>),
-    pub opened: HashMap<usize, bool>,
     pub turn: usize,
     pub players: Vec<Player>,
     pub cards: Vec<Card>,
 }
 
 pub enum Action {
-    OpenCard(usize),
+    FlipCard(usize),
     NextTurn,
 }
 
@@ -48,21 +47,27 @@ impl Reducible for Game {
         let mut state = self.as_ref().clone();
 
         let next = match action {
-            Action::OpenCard(position) => {
-                if self.opened.contains_key(&position) {
+            Action::FlipCard(position) => {
+                let card = &state.cards[position];
+
+                if card.flipped {
                     return self;
                 }
 
                 match state.guess {
-                    (None, None) => state.guess.0 = Some(position),
+                    (None, None) => {
+                        state.guess.0 = Some(position);
+                        let card = &mut state.cards[position];
+                        card.flipped = true;
+                    }
                     (Some(first_pos), None) => {
-                        let first = self.cards[first_pos];
-                        let second = self.cards[position];
+                        let first_value = state.cards[first_pos].value;
+                        let second = &mut state.cards[position];
                         let player = &mut state.players[self.turn];
 
-                        if first == second {
-                            state.opened.insert(first_pos, true);
-                            state.opened.insert(position, true);
+                        second.flipped = true;
+
+                        if first_value == second.value {
                             player.points += 2;
                             state.guess = (None, None);
                         } else {
@@ -76,9 +81,17 @@ impl Reducible for Game {
                 state
             }
             Action::NextTurn => {
-                if state.guess.0.is_some() && state.guess.1.is_some() {
+                if let (Some(first_pos), Some(second_pos)) = state.guess {
                     state.guess = (None, None);
-                }
+                    state
+                        .cards
+                        .iter_mut()
+                        .enumerate()
+                        .filter(|(pos, _)| *pos == first_pos || *pos == second_pos)
+                        .for_each(|(_, card)| {
+                            card.flipped = false;
+                        });
+                };
 
                 state
             }
@@ -90,11 +103,11 @@ impl Reducible for Game {
 
 impl Game {
     pub fn new() -> Self {
-        let mut cards = (1..=12)
+        let mut cards = (1..=24)
             .map(|value| Card {
                 id: value,
                 value: (value as f32 / 2.0).ceil() as i32,
-                opened: false,
+                flipped: false,
             })
             .collect::<Vec<Card>>();
 
@@ -104,78 +117,9 @@ impl Game {
 
         Self {
             guess: (None, None),
-            opened: HashMap::new(),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],
             turn: 0,
             cards,
         }
-    }
-}
-
-#[cfg(test)]
-mod test {
-    #[test]
-    fn it_works() {
-        // let mut game = super::Game::new();
-        //
-        // game.open_card(0);
-        //
-        // let first = game.get_card(game.opened[0].unwrap());
-        // assert_eq!(first.value, 1);
-        // assert_eq!(game.opened[1], None);
-        //
-        // game.open_card(1);
-        //
-        // let first = game.get_card(game.opened[0].unwrap());
-        // let second = game.get_card(game.opened[1].unwrap());
-        // assert_eq!(first.value, 1);
-        // assert_eq!(second.value, 1);
-        //
-        // let last_turn = game.turn;
-        //
-        // game.update();
-        // assert_eq!(game.opened, [None, None], "reset temporary opened cards");
-        //
-        // let last_playex = game.players[last_turn];
-        // assert_eq!(last_player.points, 2);
-        //
-        // let opened_cards = game
-        //     .cards
-        //     .iter()
-        //     .filter(|card| card.opened)
-        //     .collect::<Vec<_>>();
-        // assert_eq!(opened_cards.len(), 2);
-        //
-        // game.open_card(2);
-        //
-        // let first = game.get_card(game.opened[0].unwrap());
-        // assert_eq!(first.value, 2, "correct guess, +2 points");
-        // assert_eq!(game.opened[1], None);
-        //
-        // game.open_card(4);
-        //
-        // let first = game.get_card(game.opened[0].unwrap());
-        // let second = game.get_card(game.opened[1].unwrap());
-        // assert_eq!(first.value, 2);
-        // assert_eq!(second.value, 3);
-        //
-        // let last_turn = game.turn;
-        //
-        // game.update();
-        // assert_eq!(game.opened, [None, None]);
-        //
-        // let last_player = game.players[last_turn];
-        // assert_eq!(last_player.points, 0, "wrong choice, no points");
-        //
-        // let opened_cards = game
-        //     .cards
-        //     .iter()
-        //     .filter(|card| card.opened)
-        //     .collect::<Vec<_>>();
-        // assert_eq!(
-        //     opened_cards.len(),
-        //     2,
-        //     "wrong guess, no no additional opened cards"
-        // );
     }
 }

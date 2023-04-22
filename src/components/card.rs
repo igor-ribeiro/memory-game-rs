@@ -6,7 +6,6 @@ use crate::constants::COLORS;
 pub struct Props {
     pub card: crate::game::Card,
     pub on_flip: Callback<usize>,
-    pub is_flipped: bool,
     pub position: usize,
 }
 
@@ -15,7 +14,6 @@ pub fn card(props: &Props) -> Html {
     let Props {
         card,
         on_flip,
-        is_flipped,
         position,
     } = props.clone();
 
@@ -27,7 +25,7 @@ pub fn card(props: &Props) -> Html {
             key={card.id}
             class={classes!(
                 "flex w-[100px] h-[100px] items-center justify-center".to_string(),
-                is_flipped
+                card.flipped
                     .then_some(color)
                     .or(Some("hover:bg-gray-100 cursor-pointer border border-gray-400"))
             )}

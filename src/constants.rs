@@ -1,6 +1,6 @@
 pub const COLORS: [&str; 12] = [
     "bg-red-500",
-    "b-green-500",
+    "bg-green-500",
     "bg-blue-500",
     "bg-yellow-400",
     "bg-orange-400",
