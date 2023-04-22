@@ -16,23 +16,23 @@ impl PartialEq for Card {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Player<'a> {
-    pub name: &'a str,
+pub struct Player {
+    pub name: &'static str,
     pub points: i32,
 }
 
-impl<'a> Player<'a> {
-    fn new(name: &'a str) -> Self {
+impl Player {
+    fn new(name: &'static str) -> Self {
         Self { name, points: 0 }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Game<'a> {
+pub struct Game {
     pub guess: (Option<usize>, Option<usize>),
     pub opened: HashMap<usize, bool>,
     pub turn: usize,
-    pub players: Vec<Player<'a>>,
+    pub players: Vec<Player>,
     pub cards: Vec<Card>,
 }
 
@@ -41,7 +41,7 @@ pub enum Action {
     NextTurn,
 }
 
-impl<'a> Reducible for Game<'a> {
+impl Reducible for Game {
     type Action = Action;
 
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
@@ -84,11 +84,11 @@ impl<'a> Reducible for Game<'a> {
             }
         };
 
-        next.clone().into()
+        next.into()
     }
 }
 
-impl<'a> Game<'a> {
+impl Game {
     pub fn new() -> Self {
         let mut cards = (1..=12)
             .map(|value| Card {

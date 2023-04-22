@@ -1,5 +1,7 @@
 mod app;
+mod components;
 mod game;
+mod hooks;
 
 use app::App;
 use yew::Renderer;

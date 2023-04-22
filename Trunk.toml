@@ -1,2 +1,2 @@
 [watch]
-ignore = ["node_modules", "package-lock.json"]
+ignore = ["node_modules", "pnpm-lock.yaml"]
