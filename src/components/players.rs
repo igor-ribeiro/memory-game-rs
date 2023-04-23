@@ -1,4 +1,4 @@
-use crate::components::game_provider::GameContext;
+use crate::{components::game_provider::GameContext, game::PointsType};
 use yew::prelude::*;
 
 #[function_component(Players)]
@@ -7,6 +7,16 @@ pub fn players() -> Html {
 
     let players = game.players.iter().enumerate().map(|(i, player)| {
         let is_turn = game.turn == i;
+
+        let points = if let PointsType::Time { started_at } = game.points_type {
+            if started_at.is_some() && is_turn {
+                "...".to_string()
+            } else {
+                format!("{}s", player.points)
+            }
+        } else {
+            format!("{}", player.points)
+        };
 
         html! {
             <div
@@ -24,7 +34,7 @@ pub fn players() -> Html {
                     key={player.points}
                     class="text-3xl animate-[ping_.7s_ease-in-out_1] [animation-direction:reverse]"
                 >
-                    {player.points}
+                    {points}
                 </span>
 
                 <div

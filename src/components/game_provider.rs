@@ -10,7 +10,7 @@ pub struct Props {
 
 #[function_component(GameProvider)]
 pub fn game_provider(props: &Props) -> Html {
-    let game = use_reducer(Game::new);
+    let game = use_reducer(Game::with_single_player_time);
 
     html! {
         <ContextProvider<GameContext> context={game}>

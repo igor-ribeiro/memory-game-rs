@@ -1,6 +1,27 @@
+use chrono::offset;
+use log::info;
 use rand::prelude::*;
 use std::rc::Rc;
 use yew::Reducible;
+
+static CARDS: i32 = 24;
+
+pub enum GameInit {
+    Hits { single: bool },
+    Time { single: bool },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PointsType {
+    Time { started_at: Option<i64> },
+    Hits { point_per_hit: i32 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GameMode {
+    SinglePlayer,
+    MultiPlayer,
+}
 
 #[derive(Default, Clone, Copy, Debug, Eq)]
 pub struct Card {
@@ -29,6 +50,9 @@ impl Player {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Game {
+    pub game_over: bool,
+    pub points_type: PointsType,
+    pub mode: GameMode,
     pub guess: (Option<usize>, Option<usize>),
     pub turn: usize,
     pub players: Vec<Player>,
@@ -50,33 +74,122 @@ impl Reducible for Game {
             Action::FlipCard(position) => {
                 let card = &state.cards[position];
 
+                state.points_type = match state.points_type {
+                    PointsType::Time { started_at: None } => PointsType::Time {
+                        started_at: Some(offset::Local::now().timestamp()),
+                    },
+                    _ => state.points_type,
+                };
+
+                let players_with_points = self
+                    .players
+                    .iter()
+                    .filter(|player| player.points > 0)
+                    .collect::<Vec<_>>()
+                    .len();
+
+                if players_with_points == self.players.len() {
+                    if let PointsType::Time { .. } = state.points_type {
+                        state
+                            .players
+                            .iter_mut()
+                            .for_each(|player| player.points = 0);
+                    }
+                }
+
+                let player = &mut state.players[self.turn];
+
                 if card.flipped {
                     return self;
                 }
 
-                match state.guess {
+                let is_correct_guess = match state.guess {
                     (None, None) => {
                         state.guess.0 = Some(position);
                         let card = &mut state.cards[position];
                         card.flipped = true;
+
+                        None
                     }
                     (Some(first_pos), None) => {
                         let first_value = state.cards[first_pos].value;
                         let second = &mut state.cards[position];
-                        let player = &mut state.players[self.turn];
 
                         second.flipped = true;
 
                         if first_value == second.value {
-                            player.points += 2;
+                            state.game_over = state
+                                .cards
+                                .iter()
+                                .filter(|card| !card.flipped)
+                                .collect::<Vec<_>>()
+                                .is_empty();
+
                             state.guess = (None, None);
+
+                            Some(true)
                         } else {
                             state.guess.1 = Some(position);
-                            state.turn = (state.turn + 1) % self.players.len();
+
+                            Some(false)
+                        }
+                    }
+                    _ => None,
+                };
+
+                let mut next_points: Option<i32> = None;
+                let mut next_turn: Option<bool> = None;
+
+                match state.points_type {
+                    PointsType::Time {
+                        started_at: Some(started_at),
+                    } => {
+                        info!("time");
+                        if state.game_over {
+                            let now = offset::Local::now().timestamp();
+                            next_points = Some((now - started_at) as i32);
+
+                            if let GameMode::MultiPlayer = state.mode {
+                                next_turn = Some(true);
+                            }
+                        }
+                    }
+                    PointsType::Hits {
+                        point_per_hit: points_per_hit,
+                    } => {
+                        if is_correct_guess.is_some() {
+                            if let Some(true) = is_correct_guess {
+                                next_points = Some(player.points + points_per_hit);
+                            } else if let GameMode::MultiPlayer = state.mode {
+                                next_turn = Some(true);
+                            }
                         }
                     }
                     _ => {}
                 };
+
+                if let Some(points) = next_points {
+                    player.points = points;
+                }
+
+                if next_turn.is_some() {
+                    state.turn = (state.turn + 1) % self.players.len();
+                }
+
+                if state.game_over {
+                    return Game {
+                        points_type: match state.points_type {
+                            PointsType::Time {
+                                started_at: Some(_),
+                            } => PointsType::Time { started_at: None },
+                            _ => state.points_type,
+                        },
+                        game_over: false,
+                        cards: get_cards(CARDS),
+                        ..state
+                    }
+                    .into();
+                }
 
                 state
             }
@@ -101,25 +214,68 @@ impl Reducible for Game {
     }
 }
 
+fn get_cards(total: i32) -> Vec<Card> {
+    let mut cards = (1..=total)
+        .map(|value| Card {
+            id: value,
+            value: (value as f32 / 2.0).ceil() as i32,
+            flipped: false,
+        })
+        .collect::<Vec<Card>>();
+
+    let mut rng = rand::thread_rng();
+
+    cards.shuffle(&mut rng);
+
+    cards
+}
+
 impl Game {
-    pub fn new() -> Self {
-        let mut cards = (1..=24)
-            .map(|value| Card {
-                id: value,
-                value: (value as f32 / 2.0).ceil() as i32,
-                flipped: false,
-            })
-            .collect::<Vec<Card>>();
-
-        let mut rng = rand::thread_rng();
-
-        cards.shuffle(&mut rng);
-
+    pub fn with_single_player_points() -> Self {
         Self {
+            game_over: false,
+            points_type: PointsType::Hits { point_per_hit: 1 },
+            mode: GameMode::SinglePlayer,
+            guess: (None, None),
+            players: vec![Player::new("Player 1")],
+            turn: 0,
+            cards: get_cards(CARDS),
+        }
+    }
+
+    pub fn with_single_player_time() -> Self {
+        Self {
+            game_over: false,
+            points_type: PointsType::Time { started_at: None },
+            mode: GameMode::SinglePlayer,
+            guess: (None, None),
+            players: vec![Player::new("Player 1")],
+            turn: 0,
+            cards: get_cards(CARDS),
+        }
+    }
+
+    pub fn with_multi_player_points() -> Self {
+        Self {
+            game_over: false,
+            points_type: PointsType::Hits { point_per_hit: 1 },
+            mode: GameMode::MultiPlayer,
             guess: (None, None),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],
             turn: 0,
-            cards,
+            cards: get_cards(CARDS),
+        }
+    }
+
+    pub fn with_multi_player_time() -> Self {
+        Self {
+            game_over: false,
+            points_type: PointsType::Time { started_at: None },
+            mode: GameMode::MultiPlayer,
+            guess: (None, None),
+            players: vec![Player::new("Player 1"), Player::new("Player 2")],
+            turn: 0,
+            cards: get_cards(CARDS),
         }
     }
 }
