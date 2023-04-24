@@ -39,6 +39,8 @@ jobs:
         with:
           run_install: false
           version: 7
+      - name: Install cargo dependencies
+        run: cargo install --path .
       - name: Install node dependencies
         run: pnpm i --lockfile-only
       - name: Build
