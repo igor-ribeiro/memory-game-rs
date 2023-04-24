@@ -41,6 +41,7 @@ pub fn app() -> Html {
     html! {
         <GameProvider init={init.unwrap()}>
             <div class="p-2 flex flex-col gap-4 items-center">
+                <button class="btn" onclick={move |_| init.set(None)}>{"Voltar"}</button>
                 <Players />
                 <Board />
             </div>

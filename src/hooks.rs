@@ -1,4 +1,4 @@
-use crate::{components::game_provider::GameContext, game::Action};
+use crate::{components::game_provider::GameContext, constants::WRONG_GUESS_TIMEOUT, game::Action};
 use std::borrow::BorrowMut;
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::window;
@@ -43,7 +43,7 @@ pub fn use_reset_guess() {
                             .unwrap()
                             .as_ref()
                             .unchecked_ref(),
-                        800,
+                        WRONG_GUESS_TIMEOUT,
                     )
                     .unwrap();
 

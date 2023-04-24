@@ -1,3 +1,5 @@
+pub const WRONG_GUESS_TIMEOUT: i32 = 600;
+
 pub const COLORS: [&str; 12] = [
     "bg-red-500",
     "bg-green-600",
