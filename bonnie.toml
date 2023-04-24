@@ -19,9 +19,11 @@ tailwind {
 """
 
 ## Builds everything
-build.cmd = "cargo build"
-## Builds the frontend
-build.subcommands.frontend = ["bonnie build-tailwind-prod", "cargo build"]
+build.cmd = [
+	"bonnie build-tailwind-prod",
+	"trunk build --public-url memory-game-rs",
+]
+
 ## Runs the frontend, watching for changes (uses Trunk)
 run.subcommands.tailwind = ["bonnie build-tailwind-dev"]
 run.subcommands.frontend = ["trunk serve"]
