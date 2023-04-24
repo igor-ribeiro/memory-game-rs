@@ -10,7 +10,7 @@ build-tailwind-prod = [
 	"NODE_ENV=production tailwindcss -c ./tailwind.config.js -i ./input.scss -o ./.css/output.css --minify",
 ]
 ## Builds Tailwind CSS for development usage
-setup.subcommands.tailwind = "bonnie build-tailwind-dev"
+setup.subcommands.tailwind = "./bin/bonnie build-tailwind-dev"
 setup.subcommands.prompt-tailwind = "echo \"Have you installed the Tailwind CLI globally with 'npm i -g tailwindcss' or 'yarn global add tailwindcss'?\""
 setup.order = """
 tailwind {
@@ -21,9 +21,9 @@ tailwind {
 ## Builds everything
 build.cmd = [
 	"bonnie build-tailwind-prod",
-	"trunk build --public-url memory-game-rs",
+	"./bin/trunk build --public-url memory-game-rs",
 ]
 
 ## Runs the frontend, watching for changes (uses Trunk)
-run.subcommands.tailwind = ["bonnie build-tailwind-dev"]
-run.subcommands.frontend = ["trunk serve"]
+run.subcommands.tailwind = ["./bin/bonnie build-tailwind-dev"]
+run.subcommands.frontend = ["./bin/trunk serve"]

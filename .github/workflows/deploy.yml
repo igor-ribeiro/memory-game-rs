@@ -35,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install
-        run: cargo build --verbose
+        run: cargo install --locked trunk bonnie
       - name: Build
         run: bonnie build
       - name: Setup Pages
@@ -46,4 +46,5 @@ jobs:
           # Upload entire repository
           path: '.'
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v2
