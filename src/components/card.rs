@@ -27,7 +27,7 @@ pub fn card(props: &Props) -> Html {
                 "flex w-[100px] h-[100px] items-center justify-center".to_string(),
                 card.flipped
                     .then_some(color)
-                    .or(Some("hover:bg-gray-100 cursor-pointer border border-gray-400"))
+                    .or(Some("cursor-pointer border border-gray-400"))
             )}
             {onclick}
         >

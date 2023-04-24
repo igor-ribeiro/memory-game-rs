@@ -43,7 +43,7 @@ pub fn use_reset_guess() {
                             .unwrap()
                             .as_ref()
                             .unchecked_ref(),
-                        1000,
+                        800,
                     )
                     .unwrap();
 
