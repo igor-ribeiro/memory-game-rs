@@ -7,13 +7,13 @@ use yew::Reducible;
 static CARDS: i32 = 24;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GameSetup {
-    Hits { single: bool },
-    Time { single: bool },
+pub struct GameSetup {
+    pub score_type: ScoreType,
+    pub mode: GameMode,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum PointsType {
+pub enum ScoreType {
     Time { started_at: Option<i64> },
     Hits { point_per_hit: i32 },
 }
@@ -52,7 +52,7 @@ impl Player {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Game {
     pub game_over: bool,
-    pub points_type: PointsType,
+    pub points_type: ScoreType,
     pub mode: GameMode,
     pub guess: (Option<usize>, Option<usize>),
     pub turn: usize,
@@ -76,7 +76,7 @@ impl Reducible for Game {
                 let card = &state.cards[position];
 
                 state.points_type = match state.points_type {
-                    PointsType::Time { started_at: None } => PointsType::Time {
+                    ScoreType::Time { started_at: None } => ScoreType::Time {
                         started_at: Some(offset::Local::now().timestamp()),
                     },
                     _ => state.points_type,
@@ -90,7 +90,7 @@ impl Reducible for Game {
                     .len();
 
                 if players_with_points == self.players.len() {
-                    if let PointsType::Time { .. } = state.points_type {
+                    if let ScoreType::Time { .. } = state.points_type {
                         state
                             .players
                             .iter_mut()
@@ -142,7 +142,7 @@ impl Reducible for Game {
                 let mut next_turn: Option<bool> = None;
 
                 match state.points_type {
-                    PointsType::Time {
+                    ScoreType::Time {
                         started_at: Some(started_at),
                     } => {
                         info!("time");
@@ -155,7 +155,7 @@ impl Reducible for Game {
                             }
                         }
                     }
-                    PointsType::Hits {
+                    ScoreType::Hits {
                         point_per_hit: points_per_hit,
                     } => {
                         if is_correct_guess.is_some() {
@@ -180,9 +180,9 @@ impl Reducible for Game {
                 if state.game_over {
                     return Game {
                         points_type: match state.points_type {
-                            PointsType::Time {
+                            ScoreType::Time {
                                 started_at: Some(_),
-                            } => PointsType::Time { started_at: None },
+                            } => ScoreType::Time { started_at: None },
                             _ => state.points_type,
                         },
                         game_over: false,
@@ -235,7 +235,7 @@ impl Game {
     pub fn with_single_player_points() -> Self {
         Self {
             game_over: false,
-            points_type: PointsType::Hits { point_per_hit: 1 },
+            points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::SinglePlayer,
             guess: (None, None),
             players: vec![Player::new("Player 1")],
@@ -247,7 +247,7 @@ impl Game {
     pub fn with_single_player_time() -> Self {
         Self {
             game_over: false,
-            points_type: PointsType::Time { started_at: None },
+            points_type: ScoreType::Time { started_at: None },
             mode: GameMode::SinglePlayer,
             guess: (None, None),
             players: vec![Player::new("Player 1")],
@@ -259,7 +259,7 @@ impl Game {
     pub fn with_multi_player_points() -> Self {
         Self {
             game_over: false,
-            points_type: PointsType::Hits { point_per_hit: 1 },
+            points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::MultiPlayer,
             guess: (None, None),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],
@@ -271,7 +271,7 @@ impl Game {
     pub fn with_multi_player_time() -> Self {
         Self {
             game_over: false,
-            points_type: PointsType::Time { started_at: None },
+            points_type: ScoreType::Time { started_at: None },
             mode: GameMode::MultiPlayer,
             guess: (None, None),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],

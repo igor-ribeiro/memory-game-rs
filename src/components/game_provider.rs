@@ -1,4 +1,4 @@
-use crate::game::{Game, GameSetup};
+use crate::game::{Game, GameMode, GameSetup, ScoreType};
 use yew::prelude::*;
 
 pub type GameContext = UseReducerHandle<Game>;
@@ -11,21 +11,15 @@ pub struct Props {
 
 #[function_component(GameProvider)]
 pub fn game_provider(props: &Props) -> Html {
-    let game = use_reducer(|| match props.init {
-        GameSetup::Hits { single } => {
-            if single {
-                Game::with_single_player_points()
-            } else {
-                Game::with_multi_player_points()
-            }
-        }
-        GameSetup::Time { single } => {
-            if single {
-                Game::with_single_player_time()
-            } else {
-                Game::with_multi_player_time()
-            }
-        }
+    let game = use_reducer(|| match props.init.score_type {
+        ScoreType::Hits { .. } => match props.init.mode {
+            GameMode::SinglePlayer => Game::with_single_player_points(),
+            GameMode::MultiPlayer => Game::with_multi_player_points(),
+        },
+        ScoreType::Time { .. } => match props.init.mode {
+            GameMode::SinglePlayer => Game::with_single_player_time(),
+            GameMode::MultiPlayer => Game::with_multi_player_time(),
+        },
     });
 
     html! {

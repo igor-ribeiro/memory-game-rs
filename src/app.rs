@@ -1,36 +1,41 @@
 use crate::components::board::Board;
 use crate::components::game_provider::GameProvider;
 use crate::components::players::Players;
-use crate::game::{GameMode, GameSetup, PointsType};
+use crate::game::{GameMode, GameSetup, ScoreType};
 use yew::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let setup = use_state::<(Option<bool>, Option<bool>), _>(|| (None, None));
+    let game_mode = use_state::<Option<GameMode>, _>(|| None);
+    let score_type = use_state::<Option<ScoreType>, _>(|| None);
 
     let on_reset_setup = {
-        let setup = setup.clone();
+        let is_single_player = game_mode.clone();
+        let score_type = score_type.clone();
 
         move |_| {
-            setup.set((None, None));
+            is_single_player.set(None);
+            score_type.set(None);
         }
     };
 
-    let on_set_mode = {
-        let mode = setup.clone();
-        Callback::from(move |next_mode: bool| {
-            mode.set((Some(next_mode), mode.1));
+    let set_game_mode = {
+        let game_mode = game_mode.clone();
+        Callback::from(move |value: GameMode| {
+            game_mode.set(Some(value));
         })
     };
 
-    let on_set_points = {
-        let setup = setup.clone();
-        Callback::from(move |next_points: bool| {
-            setup.set((setup.0, Some(next_points)));
+    let set_score_type = {
+        let score_type = score_type.clone();
+        Callback::from(move |value: ScoreType| {
+            score_type.set(Some(value));
         })
     };
 
-    if setup.0.is_none() || setup.1.is_none() {
+    let is_ready = game_mode.is_some() && score_type.is_some();
+
+    if !is_ready {
         return html! {
             <div class="p-2 flex flex-col gap-4 items-center">
                 <h1 class="font-bold text-3xl">{"Jogo da memória"}</h1>
@@ -39,15 +44,29 @@ pub fn app() -> Html {
                     <h2 class="font-bold text-xl">{"Jogar sozinho"}</h2>
                     <div class="btn-group">
                         <button
-                            class={classes!("btn", setup.0.eq(&Some(true)).then_some("active"))}
-                            onclick={on_set_mode.clone().reform(move |_| true)}
+                            class={classes!(
+                                "btn",
+                                if let Some(GameMode::SinglePlayer) = *game_mode {
+                                    "active"
+                                } else {
+                                    ""
+                                }
+                            )}
+                            onclick={set_game_mode.clone().reform(move |_| GameMode::SinglePlayer)}
                         >
                             {"Sim"}
                         </button>
                         <div class="btn-group-divider"/>
                         <button
-                            class={classes!("btn", setup.0.eq(&Some(false)).then_some("active"))}
-                            onclick={on_set_mode.clone().reform(move |_| false)}
+                            class={classes!(
+                                "btn",
+                                if let Some(GameMode::MultiPlayer) = *game_mode {
+                                    "active"
+                                } else {
+                                    ""
+                                }
+                            )}
+                            onclick={set_game_mode.clone().reform(move |_| GameMode::MultiPlayer)}
                         >
                             {"Não"}
                         </button>
@@ -60,13 +79,15 @@ pub fn app() -> Html {
                         <button
                             class={classes!(
                                 "btn",
-                                if let Some(true) = setup.1 {
+                                if let Some(ScoreType::Hits { .. }) = *score_type {
                                     "active"
                                 } else {
                                     ""
                                 }
                             )}
-                            onclick={on_set_points.clone().reform(move |_| true)}
+                            onclick={set_score_type.clone().reform(move |_| ScoreType::Hits {
+                                point_per_hit: 1,
+                            })}
                         >
                             {"Acertos"}
                         </button>
@@ -74,13 +95,15 @@ pub fn app() -> Html {
                         <button
                             class={classes!(
                                 "btn",
-                                if let Some(false) = setup.1 {
+                                if let Some(ScoreType::Time { .. }) = *score_type{
                                     "active"
                                 } else {
                                     ""
                                 }
                             )}
-                            onclick={on_set_points.clone().reform(move |_| false)}
+                            onclick={set_score_type.clone().reform(move |_| ScoreType::Time {
+                                started_at: None,
+                            })}
                         >
                             {"Tempo"}
                         </button>
@@ -90,19 +113,13 @@ pub fn app() -> Html {
         };
     }
 
-    let setup = match *setup {
-        (Some(single), Some(points)) => {
-            if points {
-                Some(GameSetup::Hits { single })
-            } else {
-                Some(GameSetup::Time { single })
-            }
-        }
-        _ => None,
+    let setup = GameSetup {
+        mode: game_mode.unwrap(),
+        score_type: score_type.unwrap(),
     };
 
     html! {
-        <GameProvider init={setup.unwrap()}>
+        <GameProvider init={setup}>
             <div class="p-2 flex flex-col gap-4 items-center">
                 <button class="btn" onclick={on_reset_setup}>{"Voltar"}</button>
                 <Players />
