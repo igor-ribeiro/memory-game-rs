@@ -2,8 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html,
+  body {
+    font-family: "Inter";
+  }
+}
+
 @layer components {
-	.btn {
-		@apply bg-neutral-300 font-bold px-4 py-2 rounded uppercase tracking-wide;
-	}
+  .btn {
+    @apply bg-neutral-200 font-black px-4 py-2 rounded uppercase tracking-wider hover:bg-neutral-300;
+  }
+
+  .btn-group {
+    @apply flex bg-neutral-200 items-center rounded-full gap-1 overflow-hidden;
+
+    .btn {
+      @apply rounded-full;
+    }
+  }
+
+  .btn-group-divider {
+    @apply w-[1px] bg-black/10 h-[1.5em];
+  }
+}
+
+@layer utilities {
+  .btn-group .active {
+    @apply bg-sky-400;
+  }
 }

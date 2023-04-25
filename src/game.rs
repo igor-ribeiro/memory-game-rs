@@ -7,7 +7,7 @@ use yew::Reducible;
 static CARDS: i32 = 24;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GameInit {
+pub enum GameSetup {
     Hits { single: bool },
     Time { single: bool },
 }

@@ -1,0 +1,4 @@
+- [x] Game setup
+- [ ] Player name
+- [ ] Localstorage
+- [ ] Highscore per game setup
