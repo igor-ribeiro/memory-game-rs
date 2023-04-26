@@ -21,7 +21,7 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
         CardType::NBA => NBA_LOGOS
             .iter()
             .map(|url| format!("background-image: url({url})"))
-            .collect::<Vec<_>>(),
+            .collect(),
         CardType::Colors => COLORS
             .iter()
             .map(|color| format!("background-color: {color}"))
@@ -58,18 +58,21 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
     use_reset_guess();
 
     use_effect_with_deps(
-        |card_type| match card_type {
-            CardType::NBA => {
-                NBA_LOGOS.iter().for_each(|url| {
+        |card_type| {
+            match card_type {
+                CardType::NBA => {
+                    // Preload images.
+                    NBA_LOGOS.iter().for_each(|url| {
+                        let image = HtmlImageElement::new().unwrap();
+                        image.set_src(url);
+                    });
+                }
+                CardType::Animals => {
                     let image = HtmlImageElement::new().unwrap();
-                    image.set_src(url);
-                });
+                    image.set_src(ANIMALS_IMAGE);
+                }
+                _ => {}
             }
-            CardType::Animals => {
-                let image = HtmlImageElement::new().unwrap();
-                image.set_src(ANIMALS_IMAGE);
-            }
-            _ => {}
         },
         game.card_type,
     );

@@ -1,5 +1,4 @@
 use chrono::offset;
-use log::info;
 use rand::prelude::*;
 use std::rc::Rc;
 use yew::Reducible;
