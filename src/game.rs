@@ -4,6 +4,8 @@ use rand::prelude::*;
 use std::rc::Rc;
 use yew::Reducible;
 
+use crate::constants::{COLORS, NBA_LOGOS};
+
 static CARDS: i32 = 24;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -241,11 +243,13 @@ fn get_cards(total: i32) -> Vec<Card> {
 }
 
 fn get_cards_count(card_type: CardType) -> i32 {
-    match card_type {
-        CardType::NBA => 60,
-        CardType::Colors => 24,
-        CardType::ToyStory => 24,
-    }
+    let count = match card_type {
+        CardType::NBA => NBA_LOGOS.len(),
+        CardType::Colors => COLORS.len(),
+        CardType::ToyStory => 12,
+    } as i32;
+
+    count * 2
 }
 
 impl Game {
