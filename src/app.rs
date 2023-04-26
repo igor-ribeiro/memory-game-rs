@@ -1,13 +1,14 @@
 use crate::components::board::Board;
 use crate::components::game_provider::GameProvider;
 use crate::components::players::Players;
-use crate::game::{GameMode, GameSetup, ScoreType};
+use crate::game::{CardType, GameMode, GameSetup, ScoreType};
 use yew::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let game_mode = use_state::<Option<GameMode>, _>(|| None);
-    let score_type = use_state::<Option<ScoreType>, _>(|| None);
+    let game_mode = use_state::<Option<GameMode>, _>(|| Some(GameMode::SinglePlayer));
+    let score_type =
+        use_state::<Option<ScoreType>, _>(|| Some(ScoreType::Time { started_at: None }));
 
     let on_reset_setup = {
         let is_single_player = game_mode.clone();
@@ -116,14 +117,15 @@ pub fn app() -> Html {
     let setup = GameSetup {
         mode: game_mode.unwrap(),
         score_type: score_type.unwrap(),
+        card_type: CardType::NBA,
     };
 
     html! {
         <GameProvider init={setup}>
             <div class="p-2 flex flex-col gap-4 items-center">
-                <button class="btn" onclick={on_reset_setup}>{"Voltar"}</button>
                 <Players />
                 <Board />
+                <button class="btn" onclick={on_reset_setup}>{"Voltar"}</button>
             </div>
         </GameProvider>
     }

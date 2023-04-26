@@ -26,4 +26,7 @@ build.cmd = [
 
 ## Runs the frontend, watching for changes (uses Trunk)
 run.subcommands.tailwind = ["bonnie build-tailwind-dev"]
-run.subcommands.frontend = ["trunk --config Trunk.dev.toml serve --port 3030"]
+run.subcommands.frontend = [
+  # "rm -rf target",
+  "trunk --config Trunk.dev.toml serve --port 3030",
+]

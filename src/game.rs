@@ -7,9 +7,17 @@ use yew::Reducible;
 static CARDS: i32 = 24;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CardType {
+    Colors,
+    NBA,
+    ToyStory,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct GameSetup {
     pub score_type: ScoreType,
     pub mode: GameMode,
+    pub card_type: CardType,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -58,6 +66,7 @@ pub struct Game {
     pub turn: usize,
     pub players: Vec<Player>,
     pub cards: Vec<Card>,
+    pub card_type: CardType,
 }
 
 pub enum Action {
@@ -186,7 +195,7 @@ impl Reducible for Game {
                             _ => state.points_type,
                         },
                         game_over: false,
-                        cards: get_cards(CARDS),
+                        cards: get_cards(get_cards_count(state.card_type)),
                         ..state
                     }
                     .into();
@@ -219,7 +228,7 @@ fn get_cards(total: i32) -> Vec<Card> {
     let mut cards = (1..=total)
         .map(|value| Card {
             id: value,
-            value: (value as f32 / 2.0).ceil() as i32,
+            value: ((value as f32 / 2.0).ceil() as i32) - 1,
             flipped: false,
         })
         .collect::<Vec<Card>>();
@@ -231,8 +240,18 @@ fn get_cards(total: i32) -> Vec<Card> {
     cards
 }
 
+fn get_cards_count(card_type: CardType) -> i32 {
+    match card_type {
+        CardType::NBA => 60,
+        CardType::Colors => 24,
+        CardType::ToyStory => 24,
+    }
+}
+
 impl Game {
-    pub fn with_single_player_points() -> Self {
+    fn default(card_type: CardType) -> Self {
+        let cards_count = get_cards_count(card_type);
+
         Self {
             game_over: false,
             points_type: ScoreType::Hits { point_per_hit: 1 },
@@ -240,43 +259,44 @@ impl Game {
             guess: (None, None),
             players: vec![Player::new("Player 1")],
             turn: 0,
-            cards: get_cards(CARDS),
+            cards: get_cards(cards_count),
+            card_type,
         }
     }
 
-    pub fn with_single_player_time() -> Self {
+    pub fn with_single_player_points(card_type: CardType) -> Self {
         Self {
-            game_over: false,
+            points_type: ScoreType::Hits { point_per_hit: 1 },
+            mode: GameMode::SinglePlayer,
+            players: vec![Player::new("Player 1")],
+            ..Self::default(card_type)
+        }
+    }
+
+    pub fn with_single_player_time(card_type: CardType) -> Self {
+        Self {
             points_type: ScoreType::Time { started_at: None },
             mode: GameMode::SinglePlayer,
-            guess: (None, None),
             players: vec![Player::new("Player 1")],
-            turn: 0,
-            cards: get_cards(CARDS),
+            ..Self::default(card_type)
         }
     }
 
-    pub fn with_multi_player_points() -> Self {
+    pub fn with_multi_player_points(card_type: CardType) -> Self {
         Self {
-            game_over: false,
             points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::MultiPlayer,
-            guess: (None, None),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],
-            turn: 0,
-            cards: get_cards(CARDS),
+            ..Self::default(card_type)
         }
     }
 
-    pub fn with_multi_player_time() -> Self {
+    pub fn with_multi_player_time(card_type: CardType) -> Self {
         Self {
-            game_over: false,
             points_type: ScoreType::Time { started_at: None },
             mode: GameMode::MultiPlayer,
-            guess: (None, None),
             players: vec![Player::new("Player 1"), Player::new("Player 2")],
-            turn: 0,
-            cards: get_cards(CARDS),
+            ..Self::default(card_type)
         }
     }
 }

@@ -10,21 +10,21 @@ pub struct Props {
 }
 
 #[function_component(GameProvider)]
-pub fn game_provider(props: &Props) -> Html {
-    let game = use_reducer(|| match props.init.score_type {
-        ScoreType::Hits { .. } => match props.init.mode {
-            GameMode::SinglePlayer => Game::with_single_player_points(),
-            GameMode::MultiPlayer => Game::with_multi_player_points(),
+pub fn game_provider(Props { init, children }: &Props) -> Html {
+    let game = use_reducer(|| match init.score_type {
+        ScoreType::Hits { .. } => match init.mode {
+            GameMode::SinglePlayer => Game::with_single_player_points(init.card_type),
+            GameMode::MultiPlayer => Game::with_multi_player_points(init.card_type),
         },
-        ScoreType::Time { .. } => match props.init.mode {
-            GameMode::SinglePlayer => Game::with_single_player_time(),
-            GameMode::MultiPlayer => Game::with_multi_player_time(),
+        ScoreType::Time { .. } => match init.mode {
+            GameMode::SinglePlayer => Game::with_single_player_time(init.card_type),
+            GameMode::MultiPlayer => Game::with_multi_player_time(init.card_type),
         },
     });
 
     html! {
         <ContextProvider<GameContext> context={game}>
-            {for props.children.iter() }
+            {for children.iter() }
         </ContextProvider<GameContext>>
     }
 }
