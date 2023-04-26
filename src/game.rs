@@ -242,14 +242,27 @@ fn get_cards(total: i32) -> Vec<Card> {
     cards
 }
 
+pub fn get_board_cols(card_type: CardType) -> i32 {
+    match card_type {
+        CardType::NBA => 8,
+        CardType::Colors => 6,
+        CardType::ToyStory => 12,
+    }
+}
+
 fn get_cards_count(card_type: CardType) -> i32 {
     let count = match card_type {
         CardType::NBA => NBA_LOGOS.len(),
         CardType::Colors => COLORS.len(),
         CardType::ToyStory => 12,
-    } as i32;
+    };
 
-    count * 2
+    // let count = count as i32 * 2;
+    // let cols = (count as f32).sqrt().floor() as u32;
+    // let rest = count - cols.pow(cols) as i32;
+    // let rows = rest / 2;
+
+    count as i32 * 2
 }
 
 impl Game {

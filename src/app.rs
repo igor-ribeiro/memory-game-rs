@@ -6,17 +6,19 @@ use yew::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let game_mode = use_state::<Option<GameMode>, _>(|| Some(GameMode::SinglePlayer));
-    let score_type =
-        use_state::<Option<ScoreType>, _>(|| Some(ScoreType::Time { started_at: None }));
+    let game_mode = use_state::<Option<GameMode>, _>(|| None);
+    let score_type = use_state::<Option<ScoreType>, _>(|| None);
+    let card_type = use_state::<Option<CardType>, _>(|| None);
 
     let on_reset_setup = {
         let is_single_player = game_mode.clone();
         let score_type = score_type.clone();
+        let card_type = card_type.clone();
 
         move |_| {
             is_single_player.set(None);
             score_type.set(None);
+            card_type.set(None);
         }
     };
 
@@ -34,7 +36,14 @@ pub fn app() -> Html {
         })
     };
 
-    let is_ready = game_mode.is_some() && score_type.is_some();
+    let set_card_type = {
+        let card_type = card_type.clone();
+        Callback::from(move |value: CardType| {
+            card_type.set(Some(value));
+        })
+    };
+
+    let is_ready = game_mode.is_some() && score_type.is_some() && card_type.is_some();
 
     if !is_ready {
         return html! {
@@ -110,6 +119,39 @@ pub fn app() -> Html {
                         </button>
                     </div>
                 </div>
+
+                <div class="text-center">
+                    <h2 class="font-bold text-xl">{"Tipo de cartas"}</h2>
+                    <div class="btn-group">
+                        <button
+                            class={classes!(
+                                "btn",
+                                if let Some(CardType::Colors) = *card_type {
+                                    "active"
+                                } else {
+                                    ""
+                                }
+                            )}
+                            onclick={set_card_type.clone().reform(move |_| CardType::Colors )}
+                        >
+                            {"Cores"}
+                        </button>
+                        <div class="btn-group-divider"/>
+                        <button
+                            class={classes!(
+                                "btn",
+                                if let Some(CardType::NBA) = *card_type{
+                                    "active"
+                                } else {
+                                    ""
+                                }
+                            )}
+                            onclick={set_card_type.clone().reform(move |_| CardType::NBA )}
+                        >
+                            {"NBA"}
+                        </button>
+                    </div>
+                </div>
             </div>
         };
     }
@@ -117,7 +159,7 @@ pub fn app() -> Html {
     let setup = GameSetup {
         mode: game_mode.unwrap(),
         score_type: score_type.unwrap(),
-        card_type: CardType::NBA,
+        card_type: card_type.unwrap(),
     };
 
     html! {

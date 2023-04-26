@@ -1,7 +1,7 @@
 use crate::{
     components::{card::Card, game_provider::GameContext},
     constants::{COLORS, NBA_LOGOS},
-    game::{Action, CardType},
+    game::{get_board_cols, Action, CardType},
     hooks::use_reset_guess,
 };
 use web_sys::HtmlImageElement;
@@ -72,9 +72,13 @@ pub fn board() -> Html {
     });
 
     let cards_len = game.cards.len();
+    let style = format!(
+        "grid-template-columns: repeat({}, 100px)",
+        get_board_cols(game.card_type)
+    );
 
     html! {
-        <div class="grid grid-cols-[repeat(10,100px)] gap-2">
+        <div class="grid gap-2" style={style}>
             {for board}
         </div>
     }
