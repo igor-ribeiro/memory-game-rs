@@ -6,13 +6,14 @@ use yew::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let game_mode = use_state::<Option<GameMode>, _>(|| Some(GameMode::SinglePlayer));
-    let score_type =
-        use_state::<Option<ScoreType>, _>(|| Some(ScoreType::Hits { point_per_hit: 1 }));
-    let card_type = use_state::<Option<CardType>, _>(|| Some(CardType::Animals));
-    // let game_mode = use_state::<Option<GameMode>, _>(|| None);
-    // let score_type = use_state::<Option<ScoreType>, _>(|| None);
-    // let card_type = use_state::<Option<CardType>, _>(|| None);
+    // let game_mode = use_state::<Option<GameMode>, _>(|| Some(GameMode::SinglePlayer));
+    // let score_type =
+    //     use_state::<Option<ScoreType>, _>(|| Some(ScoreType::Hits { point_per_hit: 1 }));
+    // let card_type = use_state::<Option<CardType>, _>(|| Some(CardType::NBA));
+
+    let game_mode = use_state::<Option<GameMode>, _>(|| None);
+    let score_type = use_state::<Option<ScoreType>, _>(|| None);
+    let card_type = use_state::<Option<CardType>, _>(|| None);
 
     let set_game_mode = {
         let game_mode = game_mode.clone();
