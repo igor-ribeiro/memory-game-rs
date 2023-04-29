@@ -10,18 +10,6 @@ pub fn app() -> Html {
     let score_type = use_state::<Option<ScoreType>, _>(|| None);
     let card_type = use_state::<Option<CardType>, _>(|| None);
 
-    let on_reset_setup = {
-        let is_single_player = game_mode.clone();
-        let score_type = score_type.clone();
-        let card_type = card_type.clone();
-
-        move |_| {
-            is_single_player.set(None);
-            score_type.set(None);
-            card_type.set(None);
-        }
-    };
-
     let set_game_mode = {
         let game_mode = game_mode.clone();
         Callback::from(move |value: GameMode| {
@@ -176,12 +164,25 @@ pub fn app() -> Html {
         card_type: card_type.unwrap(),
     };
 
+    let on_reset_setup = {
+        let is_single_player = game_mode.clone();
+        let score_type = score_type.clone();
+        let card_type = card_type.clone();
+
+        move |_| {
+            is_single_player.set(None);
+            score_type.set(None);
+            card_type.set(None);
+        }
+    };
+
     html! {
         <GameProvider init={setup}>
             <div class="p-2 flex flex-col gap-4 items-center">
                 <Players />
-                <Board />
-                <button class="btn" onclick={on_reset_setup}>{"Voltar"}</button>
+                <Board>
+                    <button class="btn" onclick={on_reset_setup}>{"Voltar"}</button>
+                </Board>
             </div>
         </GameProvider>
     }

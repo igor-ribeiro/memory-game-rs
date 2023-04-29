@@ -43,8 +43,13 @@ fn get_back_card_style(card_type: &CardType) -> Option<String> {
     }
 }
 
+#[derive(Properties, PartialEq)]
+pub struct BoardProps {
+    pub children: Children,
+}
+
 #[function_component(Board)]
-pub fn board() -> Html {
+pub fn board(BoardProps { children }: &BoardProps) -> Html {
     let game = use_context::<GameContext>().unwrap();
     let card_style = get_card_style(&game.card_type);
     let back_card_style = get_back_card_style(&game.card_type);
@@ -89,9 +94,26 @@ pub fn board() -> Html {
         get_board_cols(game.card_type)
     );
 
+    let on_restart = {
+        let game = game.clone();
+        move |_| {
+            game.dispatch(Action::Restart);
+        }
+    };
+
     html! {
-        <div class="grid gap-2" style={style}>
-            {for board}
+        <div>
+            <div class="grid gap-2" style={style}>
+                {for board}
+            </div>
+
+            <div class="flex gap-2 justify-between mt-4">
+                {for children.iter()}
+
+                if game.game_over {
+                    <button class="btn" onclick={on_restart}>{"Jogar novamente"}</button>
+                }
+            </div>
         </div>
     }
 }

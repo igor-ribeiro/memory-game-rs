@@ -74,6 +74,7 @@ pub struct Game {
 pub enum Action {
     FlipCard(usize),
     NextTurn,
+    Restart,
 }
 
 impl Reducible for Game {
@@ -189,18 +190,12 @@ impl Reducible for Game {
                 }
 
                 if state.game_over {
-                    return Game {
-                        points_type: match state.points_type {
-                            ScoreType::Time {
-                                started_at: Some(_),
-                            } => ScoreType::Time { started_at: None },
-                            _ => state.points_type,
-                        },
-                        game_over: false,
-                        cards: get_cards(get_cards_count(state.card_type)),
-                        ..state
-                    }
-                    .into();
+                    state.points_type = match state.points_type {
+                        ScoreType::Time {
+                            started_at: Some(_),
+                        } => ScoreType::Time { started_at: None },
+                        _ => state.points_type,
+                    };
                 }
 
                 state
@@ -219,6 +214,18 @@ impl Reducible for Game {
                 };
 
                 state
+            }
+            Action::Restart => {
+                if !state.game_over {
+                    return state.into();
+                }
+
+                return Game {
+                    game_over: false,
+                    cards: get_cards(get_cards_count(state.card_type)),
+                    ..state
+                }
+                .into();
             }
         };
 
