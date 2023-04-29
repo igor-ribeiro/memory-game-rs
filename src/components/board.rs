@@ -1,6 +1,6 @@
 use crate::{
     components::{card::Card, game_provider::GameContext},
-    constants::{COLORS, NBA_LOGOS},
+    constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, NBA_LOGOS},
     game::{get_board_cols, Action, CardType},
     hooks::use_reset_guess,
 };
@@ -17,7 +17,20 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
             .iter()
             .map(|color| format!("background-color: {color}"))
             .collect::<Vec<_>>(),
-        _ => vec![],
+        CardType::Animals => (0..=ANIMALS_COUNT)
+            .map(|i| {
+                let card_size = 100;
+
+                format!(
+                    "background-image: url({}); \
+                        background-size: {}px;\
+                        background-position: {}px center",
+                    ANIMALS_IMAGE,
+                    card_size * ANIMALS_COUNT,
+                    i * card_size
+                )
+            })
+            .collect::<Vec<_>>(),
     }
 }
 
@@ -71,7 +84,6 @@ pub fn board() -> Html {
         }
     });
 
-    let cards_len = game.cards.len();
     let style = format!(
         "grid-template-columns: repeat({}, 100px)",
         get_board_cols(game.card_type)

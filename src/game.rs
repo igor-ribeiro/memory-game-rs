@@ -4,7 +4,7 @@ use rand::prelude::*;
 use std::rc::Rc;
 use yew::Reducible;
 
-use crate::constants::{COLORS, NBA_LOGOS};
+use crate::constants::{ANIMALS_COUNT, COLORS, NBA_LOGOS};
 
 static CARDS: i32 = 24;
 
@@ -12,7 +12,7 @@ static CARDS: i32 = 24;
 pub enum CardType {
     Colors,
     NBA,
-    ToyStory,
+    Animals,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -246,15 +246,15 @@ pub fn get_board_cols(card_type: CardType) -> i32 {
     match card_type {
         CardType::NBA => 8,
         CardType::Colors => 6,
-        CardType::ToyStory => 12,
+        CardType::Animals => 8,
     }
 }
 
 fn get_cards_count(card_type: CardType) -> i32 {
     let count = match card_type {
-        CardType::NBA => NBA_LOGOS.len(),
-        CardType::Colors => COLORS.len(),
-        CardType::ToyStory => 12,
+        CardType::NBA => NBA_LOGOS.len() as i32,
+        CardType::Colors => COLORS.len() as i32,
+        CardType::Animals => ANIMALS_COUNT,
     };
 
     // let count = count as i32 * 2;
@@ -262,7 +262,7 @@ fn get_cards_count(card_type: CardType) -> i32 {
     // let rest = count - cols.pow(cols) as i32;
     // let rows = rest / 2;
 
-    count as i32 * 2
+    count * 2
 }
 
 impl Game {

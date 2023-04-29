@@ -37,3 +37,6 @@ pub const NBA_LOGOS: [&str; 20] = [
     "https://cdn.nba.com/logos/nba/1610612740/global/L/logo.svg", // pelicans,
                                                                   // "https://cdn.nba.com/logos/nba/1610612759/global/L/logo.svg", // spurs
 ];
+
+pub const ANIMALS_IMAGE: &str = "/public/animals.jpg";
+pub const ANIMALS_COUNT: i32 = 16;
