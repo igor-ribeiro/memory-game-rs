@@ -22,7 +22,7 @@ pub fn players() -> Html {
             <div
                 key={player.name}
                 class={classes!(
-                    "w-[100px] flex-1 text-center flex flex-col justify-between relative overflow-hidden".to_string(),
+                    "w-[100px] text-center flex flex-col justify-between relative overflow-hidden".to_string(),
                     is_turn.then_some("font-bold").or(Some("text-gray-600")),
                 )}
             >
@@ -48,7 +48,7 @@ pub fn players() -> Html {
     });
 
     html! {
-        <div class="flex gap-2 border border-gray-300 p-1">
+        <div class="flex flex-col w-fit gap-2 border border-gray-300 p-1">
             {for players}
         </div>
     }

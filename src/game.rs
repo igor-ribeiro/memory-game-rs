@@ -157,7 +157,6 @@ impl Reducible for Game {
                     ScoreType::Time {
                         started_at: Some(started_at),
                     } => {
-                        info!("time");
                         if state.game_over {
                             let now = offset::Local::now().timestamp();
                             next_points = Some((now - started_at) as i32);
@@ -282,7 +281,7 @@ impl Game {
             points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::SinglePlayer,
             guess: (None, None),
-            players: vec![Player::new("Player 1")],
+            players: vec![Player::new("Jogador 1")],
             turn: 0,
             cards: get_cards(cards_count),
             card_type,
@@ -293,7 +292,7 @@ impl Game {
         Self {
             points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::SinglePlayer,
-            players: vec![Player::new("Player 1")],
+            players: vec![Player::new("Jogador 1")],
             ..Self::default(card_type)
         }
     }
@@ -302,7 +301,7 @@ impl Game {
         Self {
             points_type: ScoreType::Time { started_at: None },
             mode: GameMode::SinglePlayer,
-            players: vec![Player::new("Player 1")],
+            players: vec![Player::new("Jogador 1")],
             ..Self::default(card_type)
         }
     }
@@ -311,7 +310,7 @@ impl Game {
         Self {
             points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::MultiPlayer,
-            players: vec![Player::new("Player 1"), Player::new("Player 2")],
+            players: vec![Player::new("Jogador 1"), Player::new("Jogador 2")],
             ..Self::default(card_type)
         }
     }
@@ -320,7 +319,7 @@ impl Game {
         Self {
             points_type: ScoreType::Time { started_at: None },
             mode: GameMode::MultiPlayer,
-            players: vec![Player::new("Player 1"), Player::new("Player 2")],
+            players: vec![Player::new("Jogador 1"), Player::new("Jogador 2")],
             ..Self::default(card_type)
         }
     }

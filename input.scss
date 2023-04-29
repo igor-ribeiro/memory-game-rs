@@ -7,10 +7,20 @@
   body {
     font-family: "Inter";
   }
-
   :root {
     --card-size: 60px;
     --card-gap: 4px;
+  }
+
+  @media (min-width: 960px) {
+    :root {
+      --card-size: 100px;
+      --card-gap: 6px;
+    }
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -35,5 +45,9 @@
 @layer utilities {
   .btn-group .active {
     @apply bg-sky-400;
+  }
+
+  .btn:disabled {
+    @apply opacity-40;
   }
 }

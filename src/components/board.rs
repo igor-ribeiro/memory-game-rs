@@ -106,17 +106,17 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
     };
 
     html! {
-        <div>
+        <div class="flex-1 flex flex-col items-center">
             <div class="grid" style={style}>
                 {for board}
             </div>
 
-            <div class="flex gap-2 justify-between mt-4">
+            <div class="flex gap-2 mt-4">
                 {for children.iter()}
 
-                if game.game_over {
-                    <button class="btn" onclick={on_restart}>{"Jogar novamente"}</button>
-                }
+                <button class="btn" onclick={on_restart} disabled={!game.game_over}>
+                    {"Jogar novamente"}
+                </button>
             </div>
         </div>
     }
