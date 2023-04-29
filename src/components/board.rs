@@ -64,6 +64,10 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
                     image.set_src(url);
                 });
             }
+            CardType::Animals => {
+                let image = HtmlImageElement::new().unwrap();
+                image.set_src(ANIMALS_IMAGE);
+            }
             _ => {}
         },
         game.card_type,
