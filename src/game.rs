@@ -245,6 +245,7 @@ fn get_cards(total: i32) -> Vec<Card> {
     let mut rng = rand::thread_rng();
 
     cards.shuffle(&mut rng);
+    cards.shuffle(&mut rng);
 
     cards
 }
