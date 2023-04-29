@@ -39,4 +39,4 @@ pub const NBA_LOGOS: [&str; 20] = [
 ];
 
 pub const ANIMALS_IMAGE: &str = "public/animals.jpg";
-pub const ANIMALS_COUNT: i32 = 16;
+pub const ANIMALS_COUNT: i32 = 20;

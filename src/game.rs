@@ -258,8 +258,8 @@ fn get_cards(total: i32) -> Vec<Card> {
 
     let mut rng = rand::thread_rng();
 
-    // cards.shuffle(&mut rng);
-    // cards.shuffle(&mut rng);
+    cards.shuffle(&mut rng);
+    cards.shuffle(&mut rng);
 
     cards
 }
@@ -268,7 +268,7 @@ pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
     match card_type {
         CardType::NBA => (8, 5),
         CardType::Colors => (6, 4),
-        CardType::Animals => (8, 4),
+        CardType::Animals => (8, 5),
     }
 }
 
