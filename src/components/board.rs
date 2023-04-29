@@ -1,7 +1,7 @@
 use crate::{
     components::{card::Card, game_provider::GameContext},
     constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, NBA_LOGOS},
-    game::{get_board_cols, Action, CardType},
+    game::{get_board_grid, Action, CardType},
     hooks::use_reset_guess,
 };
 use web_sys::HtmlImageElement;
@@ -19,15 +19,11 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
             .collect::<Vec<_>>(),
         CardType::Animals => (0..=ANIMALS_COUNT)
             .map(|i| {
-                let card_size = 100;
-
                 format!(
                     "background-image: url({}); \
-                        background-size: {}px;\
-                        background-position: {}px center",
-                    ANIMALS_IMAGE,
-                    card_size * ANIMALS_COUNT,
-                    i * card_size
+                        background-size: calc(var(--card-size) * {});\
+                        background-position: calc(var(--card-size) * {}) center",
+                    ANIMALS_IMAGE, ANIMALS_COUNT, i
                 )
             })
             .collect::<Vec<_>>(),
@@ -93,9 +89,13 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
         }
     });
 
+    let board_grid = get_board_grid(game.card_type);
+
     let style = format!(
-        "grid-template-columns: repeat({}, 100px)",
-        get_board_cols(game.card_type)
+        "grid-template-columns: repeat({}, var(--card-size));\
+            grid-template-rows: repeat({}, var(--card-size));\
+            grid-gap: var(--card-gap);",
+        board_grid.0, board_grid.1,
     );
 
     let on_restart = {
@@ -107,7 +107,7 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
 
     html! {
         <div>
-            <div class="grid gap-2" style={style}>
+            <div class="grid" style={style}>
                 {for board}
             </div>
 

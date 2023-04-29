@@ -26,21 +26,21 @@ pub fn players() -> Html {
                     is_turn.then_some("font-bold").or(Some("text-gray-600")),
                 )}
             >
-                <span>
+                <span class="text-xs lg:text-sm">
                     {player.name}
                 </span>
 
                 <span
                     key={player.points}
-                    class="text-3xl animate-[ping_.7s_ease-in-out_1] [animation-direction:reverse]"
+                    class="text-xl lg:text-3xl animate-[ping_.7s_ease-in-out_1] [animation-direction:reverse]"
                 >
                     {points}
                 </span>
 
                 <div
                     class={classes!(
-                        "z-[-1] w-full h-full absolute left-0 top-0 bg-gray-300".to_string(),
-                        is_turn.then_some("opacity-1 animate-pulse").or(Some("opacity-0")),
+                        "z-[-1] w-full h-full absolute left-0 top-0 bg-green-600/20".to_string(),
+                        is_turn.then_some("opacity-1").or(Some("opacity-0")),
                     )}
                 />
             </div>
@@ -48,7 +48,7 @@ pub fn players() -> Html {
     });
 
     html! {
-        <div class="flex p-2 border border-gray-400 gap-2">
+        <div class="flex gap-2 border border-gray-300 p-1">
             {for players}
         </div>
     }

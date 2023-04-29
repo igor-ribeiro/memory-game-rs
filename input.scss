@@ -7,6 +7,11 @@
   body {
     font-family: "Inter";
   }
+
+  :root {
+    --card-size: 60px;
+    --card-gap: 4px;
+  }
 }
 
 @layer components {

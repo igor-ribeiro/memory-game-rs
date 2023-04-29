@@ -250,11 +250,11 @@ fn get_cards(total: i32) -> Vec<Card> {
     cards
 }
 
-pub fn get_board_cols(card_type: CardType) -> i32 {
+pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
     match card_type {
-        CardType::NBA => 8,
-        CardType::Colors => 6,
-        CardType::Animals => 8,
+        CardType::NBA => (8, 5),
+        CardType::Colors => (6, 4),
+        CardType::Animals => (8, 4),
     }
 }
 

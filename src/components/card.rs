@@ -26,7 +26,7 @@ pub fn card(props: &Props) -> Html {
             key={card.id}
             style={card.flipped.then_some(card_style).or(back_card_style)}
             class={classes!(
-                "flex w-[100px] h-[100px] items-center justify-center border border-gray-400 rounded".to_string(),
+                "flex w-full h-full items-center justify-center border border-gray-400 rounded".to_string(),
                 card.flipped
                     .then_some("")
                     .or(Some("cursor-pointer hover:bg-neutral-100"))
