@@ -101,6 +101,7 @@ impl Reducible for Game {
                     .collect::<Vec<_>>()
                     .len();
 
+                // Reset players points when starting a new round.
                 if players_with_points == self.players.len() {
                     if let ScoreType::Time { .. } = state.points_type {
                         state
@@ -146,6 +147,20 @@ impl Reducible for Game {
 
                             Some(false)
                         }
+                    }
+                    (Some(first_pos), Some(second_pos)) => {
+                        state.cards.iter_mut().enumerate().for_each(|(i, card)| {
+                            if i == first_pos || i == second_pos {
+                                card.flipped = false;
+                            }
+                        });
+
+                        state.guess = (Some(position), None);
+
+                        let card = &mut state.cards[position];
+                        card.flipped = true;
+
+                        None
                     }
                     _ => None,
                 };
@@ -243,8 +258,8 @@ fn get_cards(total: i32) -> Vec<Card> {
 
     let mut rng = rand::thread_rng();
 
-    cards.shuffle(&mut rng);
-    cards.shuffle(&mut rng);
+    // cards.shuffle(&mut rng);
+    // cards.shuffle(&mut rng);
 
     cards
 }
