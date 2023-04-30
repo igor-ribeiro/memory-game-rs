@@ -1,4 +1,4 @@
 - [x] Game setup
-- [ ] Player name
+- [ ] Multiple players with name
 - [ ] Localstorage
 - [ ] Highscore per game setup

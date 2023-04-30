@@ -4,7 +4,7 @@ use rand::prelude::*;
 use std::rc::Rc;
 use yew::Reducible;
 
-use crate::constants::{ANIMALS_COUNT, COLORS, NBA_LOGOS};
+use crate::constants::{ANIMALS_COUNT, COLORS, DISNEY_COUNT, NBA_LOGOS};
 
 static CARDS: i32 = 24;
 
@@ -13,6 +13,7 @@ pub enum CardType {
     Colors,
     NBA,
     Animals,
+    Disney,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -269,6 +270,7 @@ pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
         CardType::NBA => (8, 5),
         CardType::Colors => (6, 4),
         CardType::Animals => (8, 5),
+        CardType::Disney => (8, 5),
     }
 }
 
@@ -277,6 +279,7 @@ fn get_cards_count(card_type: CardType) -> i32 {
         CardType::NBA => NBA_LOGOS.len() as i32,
         CardType::Colors => COLORS.len() as i32,
         CardType::Animals => ANIMALS_COUNT,
+        CardType::Disney => DISNEY_COUNT,
     };
 
     // let count = count as i32 * 2;

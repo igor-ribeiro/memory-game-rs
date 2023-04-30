@@ -157,6 +157,20 @@ pub fn app() -> Html {
                         >
                             {"Animais"}
                         </button>
+                        <div class="btn-group-divider"/>
+                        <button
+                            class={classes!(
+                                "btn",
+                                if let Some(CardType::Disney) = *card_type{
+                                    "active"
+                                } else {
+                                    ""
+                                }
+                            )}
+                            onclick={set_card_type.clone().reform(move |_| CardType::Disney )}
+                        >
+                            {"Disney"}
+                        </button>
                     </div>
                 </div>
             </div>

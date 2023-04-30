@@ -1,11 +1,20 @@
 use crate::{
     components::{card::Card, game_provider::GameContext},
-    constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, NBA_LOGOS},
+    constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, NBA_LOGOS},
     game::{get_board_grid, Action, CardType},
     hooks::use_reset_guess,
 };
 use web_sys::HtmlImageElement;
 use yew::prelude::*;
+
+fn get_background_image_style(image: &str, count: i32, position: i32) -> String {
+    format!(
+        "background-image: url({}); \
+                        background-size: calc(var(--card-size) * {});\
+                        background-position: calc(var(--card-size) * {}) center",
+        image, count, position
+    )
+}
 
 fn get_card_style(card_type: &CardType) -> Vec<String> {
     match card_type {
@@ -18,14 +27,10 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
             .map(|color| format!("background-color: {color}"))
             .collect::<Vec<_>>(),
         CardType::Animals => (0..=ANIMALS_COUNT)
-            .map(|i| {
-                format!(
-                    "background-image: url({}); \
-                        background-size: calc(var(--card-size) * {});\
-                        background-position: calc(var(--card-size) * {}) center",
-                    ANIMALS_IMAGE, ANIMALS_COUNT, i
-                )
-            })
+            .map(|i| get_background_image_style(ANIMALS_IMAGE, ANIMALS_COUNT, i))
+            .collect::<Vec<_>>(),
+        CardType::Disney => (0..=DISNEY_COUNT)
+            .map(|i| get_background_image_style(DISNEY_IMAGE, DISNEY_COUNT, i))
             .collect::<Vec<_>>(),
     }
 }
