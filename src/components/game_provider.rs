@@ -1,25 +1,34 @@
-use crate::game::{Game, GameMode, GameSetup, ScoreType};
+use crate::{
+    components::game_setup::{context::GameSetupContext, provider::use_game_setup},
+    game::{Game, GameMode, ScoreType},
+};
 use yew::prelude::*;
 
 pub type GameContext = UseReducerHandle<Game>;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub init: GameSetup,
     pub children: Children,
 }
 
 #[function_component(GameProvider)]
-pub fn game_provider(Props { init, children }: &Props) -> Html {
-    let game = use_reducer(|| match init.score_type {
-        ScoreType::Hits { .. } => match init.mode {
-            GameMode::SinglePlayer => Game::with_single_player_points(init.card_type),
-            GameMode::MultiPlayer => Game::with_multi_player_points(init.card_type),
+pub fn game_provider(Props { children }: &Props) -> Html {
+    let GameSetupContext { setup, .. } = use_game_setup();
+
+    let game = use_reducer(|| match setup.score_type {
+        Some(ScoreType::Hits { .. }) => match setup.game_mode {
+            Some(GameMode::SinglePlayer) => {
+                Game::with_single_player_points(setup.card_type.unwrap())
+            }
+            Some(GameMode::MultiPlayer) => Game::with_multi_player_points(setup.card_type.unwrap()),
+            None => unreachable!(),
         },
-        ScoreType::Time { .. } => match init.mode {
-            GameMode::SinglePlayer => Game::with_single_player_time(init.card_type),
-            GameMode::MultiPlayer => Game::with_multi_player_time(init.card_type),
+        Some(ScoreType::Time { .. }) => match setup.game_mode {
+            Some(GameMode::SinglePlayer) => Game::with_single_player_time(setup.card_type.unwrap()),
+            Some(GameMode::MultiPlayer) => Game::with_multi_player_time(setup.card_type.unwrap()),
+            None => unreachable!(),
         },
+        None => unreachable!(),
     });
 
     html! {

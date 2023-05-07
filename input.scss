@@ -6,7 +6,10 @@
   html,
   body {
     font-family: "Inter";
+    height: 100%;
+    overflow: hidden;
   }
+
   :root {
     --card-size: 60px;
     --card-gap: 4px;
@@ -40,6 +43,43 @@
   .btn-group-divider {
     @apply w-[1px] bg-black/10 h-[1.5em];
   }
+
+  .card {
+    @apply overflow-hidden relative transition-transform;
+
+    &[data-player]:after {
+      @apply block absolute left-1 top-1 w-4 h-4 rounded-full border border-2 border-white;
+      content: "";
+      background-color: var(--player-color);
+    }
+
+    [data-game-over="true"] & {
+      @apply animate-success;
+      animation-delay: calc(0.02s * var(--position, 0));
+    }
+  }
+
+  .card-front {
+    @apply [grid-column:1] [grid-row:1] w-full h-full;
+    transform: rotateY(180deg);
+  }
+
+  .card-back {
+    @apply w-full h-full [grid-column:1] [grid-row:1] font-black text-gray-300 text-xl bg-white flex items-center justify-center;
+  }
+
+  .card-front,
+  .card-back {
+    @apply transition-transform;
+    backface-visibility: hidden;
+  }
+
+  [data-flipped="true"] .card-front {
+    transform: rotateY(0);
+  }
+  [data-flipped="true"] .card-back {
+    transform: rotateY(180deg);
+  }
 }
 
 @layer utilities {
@@ -49,5 +89,14 @@
 
   .btn:disabled {
     @apply opacity-40;
+  }
+
+  .is-wrong {
+    @apply animate-wiggle;
+  }
+
+  .is-correct {
+    @apply animate-success pointer-events-none;
+    animation-iteration-count: 1;
   }
 }

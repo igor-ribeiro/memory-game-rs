@@ -1,5 +1,9 @@
 use crate::{
-    components::{card::Card, game_provider::GameContext},
+    components::{
+        card::Card,
+        game_provider::GameContext,
+        game_setup::{context::GameSetupContext, provider::use_game_setup},
+    },
     constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, NBA_LOGOS},
     game::{get_board_grid, Action, CardType},
     hooks::use_reset_guess,
@@ -41,16 +45,18 @@ fn get_back_card_style(card_type: &CardType) -> Option<String> {
             Some("background-image: url(/public/nba-logo.png); background-size: cover;".to_string())
         }
         _ => None,
+        // _ => Some("background-color: #dedede".to_string()),
     }
 }
 
 #[derive(Properties, PartialEq)]
 pub struct BoardProps {
-    pub children: Children,
+    // pub children: Children,
 }
 
 #[function_component(Board)]
-pub fn board(BoardProps { children }: &BoardProps) -> Html {
+pub fn board() -> Html {
+    let GameSetupContext { reset, .. } = use_game_setup();
     let game = use_context::<GameContext>().unwrap();
     let card_style = get_card_style(&game.card_type);
     let back_card_style = get_back_card_style(&game.card_type);
@@ -83,7 +89,10 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
             Callback::from(move |pos: usize| game.dispatch(Action::FlipCard(pos)))
         };
 
-        let style = card_style[card.value as usize].to_string();
+        let style = format!(
+            "{}; --position: {};",
+            card_style[card.value as usize], position,
+        );
 
         html! {
             <Card
@@ -113,15 +122,18 @@ pub fn board(BoardProps { children }: &BoardProps) -> Html {
         }
     };
 
+    let on_reset = { move |_| reset.emit(()) };
+
     html! {
-        <div class="flex-1 flex flex-col items-center">
-            <div class="grid" style={style}>
+        <div class="flex-1 flex flex-col items-center justify-center p-2">
+            <div class="grid" style={style} data-game-over={game.game_over.to_string()} key={game.game_over.to_string()}>
                 {for board}
             </div>
 
             <div class="flex gap-2 mt-4">
-                {for children.iter()}
-
+                <button class="btn" onclick={on_reset}>
+                    {"Voltar"}
+                </button>
                 <button class="btn" onclick={on_restart} disabled={!game.game_over}>
                     {"Jogar novamente"}
                 </button>

@@ -1,13 +1,12 @@
 use chrono::offset;
 use rand::prelude::*;
 use std::rc::Rc;
+use strum::EnumIter;
 use yew::Reducible;
 
 use crate::constants::{ANIMALS_COUNT, COLORS, DISNEY_COUNT, NBA_LOGOS};
 
-static CARDS: i32 = 24;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
 pub enum CardType {
     Colors,
     NBA,
@@ -22,7 +21,7 @@ pub struct GameSetup {
     pub card_type: CardType,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
 pub enum ScoreType {
     Time { started_at: Option<i64> },
     Hits { point_per_hit: i32 },
