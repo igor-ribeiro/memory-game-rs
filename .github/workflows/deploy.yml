@@ -44,7 +44,7 @@ jobs:
       - name: Install bonnie
         run: wget -O bonnie https://github.com/arctic-hen7/bonnie/releases/download/v0.3.2/bonnie-linux-amd64 && chmod +x bonnie && mv bonnie ~/.cargo/bin
       - name: Install node dependencies
-        run: pnpm i --lockfile-only
+        run: pnpm i 
       - name: Add Wasm target
         run: rustup target add wasm32-unknown-unknown
       - name: Build
