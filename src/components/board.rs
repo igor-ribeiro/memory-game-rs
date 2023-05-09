@@ -4,7 +4,10 @@ use crate::{
         game_provider::GameContext,
         game_setup::{context::GameSetupContext, provider::use_game_setup},
     },
-    constants::{ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, NBA_LOGOS},
+    constants::{
+        ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, HARRY_POTTER_COUNT,
+        HARRY_POTTER_IMAGE, NBA_LOGOS,
+    },
     game::{get_board_grid, Action, CardType},
     hooks::use_reset_guess,
 };
@@ -35,6 +38,9 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
             .collect::<Vec<_>>(),
         CardType::Disney => (0..=DISNEY_COUNT)
             .map(|i| get_background_image_style(DISNEY_IMAGE, DISNEY_COUNT, i))
+            .collect::<Vec<_>>(),
+        CardType::HarryPotter => (0..=HARRY_POTTER_COUNT)
+            .map(|i| get_background_image_style(HARRY_POTTER_IMAGE, HARRY_POTTER_COUNT, i))
             .collect::<Vec<_>>(),
     }
 }

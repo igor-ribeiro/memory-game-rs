@@ -4,7 +4,7 @@ use std::rc::Rc;
 use strum::EnumIter;
 use yew::Reducible;
 
-use crate::constants::{ANIMALS_COUNT, COLORS, DISNEY_COUNT, NBA_LOGOS};
+use crate::constants::{ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
 pub enum CardType {
@@ -12,6 +12,7 @@ pub enum CardType {
     NBA,
     Animals,
     Disney,
+    HarryPotter,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -269,6 +270,7 @@ pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
         CardType::Colors => (6, 4),
         CardType::Animals => (8, 5),
         CardType::Disney => (8, 5),
+        CardType::HarryPotter => (8, 5),
     }
 }
 
@@ -278,6 +280,7 @@ fn get_cards_count(card_type: CardType) -> i32 {
         CardType::Colors => COLORS.len() as i32,
         CardType::Animals => ANIMALS_COUNT,
         CardType::Disney => DISNEY_COUNT,
+        CardType::HarryPotter => HARRY_POTTER_COUNT,
     };
 
     // let count = count as i32 * 2;

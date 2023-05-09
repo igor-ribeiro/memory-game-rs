@@ -43,3 +43,6 @@ pub const ANIMALS_COUNT: i32 = 20;
 
 pub const DISNEY_IMAGE: &str = "public/disney.jpg";
 pub const DISNEY_COUNT: i32 = 20;
+
+pub const HARRY_POTTER_IMAGE: &str = "public/harry-potter.jpg";
+pub const HARRY_POTTER_COUNT: i32 = 20;

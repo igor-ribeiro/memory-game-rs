@@ -16,6 +16,7 @@ fn get_label(card_type: CardType) -> String {
         CardType::Disney => "Disney",
         CardType::Colors => "Cores",
         CardType::Animals => "Animais",
+        CardType::HarryPotter => "Harry Potter",
     }
     .to_string()
 }
