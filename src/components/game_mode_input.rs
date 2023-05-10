@@ -19,8 +19,8 @@ pub fn game_mode_input() -> Html {
         })
     };
 
-    let is_single_player = is_option_value(setup.game_mode, GameMode::SinglePlayer);
-    let is_multi_player = is_option_value(setup.game_mode, GameMode::MultiPlayer);
+    let is_single_player = is_option_value(&setup.game_mode, &GameMode::SinglePlayer);
+    let is_multi_player = is_option_value(&setup.game_mode, &GameMode::MultiPlayer);
 
     let set_single_player =
         on_set_value.reform(move |_| GameSetupField::Mode(GameMode::SinglePlayer));

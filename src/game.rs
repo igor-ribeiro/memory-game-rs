@@ -1,14 +1,16 @@
 use chrono::offset;
+use log::info;
 use rand::prelude::*;
 use std::rc::Rc;
 use strum::EnumIter;
+use uuid::Uuid;
 use yew::Reducible;
 
 use crate::constants::{
     ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS, WRONG_GUESS_TIMEOUT,
 };
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
+#[derive(Clone, Debug, PartialEq, Eq, EnumIter, Copy)]
 pub enum CardType {
     Colors,
     NbaTeams,
@@ -17,33 +19,33 @@ pub enum CardType {
     HarryPotter,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Copy)]
 pub struct GameSetup {
     pub score_type: ScoreType,
     pub mode: GameMode,
     pub card_type: CardType,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
+#[derive(Clone, Debug, PartialEq, Eq, EnumIter, Copy)]
 pub enum ScoreType {
     Time { started_at: Option<i64> },
     Hits { point_per_hit: i32 },
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Copy)]
 pub enum GameMode {
     SinglePlayer,
     MultiPlayer,
 }
 
-#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Default, Clone, Debug, PartialEq, Eq)]
 pub struct Card {
-    pub id: i32,
+    pub id: String,
     pub value: i32,
     pub flipped: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Player {
     pub name: &'static str,
     pub points: i32,
@@ -70,18 +72,19 @@ pub struct Game {
     pub game_started: bool,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NextAction {
     pub action: Action,
     pub after_ms: i32,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Action {
     FlipCard(usize),
     FlashCards(bool),
     NextTurn,
-    Restart,
+    RestartTurn,
+    RestartGame,
 }
 
 impl Reducible for Game {
@@ -197,6 +200,11 @@ impl Reducible for Game {
                                 next_turn = Some(true);
                             }
                         }
+
+                        info!(
+                            "is_over {} mode {:?} next_turn {:?}",
+                            state.game_over, state.mode, next_turn
+                        );
                     }
                     ScoreType::Hits {
                         point_per_hit: points_per_hit,
@@ -215,6 +223,8 @@ impl Reducible for Game {
                 if let Some(points) = next_points {
                     player.points = points;
                 }
+
+                info!("{:?}", state);
 
                 if next_turn.is_some() {
                     state.turn = (state.turn + 1) % self.players.len();
@@ -246,18 +256,19 @@ impl Reducible for Game {
 
                 state
             }
-            Action::Restart => {
-                if !state.game_over {
-                    return self;
+            Action::RestartTurn => {
+                match state.points_type {
+                    ScoreType::Hits { .. } => {
+                        for player in state.players.iter_mut() {
+                            player.points = 0;
+                        }
+                    }
+                    ScoreType::Time { .. } => {
+                        state.points_type = ScoreType::Time { started_at: None }
+                    }
                 }
 
-                return Game {
-                    game_started: false,
-                    game_over: false,
-                    cards: get_cards(get_cards_count(state.card_type)),
-                    ..state
-                }
-                .into();
+                state.reset()
             }
             Action::FlashCards(flip) => {
                 if state.game_started && flip {
@@ -282,6 +293,20 @@ impl Reducible for Game {
 
                 state
             }
+            Action::RestartGame => {
+                for player in state.players.iter_mut() {
+                    player.points = 0;
+                }
+
+                Game {
+                    turn: 0,
+                    points_type: match state.points_type {
+                        ScoreType::Time { .. } => ScoreType::Time { started_at: None },
+                        _ => state.points_type,
+                    },
+                    ..state.reset()
+                }
+            }
         };
 
         next.into()
@@ -289,15 +314,19 @@ impl Reducible for Game {
 }
 
 fn get_cards(total: i32) -> Vec<Card> {
+    let mut rng = rand::thread_rng();
+
     let mut cards = (1..=total)
-        .map(|value| Card {
-            id: value,
-            value: ((value as f32 / 2.0).ceil() as i32) - 1,
-            flipped: false,
+        .map(|value| {
+            let id = Uuid::new_v4().to_string();
+
+            Card {
+                id,
+                value: ((value as f32 / 2.0).ceil() as i32) - 1,
+                flipped: false,
+            }
         })
         .collect::<Vec<Card>>();
-
-    let mut rng = rand::thread_rng();
 
     cards.shuffle(&mut rng);
     cards.shuffle(&mut rng);
@@ -305,7 +334,7 @@ fn get_cards(total: i32) -> Vec<Card> {
     cards
 }
 
-pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
+pub fn get_board_grid(card_type: &CardType) -> (i32, i32) {
     match card_type {
         CardType::NbaTeams => (8, 5),
         CardType::Colors => (6, 4),
@@ -351,6 +380,17 @@ impl Game {
         }
     }
 
+    pub fn reset(&mut self) -> Self {
+        Self {
+            game_started: false,
+            game_over: false,
+            guess: (None, None),
+            cards: get_cards(get_cards_count(self.card_type)),
+            flip_all: false,
+            ..self.clone()
+        }
+    }
+
     pub fn with_single_player_points(card_type: CardType) -> Self {
         Self {
             points_type: ScoreType::Hits { point_per_hit: 1 },
@@ -381,8 +421,8 @@ impl Game {
     pub fn with_multi_player_time(card_type: CardType) -> Self {
         Self {
             points_type: ScoreType::Time { started_at: None },
-            mode: GameMode::MultiPlayer,
             players: vec![Player::new("Jogador 1"), Player::new("Jogador 2")],
+            mode: GameMode::MultiPlayer,
             ..Self::default(card_type)
         }
     }

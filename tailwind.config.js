@@ -12,10 +12,16 @@ module.exports = {
           "0%, 100%": { transform: "rotate(-6deg)" },
           "50%": { transform: "rotate(6deg)" },
         },
+        start: {
+          "0%": { transform: "translateY(0)", opacity: 0 },
+          "50%": { transform: "translateY(-50px)" },
+          "100%": { transform: "translateY(0)", opacity: 1 },
+        },
       },
       animation: {
         wiggle: "wiggle .2s ease-in-out 3",
-        success: "success .5s ease-in 1",
+        success: "success .5s ease-in var(--animation-delay) 1",
+        start: "start .5s ease-in var(--animation-delay) 1 forwards",
       },
     },
   },

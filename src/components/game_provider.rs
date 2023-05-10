@@ -2,7 +2,6 @@ use crate::{
     components::game_setup::{context::GameSetupContext, provider::use_game_setup},
     game::{Game, GameMode, ScoreType},
 };
-use log::info;
 use std::borrow::BorrowMut;
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::window;
@@ -45,17 +44,15 @@ pub fn game_provider(Props { children }: &Props) -> Html {
             let window = window().unwrap();
             let timeout = timeout_id.as_ref().borrow().to_owned();
 
-            if let Some(next_action) = *next_action {
-                info!(
-                    "will dispatch {:?} after {}",
-                    next_action.action, next_action.after_ms
-                );
+            if let Some(next_action) = next_action {
                 if let Some(id) = timeout {
                     window.clear_timeout_with_handle(id);
                 }
 
+                let next_action = next_action.clone();
+
                 let callback = Closure::<dyn Fn()>::new(move || {
-                    dispatcher.dispatch(next_action.action);
+                    dispatcher.dispatch(next_action.action.clone());
                 });
 
                 timeout_callback.borrow_mut().replace(Some(callback));
@@ -76,7 +73,7 @@ pub fn game_provider(Props { children }: &Props) -> Html {
                 timeout_id.borrow_mut().replace(Some(new_timeout_id));
             }
         },
-        game.next_action,
+        game.next_action.clone(),
     );
 
     html! {

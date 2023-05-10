@@ -42,16 +42,16 @@ pub fn card(props: &Props) -> Html {
     html! {
         <div
             role="button"
-            key={card.id}
+            key={card.id.to_string()}
+            data-key={card.id.to_string()}
             style={format!("--position: {};", position)}
             class={classes!(
-                "card w-full grid grid-cols-1 grid-rows-1 h-full items-center justify-center border border-gray-400 rounded transition-transform select-none".to_string(),
+                "card".to_string(),
                 was_guessed
                     .then_some("")
                     .or(Some("border-gray-400")),
                 should_dim
-                    .then_some("opacity-50 scale-95")
-                    .or(Some("opacity-100")),
+                    .then_some("opacity-50 scale-95"),
                 should_animate
                     .then_some("is-correct")
                     .or(Some("cursor-pointer")),

@@ -2,7 +2,7 @@ use yew::{Callback, Reducible};
 
 use crate::game::{CardType, GameMode, ScoreType};
 
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Copy)]
 pub struct GameSetupValue {
     pub game_mode: Option<GameMode>,
     pub score_type: Option<ScoreType>,

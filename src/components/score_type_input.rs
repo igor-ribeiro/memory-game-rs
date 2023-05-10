@@ -31,7 +31,7 @@ pub fn game_mode_input() -> Html {
             })
         };
 
-        let is_selected = is_option_value(setup.score_type, score_type);
+        let is_selected = is_option_value(&setup.score_type, &score_type);
 
         html! {
             <button

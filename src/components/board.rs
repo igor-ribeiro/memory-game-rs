@@ -99,8 +99,8 @@ pub fn board() -> Html {
 
         html! {
             <Card
-                key={card.id}
-                card={*card}
+                key={card.id.to_string()}
+                card={card.clone()}
                 {on_flip}
                 {position}
                 card_style={style}
@@ -109,7 +109,7 @@ pub fn board() -> Html {
         }
     });
 
-    let board_grid = get_board_grid(game.card_type);
+    let board_grid = get_board_grid(&game.card_type);
 
     let style = format!(
         "grid-template-columns: repeat({}, var(--card-size));\
@@ -118,10 +118,17 @@ pub fn board() -> Html {
         board_grid.0, board_grid.1,
     );
 
-    let on_restart = {
+    let on_restart_game = {
         let game = game.clone();
         move |_| {
-            game.dispatch(Action::Restart);
+            game.dispatch(Action::RestartGame);
+        }
+    };
+
+    let on_restart_turn = {
+        let game = game.clone();
+        move |_| {
+            game.dispatch(Action::RestartTurn);
         }
     };
 
@@ -148,11 +155,18 @@ pub fn board() -> Html {
                 </button>
 
                 <div class="flex gap-2">
+                    <button class="btn" onclick={on_restart_game}>
+                        {"Recomeçar Jogo"}
+                    </button>
                     <button class="btn" onclick={on_flash_cards} disabled={game.game_started}>
                         {"Mostrar cartas"}
                     </button>
-                    <button class="btn" onclick={on_restart} disabled={!game.game_over}>
-                        {"Jogar novamente"}
+                    <button class="btn" onclick={on_restart_turn}>
+                        {if game.game_over {
+                            "Continuar"
+                        } else {
+                            "Recomeçar"
+                        }}
                     </button>
                 </div>
             </div>
