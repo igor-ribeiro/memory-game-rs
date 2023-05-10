@@ -9,7 +9,6 @@ use crate::{
         HARRY_POTTER_IMAGE, NBA_LOGOS,
     },
     game::{get_board_grid, Action, CardType},
-    hooks::use_reset_guess,
 };
 use web_sys::HtmlImageElement;
 use yew::prelude::*;
@@ -25,7 +24,7 @@ fn get_background_image_style(image: &str, count: i32, position: i32) -> String 
 
 fn get_card_style(card_type: &CardType) -> Vec<String> {
     match card_type {
-        CardType::NBA => NBA_LOGOS
+        CardType::NbaTeams => NBA_LOGOS
             .iter()
             .map(|url| format!("background-image: url({url})"))
             .collect(),
@@ -47,7 +46,7 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
 
 fn get_back_card_style(card_type: &CardType) -> Option<String> {
     match card_type {
-        CardType::NBA => {
+        CardType::NbaTeams => {
             Some("background-image: url(/public/nba-logo.png); background-size: cover;".to_string())
         }
         _ => None,
@@ -67,12 +66,10 @@ pub fn board() -> Html {
     let card_style = get_card_style(&game.card_type);
     let back_card_style = get_back_card_style(&game.card_type);
 
-    use_reset_guess();
-
     use_effect_with_deps(
         |card_type| {
             match card_type {
-                CardType::NBA => {
+                CardType::NbaTeams => {
                     // Preload images.
                     NBA_LOGOS.iter().for_each(|url| {
                         let image = HtmlImageElement::new().unwrap();
@@ -128,6 +125,13 @@ pub fn board() -> Html {
         }
     };
 
+    let on_flash_cards = {
+        let game = game.clone();
+        move |_| {
+            game.dispatch(Action::FlashCards(true));
+        }
+    };
+
     let on_reset = { move |_| reset.emit(()) };
 
     html! {
@@ -142,6 +146,9 @@ pub fn board() -> Html {
                 </button>
                 <button class="btn" onclick={on_restart} disabled={!game.game_over}>
                     {"Jogar novamente"}
+                </button>
+                <button class="btn" onclick={on_flash_cards} disabled={game.game_started}>
+                    {"Mostrar cartas"}
                 </button>
             </div>
         </div>

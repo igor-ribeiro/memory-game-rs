@@ -37,6 +37,8 @@ pub fn card(props: &Props) -> Html {
         && Some(position) != game.guess.0
         && Some(position) != game.guess.1;
 
+    let should_animate = card.flipped && !was_guessed && !game.flip_all;
+
     html! {
         <div
             role="button"
@@ -50,11 +52,9 @@ pub fn card(props: &Props) -> Html {
                 should_dim
                     .then_some("opacity-50 scale-95")
                     .or(Some("opacity-100")),
-                card.flipped
-                    .then_some("")
-                    .or(Some("cursor-pointer hover:bg-neutral-100")),
-                (card.flipped && !was_guessed)
-                    .then_some("is-correct"),
+                should_animate
+                    .then_some("is-correct")
+                    .or(Some("cursor-pointer")),
             )}
             onclick={on_click}
             data-flipped={card.flipped.to_string()}

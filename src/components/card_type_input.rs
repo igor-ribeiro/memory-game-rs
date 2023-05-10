@@ -12,7 +12,7 @@ use crate::{
 
 fn get_label(card_type: CardType) -> String {
     match card_type {
-        CardType::NBA => "NBA",
+        CardType::NbaTeams => "NBA",
         CardType::Disney => "Disney",
         CardType::Colors => "Cores",
         CardType::Animals => "Animais",

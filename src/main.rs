@@ -2,7 +2,6 @@ mod app;
 mod components;
 mod constants;
 mod game;
-mod hooks;
 mod utils;
 
 use app::App;

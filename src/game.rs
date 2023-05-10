@@ -4,12 +4,14 @@ use std::rc::Rc;
 use strum::EnumIter;
 use yew::Reducible;
 
-use crate::constants::{ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS};
+use crate::constants::{
+    ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS, WRONG_GUESS_TIMEOUT,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, EnumIter)]
 pub enum CardType {
     Colors,
-    NBA,
+    NbaTeams,
     Animals,
     Disney,
     HarryPotter,
@@ -34,17 +36,11 @@ pub enum GameMode {
     MultiPlayer,
 }
 
-#[derive(Default, Clone, Copy, Debug, Eq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Card {
     pub id: i32,
     pub value: i32,
     pub flipped: bool,
-}
-
-impl PartialEq for Card {
-    fn eq(&self, other: &Self) -> bool {
-        self.value == other.value
-    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -69,10 +65,21 @@ pub struct Game {
     pub players: Vec<Player>,
     pub cards: Vec<Card>,
     pub card_type: CardType,
+    pub next_action: Option<NextAction>,
+    pub flip_all: bool,
+    pub game_started: bool,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct NextAction {
+    pub action: Action,
+    pub after_ms: i32,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Action {
     FlipCard(usize),
+    FlashCards(bool),
     NextTurn,
     Restart,
 }
@@ -82,6 +89,8 @@ impl Reducible for Game {
 
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         let mut state = self.as_ref().clone();
+
+        state.next_action = None;
 
         let next = match action {
             Action::FlipCard(position) => {
@@ -116,6 +125,8 @@ impl Reducible for Game {
                 if card.flipped {
                     return self;
                 }
+
+                state.game_started = true;
 
                 let is_correct_guess = match state.guess {
                     (None, None) => {
@@ -159,7 +170,6 @@ impl Reducible for Game {
 
                         let card = &mut state.cards[position];
                         card.flipped = true;
-
                         None
                     }
                     _ => None,
@@ -167,6 +177,13 @@ impl Reducible for Game {
 
                 let mut next_points: Option<i32> = None;
                 let mut next_turn: Option<bool> = None;
+
+                if let Some(false) = is_correct_guess {
+                    state.next_action = Some(NextAction {
+                        action: Action::NextTurn,
+                        after_ms: WRONG_GUESS_TIMEOUT,
+                    });
+                }
 
                 match state.points_type {
                     ScoreType::Time {
@@ -231,15 +248,39 @@ impl Reducible for Game {
             }
             Action::Restart => {
                 if !state.game_over {
-                    return state.into();
+                    return self;
                 }
 
                 return Game {
+                    game_started: false,
                     game_over: false,
                     cards: get_cards(get_cards_count(state.card_type)),
                     ..state
                 }
                 .into();
+            }
+            Action::FlashCards(flip) => {
+                if state.game_started && flip {
+                    return self;
+                }
+
+                for card in state.cards.iter_mut() {
+                    card.flipped = flip;
+                }
+
+                state.game_started = true;
+                state.flip_all = flip;
+
+                if flip {
+                    state.next_action = Some(NextAction {
+                        action: Action::FlashCards(false),
+                        after_ms: 1000,
+                    });
+                } else {
+                    state.next_action = None;
+                }
+
+                state
             }
         };
 
@@ -266,7 +307,7 @@ fn get_cards(total: i32) -> Vec<Card> {
 
 pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
     match card_type {
-        CardType::NBA => (8, 5),
+        CardType::NbaTeams => (8, 5),
         CardType::Colors => (6, 4),
         CardType::Animals => (8, 5),
         CardType::Disney => (8, 5),
@@ -276,7 +317,7 @@ pub fn get_board_grid(card_type: CardType) -> (i32, i32) {
 
 fn get_cards_count(card_type: CardType) -> i32 {
     let count = match card_type {
-        CardType::NBA => NBA_LOGOS.len() as i32,
+        CardType::NbaTeams => NBA_LOGOS.len() as i32,
         CardType::Colors => COLORS.len() as i32,
         CardType::Animals => ANIMALS_COUNT,
         CardType::Disney => DISNEY_COUNT,
@@ -296,6 +337,7 @@ impl Game {
         let cards_count = get_cards_count(card_type);
 
         Self {
+            game_started: false,
             game_over: false,
             points_type: ScoreType::Hits { point_per_hit: 1 },
             mode: GameMode::SinglePlayer,
@@ -304,6 +346,8 @@ impl Game {
             turn: 0,
             cards: get_cards(cards_count),
             card_type,
+            next_action: None,
+            flip_all: false,
         }
     }
 
