@@ -65,6 +65,7 @@ pub fn board() -> Html {
     let game = use_context::<GameContext>().unwrap();
     let card_style = get_card_style(&game.card_type);
     let back_card_style = get_back_card_style(&game.card_type);
+    let board_grid = get_board_grid(&game.card_type);
 
     use_effect_with_deps(
         |card_type| {
@@ -93,9 +94,12 @@ pub fn board() -> Html {
         };
 
         let style = format!(
-            "{}; --position: {};",
-            card_style[card.value as usize], position,
+            "--position: {}; --column: {};",
+            position,
+            position % board_grid.0 as usize
         );
+
+        let front_style = format!("{};", card_style[card.value as usize],);
 
         html! {
             <Card
@@ -103,13 +107,11 @@ pub fn board() -> Html {
                 card={card.clone()}
                 {on_flip}
                 {position}
-                card_style={style}
-                back_card_style={back_card_style.clone()}
+                style={style}
+                front_style={front_style}
             />
         }
     });
-
-    let board_grid = get_board_grid(&game.card_type);
 
     let style = format!(
         "grid-template-columns: repeat({}, var(--card-size));\

@@ -45,34 +45,29 @@
   }
 
   .card {
-    --animation-delay: calc(0.02s * var(--position, 0));
+    --animation-card-delay: calc(0.03s * var(--position, 0));
+    --animation-column-delay: calc(0.15s * var(--column, 0));
 
-    @apply overflow-hidden relative opacity-0 animate-start w-full grid grid-cols-1 grid-rows-1 h-full items-center justify-center border border-gray-400 rounded select-none;
-
-    &[data-player]:after {
-      @apply block absolute left-1 top-1 w-4 h-4 rounded-full border border-2 border-white;
-      content: "";
-      background-color: var(--player-color);
-    }
+    @apply overflow-hidden grid border border-gray-400 rounded select-none transition-transform;
 
     [data-game-over="true"] & {
       @apply animate-success;
+      animation-delay: var(--animation-column-delay, 0);
+    }
+
+    .card-front,
+    .card-back {
+      @apply [grid-area:1/-1] transition-transform;
+      backface-visibility: hidden;
     }
   }
 
   .card-front {
-    @apply [grid-column:1] [grid-row:1] w-full h-full;
     transform: rotateY(180deg);
   }
 
   .card-back {
-    @apply w-full h-full [grid-column:1] [grid-row:1] font-black text-gray-300 text-xl bg-white flex items-center justify-center;
-  }
-
-  .card-front,
-  .card-back {
-    @apply transition-transform;
-    backface-visibility: hidden;
+    @apply font-black text-gray-300 text-xl bg-white flex items-center justify-center;
   }
 
   [data-flipped="true"] .card-front {

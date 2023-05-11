@@ -28,9 +28,9 @@ pub fn game_setup_provider(Props { children }: &Props) -> Html {
     // let setup = use_reducer(|| GameSetupValue {
     //     game_mode: Some(GameMode::MultiPlayer),
     //     card_type: Some(CardType::NbaTeams),
-    //     score_type: Some(ScoreType::Hits { point_per_hit: 1 }),
+    //     score_type: Some(ScoreType::Time { started_at: None }),
     // });
-    //
+
     let reset = {
         let send = setup.dispatcher();
 

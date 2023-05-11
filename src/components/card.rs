@@ -7,8 +7,8 @@ pub struct Props {
     pub card: crate::game::Card,
     pub on_flip: Callback<usize>,
     pub position: usize,
-    pub card_style: String,
-    pub back_card_style: Option<String>,
+    pub style: String,
+    pub front_style: String,
 }
 
 #[function_component(Card)]
@@ -17,7 +17,8 @@ pub fn card(props: &Props) -> Html {
         card,
         on_flip,
         position,
-        card_style,
+        front_style,
+        style,
         ..
     } = props.clone();
 
@@ -37,6 +38,8 @@ pub fn card(props: &Props) -> Html {
         && Some(position) != game.guess.0
         && Some(position) != game.guess.1;
 
+    // let should_dim = !card.flipped;
+
     let should_animate = card.flipped && !was_guessed && !game.flip_all;
 
     html! {
@@ -44,14 +47,15 @@ pub fn card(props: &Props) -> Html {
             role="button"
             key={card.id.to_string()}
             data-key={card.id.to_string()}
-            style={format!("--position: {};", position)}
+            style={style}
             class={classes!(
                 "card".to_string(),
+                game.game_started.then_some("").or(Some("opacity-0 animate-start")),
                 was_guessed
                     .then_some("")
                     .or(Some("border-gray-400")),
                 should_dim
-                    .then_some("opacity-50 scale-95"),
+                    .then_some("opacity-40 scale-[85%]"),
                 should_animate
                     .then_some("is-correct")
                     .or(Some("cursor-pointer")),
@@ -61,7 +65,7 @@ pub fn card(props: &Props) -> Html {
         >
                 <span
                     class="card-front"
-                    style={card_style}
+                    style={front_style}
                 ></span>
                 <span class="card-back">
                     {position + 1}
