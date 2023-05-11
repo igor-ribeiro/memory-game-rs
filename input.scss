@@ -46,7 +46,7 @@
 
   .card {
     --animation-card-delay: calc(0.03s * var(--position, 0));
-    --animation-column-delay: calc(0.15s * var(--column, 0));
+    --animation-column-delay: calc(0.1s * var(--column, 0));
 
     @apply overflow-hidden grid border border-gray-400 rounded select-none transition-transform;
 

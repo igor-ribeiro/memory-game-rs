@@ -21,7 +21,7 @@ module.exports = {
       animation: {
         wiggle: "wiggle .2s ease-in-out 3",
         success: "success .5s ease-in 1",
-        start: "start .5s ease-in var(--animation-column-delay) 1 forwards",
+        start: "start .3s ease-out var(--animation-column-delay) 1 forwards",
       },
     },
   },
