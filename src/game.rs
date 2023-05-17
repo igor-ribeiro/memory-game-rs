@@ -285,7 +285,7 @@ impl Reducible for Game {
                 if flip {
                     state.next_action = Some(NextAction {
                         action: Action::FlashCards(false),
-                        after_ms: 2000,
+                        after_ms: 3000,
                     });
                 } else {
                     state.next_action = None;
