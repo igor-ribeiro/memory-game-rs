@@ -8,6 +8,7 @@
     font-family: "Inter";
     height: 100%;
     overflow: hidden;
+    @apply bg-purple-100;
   }
 
   :root {
@@ -29,14 +30,22 @@
 
 @layer components {
   .btn {
-    @apply bg-neutral-200 font-black px-4 py-2 rounded uppercase tracking-wider hover:bg-neutral-300;
+    @apply cartoon font-black px-4 py-2 rounded-full uppercase tracking-wider hover:bg-black/20;
   }
 
   .btn-group {
-    @apply flex bg-neutral-200 items-center rounded-full gap-1 overflow-hidden;
+    @apply w-fit flex bg-yellow-50 items-center rounded-full overflow-hidden cartoon;
 
-    .btn {
-      @apply rounded-full;
+    button {
+      @apply py-2 px-4 bg-transparent font-black uppercase;
+
+      &:first-child {
+        @apply rounded-l-full;
+      }
+
+      &:last-child {
+        @apply rounded-r-full;
+      }
     }
   }
 
@@ -48,7 +57,7 @@
     --animation-card-delay: calc(0.03s * var(--position, 0));
     --animation-column-delay: calc(0.1s * var(--column, 0));
 
-    @apply overflow-hidden grid border border-gray-400 rounded select-none transition-transform;
+    @apply overflow-hidden grid rounded select-none transition-transform cartoon;
 
     [data-game-over="true"] & {
       @apply animate-success;
@@ -63,11 +72,12 @@
   }
 
   .card-front {
+    @apply bg-white;
     transform: rotateY(180deg);
   }
 
   .card-back {
-    @apply font-black text-gray-300 text-xl bg-white flex items-center justify-center;
+    @apply font-black text-black/30 text-xl flex items-center justify-center bg-white;
   }
 
   [data-flipped="true"] .card-front {
@@ -79,12 +89,16 @@
 }
 
 @layer utilities {
-  .btn-group .active {
-    @apply bg-sky-400;
+  .btn-group [data-active="true"] {
+    @apply bg-yellow-300;
   }
 
   .btn:disabled {
     @apply opacity-40;
+  }
+
+  .btn-primary {
+    @apply bg-yellow-200 hover:bg-yellow-300;
   }
 
   .is-wrong {
@@ -94,5 +108,9 @@
   .is-correct {
     @apply animate-success pointer-events-none;
     animation-iteration-count: 1;
+  }
+
+  .cartoon {
+    @apply border-2 border-black shadow-cartoon shadow-black;
   }
 }

@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{rs,html}", "./index.html"],
   theme: {
     extend: {
+      boxShadow: {
+        cartoon: "2px 2px 0 0",
+      },
       keyframes: {
         success: {
           "30%": { transform: "scale(.8) rotateY(0deg)" },

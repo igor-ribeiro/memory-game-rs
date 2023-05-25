@@ -39,10 +39,7 @@ pub fn game_mode_input() -> Html {
         html! {
             <button
                 type="button"
-                class={classes!(
-                    "btn",
-                    is_selected.then_some("active")
-                )}
+                data-active={is_selected.to_string()}
                 onclick={on_set_value}
             >
                 {get_label(card_type)}

@@ -34,20 +34,14 @@ pub fn game_mode_input() -> Html {
             <div class="btn-group">
                 <button
                     type="button"
-                    class={classes!(
-                        "btn",
-                        is_single_player.then_some("active")
-                    )}
+                    data-active={is_single_player.to_string()}
                     onclick={set_single_player}
                 >
                     {"Sim"}
                 </button>
-                <div class="btn-group-divider"/>
                 <button
-                    class={classes!(
-                        "btn",
-                        is_multi_player.then_some("active")
-                    )}
+                    type="button"
+                    data-active={is_multi_player.to_string()}
                     onclick={set_multi_player}
                 >
                     {"Não"}

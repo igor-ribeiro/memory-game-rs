@@ -19,17 +19,17 @@ pub struct Props {
 
 #[function_component(GameSetupProvider)]
 pub fn game_setup_provider(Props { children }: &Props) -> Html {
-    let setup = use_reducer(|| GameSetupValue {
-        game_mode: None,
-        card_type: None,
-        score_type: None,
-    });
-
     // let setup = use_reducer(|| GameSetupValue {
     //     game_mode: Some(GameMode::MultiPlayer),
-    //     card_type: Some(CardType::NbaTeams),
-    //     score_type: Some(ScoreType::Time { started_at: None }),
+    //     card_type: None,
+    //     score_type: None,
     // });
+
+    let setup = use_reducer(|| GameSetupValue {
+        game_mode: Some(GameMode::MultiPlayer),
+        card_type: Some(CardType::NbaTeams),
+        score_type: Some(ScoreType::Time { started_at: None }),
+    });
 
     let reset = {
         let send = setup.dispatcher();

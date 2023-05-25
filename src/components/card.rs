@@ -51,9 +51,9 @@ pub fn card(props: &Props) -> Html {
             class={classes!(
                 "card".to_string(),
                 game.game_started.then_some("").or(Some("opacity-0 animate-start")),
-                was_guessed
-                    .then_some("")
-                    .or(Some("border-gray-400")),
+                // was_guessed
+                //     .then_some("")
+                //     .or(Some("border-gray-400")),
                 should_dim
                     .then_some("opacity-40 scale-[85%]"),
                 should_animate

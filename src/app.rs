@@ -24,14 +24,16 @@ pub fn screen() -> Html {
 
     html! {
         if has_setup {
-            <div class="grid grid-cols-[150px_1fr] h-full">
+            <div class="grid grid-cols-[150px_1fr] h-full gap-2 p-1">
                 <GameProvider>
                     <Players />
                     <Board />
                 </GameProvider>
             </div>
         } else {
-            <GameSetupForm />
+            <div class="p-2">
+                <GameSetupForm />
+            </div>
         }
     }
 }
