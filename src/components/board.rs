@@ -144,14 +144,14 @@ pub fn board() -> Html {
     let on_reset = { move |_| reset.emit(()) };
 
     html! {
-        <div class="flex-1 flex flex-col cartoon">
-            <div class="flex-1 flex items-center justify-center p-2 bg-green-100">
+        <div class="flex-1 flex flex-col gap-3">
+            <div class="flex-1 flex items-center justify-center p-2">
                 <div class="grid" style={style} data-game-over={game.game_over.to_string()} key={game.game_over.to_string()}>
                     {for board}
                 </div>
             </div>
 
-            <div class="flex bg-yellow-300 gap-2 border-t-2 border-black w-full p-2 justify-between">
+            <div class="cartoon flex gap-2 w-full justify-between p-2 bg-green-300">
                 <button class="btn" onclick={on_reset}>
                     {"Voltar"}
                 </button>

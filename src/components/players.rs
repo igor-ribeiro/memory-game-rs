@@ -48,7 +48,7 @@ pub fn players() -> Html {
     });
 
     html! {
-        <div class="flex flex-col w-full gap-2 bg-blue-300 cartoon p-1">
+        <div class="flex flex-col w-full gap-2 cartoon p-1 bg-green-300">
             {for players}
         </div>
     }
