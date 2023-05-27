@@ -1,5 +1,4 @@
 use chrono::offset;
-use log::info;
 use rand::prelude::*;
 use std::rc::Rc;
 use strum::EnumIter;
@@ -200,11 +199,6 @@ impl Reducible for Game {
                                 next_turn = Some(true);
                             }
                         }
-
-                        info!(
-                            "is_over {} mode {:?} next_turn {:?}",
-                            state.game_over, state.mode, next_turn
-                        );
                     }
                     ScoreType::Hits {
                         point_per_hit: points_per_hit,
@@ -223,8 +217,6 @@ impl Reducible for Game {
                 if let Some(points) = next_points {
                     player.points = points;
                 }
-
-                info!("{:?}", state);
 
                 if next_turn.is_some() {
                     state.turn = (state.turn + 1) % self.players.len();
@@ -336,11 +328,8 @@ fn get_cards(total: i32) -> Vec<Card> {
 
 pub fn get_board_grid(card_type: &CardType) -> (i32, i32) {
     match card_type {
-        CardType::NbaTeams => (8, 5),
         CardType::Colors => (6, 4),
-        CardType::Animals => (8, 5),
-        CardType::Disney => (8, 5),
-        CardType::HarryPotter => (8, 5),
+        _ => (8, 5),
     }
 }
 

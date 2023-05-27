@@ -146,30 +146,37 @@ pub fn board() -> Html {
     html! {
         <div class="flex-1 flex flex-col gap-3">
             <div class="flex-1 flex items-center justify-center p-2">
-                <div class="grid" style={style} data-game-over={game.game_over.to_string()} key={game.game_over.to_string()}>
+                <div
+                    class="grid"
+                    style={style}
+                    data-game-over={game.game_over.to_string()}
+                    key={game.game_over.to_string()}
+                >
                     {for board}
                 </div>
             </div>
 
-            <div class="cartoon flex gap-2 w-full justify-between p-2 bg-green-300">
-                <button class="btn" onclick={on_reset}>
+            <div class="-cartoon flex gap-2 w-full justify-between  -bg-green-100 rounded">
+                <button class="btn bg-green-200" onclick={on_reset}>
                     {"Voltar"}
                 </button>
 
                 <div class="flex gap-2">
-                    <button class="btn" onclick={on_restart_game}>
-                        {"Recomeçar Jogo"}
-                    </button>
-                    <button class="btn" onclick={on_flash_cards} disabled={game.game_started}>
-                        {"Mostrar cartas"}
-                    </button>
-                    <button class="btn" onclick={on_restart_turn}>
-                        {if game.game_over {
-                            "Continuar"
-                        } else {
-                            "Recomeçar"
-                        }}
-                    </button>
+                    <div class="btn-group">
+                        <button class="-btn" onclick={on_restart_game}>
+                            {"Recomeçar Jogo"}
+                        </button>
+                        <button class="-btn" onclick={on_flash_cards} disabled={game.game_started}>
+                            {"Mostrar cartas"}
+                        </button>
+                        <button class="-btn" onclick={on_restart_turn}>
+                            {if game.game_over {
+                                "Continuar"
+                            } else {
+                                "Recomeçar"
+                            }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

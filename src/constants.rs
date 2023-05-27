@@ -2,7 +2,7 @@ pub const WRONG_GUESS_TIMEOUT: i32 = 600;
 
 pub const COLORS: [&str; 12] = [
     "#ef4444", "#16a34a", "#3b82f6", "#facc15", "#fb923c", "#a3a3a3", "#9333ea", "#f472b6",
-    "#704d0a", "#67e8f9", "#bbf7d0", "#111111",
+    "#704d0a", "#67e8f9", "#fbd0d0", "#111111",
 ];
 
 pub const NBA_LOGOS: [&str; 20] = [

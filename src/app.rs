@@ -24,7 +24,7 @@ pub fn screen() -> Html {
 
     html! {
         if has_setup {
-            <div class="grid grid-cols-[150px_1fr] h-full gap-3 p-3">
+            <div class="grid grid-cols-[minmax(60px,120px)_1fr] h-full gap-3 p-3">
                 <GameProvider>
                     <Players />
                     <Board />

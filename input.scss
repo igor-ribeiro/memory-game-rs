@@ -8,7 +8,7 @@
     font-family: "Inter";
     height: 100%;
     overflow: hidden;
-    @apply bg-green-100;
+    @apply bg-green-300;
   }
 
   :root {
@@ -30,11 +30,11 @@
 
 @layer components {
   .btn {
-    @apply cartoon font-black px-4 py-2 rounded-full uppercase tracking-wider hover:bg-black/20;
+    @apply cartoon font-black px-4 py-2 rounded-full uppercase tracking-wider hover:bg-black/10;
   }
 
   .btn-group {
-    @apply w-fit flex bg-yellow-50 items-center rounded-full overflow-hidden cartoon;
+    @apply w-fit flex bg-yellow-100 items-center rounded-full overflow-hidden cartoon;
 
     button {
       @apply py-2 px-4 bg-transparent font-black uppercase;
@@ -55,7 +55,7 @@
 
   .card {
     --animation-card-delay: calc(0.03s * var(--position, 0));
-    --animation-column-delay: calc(0.1s * var(--column, 0));
+    --animation-column-delay: calc(0.05s * var(--column, 0));
 
     @apply overflow-hidden grid rounded select-none transition-transform cartoon;
 
@@ -77,28 +77,42 @@
   }
 
   .card-back {
-    @apply font-black text-black/30 text-xl flex items-center justify-center bg-white;
+    @apply font-black text-black/40 text-xl flex items-center justify-center bg-green-200;
   }
 
-  [data-flipped="true"] .card-front {
-    transform: rotateY(0);
-  }
-  [data-flipped="true"] .card-back {
-    transform: rotateY(180deg);
+  [data-flipped="true"] {
+    .card-front {
+      transform: rotateY(0);
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+    }
   }
 }
 
 @layer utilities {
-  .btn-group [data-active="true"] {
-    @apply bg-yellow-300;
+  .btn-group button {
+    @apply hover:bg-black/10;
+
+    &[data-active="true"],
+    &:active:enabled {
+      @apply bg-yellow-400;
+    }
   }
 
-  .btn:disabled {
+  .btn:disabled,
+  .btn-group button:disabled {
     @apply opacity-40;
   }
 
   .btn-primary {
     @apply bg-yellow-200 hover:bg-yellow-300;
+  }
+
+  .btn-transparent {
+    border: none;
+    box-shadow: none;
   }
 
   .is-wrong {

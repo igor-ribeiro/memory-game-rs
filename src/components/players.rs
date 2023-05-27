@@ -22,11 +22,11 @@ pub fn players() -> Html {
             <div
                 key={player.name}
                 class={classes!(
-                    "text-center flex flex-col justify-between relative overflow-hidden".to_string(),
-                    is_turn.then_some("font-bold").or(Some("text-gray-600")),
+                    "font-black text-center flex flex-col justify-between relative overflow-hidden p-1".to_string(),
+                    is_turn.then_some("bg-yellow-200"),
                 )}
             >
-                <span class="text-sm">
+                <span class="uppercase text-sm">
                     {player.name}
                 </span>
 
@@ -36,19 +36,12 @@ pub fn players() -> Html {
                 >
                     {points}
                 </span>
-
-                <div
-                    class={classes!(
-                        "z-[-1] w-full h-full absolute left-0 top-0 bg-green-600/20".to_string(),
-                        is_turn.then_some("opacity-1").or(Some("opacity-0")),
-                    )}
-                />
             </div>
         }
     });
 
     html! {
-        <div class="flex flex-col w-full gap-2 cartoon p-1 bg-green-300">
+        <div class="flex flex-col w-full gap-2 rounded cartoon bg-green-200">
             {for players}
         </div>
     }
