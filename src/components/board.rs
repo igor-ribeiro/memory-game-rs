@@ -209,8 +209,8 @@ pub fn board() -> Html {
                 </div>
             </div>
 
-            <audio ref={success_ref} src="/public/audio/success.ogg"></audio>
-            <audio ref={error_ref} src="/public/audio/error.ogg"></audio>
+            <audio ref={success_ref} src="/public/audio/success.mp3"></audio>
+            <audio ref={error_ref} src="/public/audio/error.mp3"></audio>
 
             <div class="-cartoon flex gap-2 w-full justify-between  -bg-green-100 rounded">
                 <button class="btn bg-green-200" onclick={on_reset}>
