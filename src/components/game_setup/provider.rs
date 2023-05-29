@@ -1,10 +1,7 @@
 use yew::prelude::*;
 
-use crate::{
-    components::game_setup::context::{
-        GameSetupAction, GameSetupContext, GameSetupField, GameSetupValue,
-    },
-    game::{CardType, GameMode, ScoreType},
+use crate::components::game_setup::context::{
+    GameSetupAction, GameSetupContext, GameSetupField, GameSetupValue,
 };
 
 #[hook]
@@ -19,17 +16,17 @@ pub struct Props {
 
 #[function_component(GameSetupProvider)]
 pub fn game_setup_provider(Props { children }: &Props) -> Html {
+    let setup = use_reducer(|| GameSetupValue {
+        game_mode: None,
+        card_type: None,
+        score_type: None,
+    });
+
     // let setup = use_reducer(|| GameSetupValue {
     //     game_mode: Some(GameMode::MultiPlayer),
-    //     card_type: None,
-    //     score_type: None,
+    //     card_type: Some(CardType::NbaTeams),
+    //     score_type: Some(ScoreType::Hits { point_per_hit: 1 }),
     // });
-
-    let setup = use_reducer(|| GameSetupValue {
-        game_mode: Some(GameMode::MultiPlayer),
-        card_type: Some(CardType::NbaTeams),
-        score_type: Some(ScoreType::Hits { point_per_hit: 1 }),
-    });
 
     let reset = {
         let send = setup.dispatcher();

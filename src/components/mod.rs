@@ -6,3 +6,5 @@ pub mod game_provider;
 pub mod game_setup;
 pub mod players;
 pub mod score_type_input;
+pub mod sounds;
+

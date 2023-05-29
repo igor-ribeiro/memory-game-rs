@@ -26,20 +26,29 @@ pub fn game_provider(Props { children }: &Props) -> Html {
                 Game::with_single_player_points(setup.card_type.unwrap())
             }
             Some(GameMode::MultiPlayer) => Game::with_multi_player_points(setup.card_type.unwrap()),
-            None => unreachable!(),
+            None => unreachable!("Invalid game mode"),
         },
         Some(ScoreType::Time { .. }) => match setup.game_mode {
             Some(GameMode::SinglePlayer) => Game::with_single_player_time(setup.card_type.unwrap()),
             Some(GameMode::MultiPlayer) => Game::with_multi_player_time(setup.card_type.unwrap()),
-            None => unreachable!(),
+            None => unreachable!("Invalid game mode"),
         },
-        None => unreachable!(),
+        None => unreachable!("Invalid score type"),
     });
 
     let mut timeout_id = use_mut_ref::<Option<i32>, _>(|| None);
     let mut timeout_callback = use_mut_ref::<Option<Closure<dyn Fn()>>, _>(|| None);
 
     let dispatcher = game.dispatcher();
+
+    info!("{:?}", game.game_started);
+
+    use_effect_with_deps(
+        |_| {
+            play_sound(Sound::Start);
+        },
+        game.id.clone(),
+    );
 
     use_effect_with_deps(
         |correct_guess| {

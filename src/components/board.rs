@@ -8,13 +8,9 @@ use crate::{
         ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, HARRY_POTTER_COUNT,
         HARRY_POTTER_IMAGE, NBA_LOGOS,
     },
-    game::{get_board_grid, Action, CardType, Sound},
-    utils::play_sound,
+    game::{get_board_grid, Action, CardType},
 };
-use log::info;
-use std::borrow::Borrow;
-use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
-use web_sys::{window, CustomEvent, CustomEventInit, HtmlAudioElement, HtmlImageElement};
+use web_sys::HtmlImageElement;
 use yew::prelude::*;
 
 fn get_background_image_style(image: &str, count: i32, position: i32) -> String {
@@ -48,16 +44,6 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
     }
 }
 
-fn get_back_card_style(card_type: &CardType) -> Option<String> {
-    match card_type {
-        CardType::NbaTeams => {
-            Some("background-image: url(/public/nba-logo.png); background-size: cover;".to_string())
-        }
-        _ => None,
-        // _ => Some("background-color: #dedede".to_string()),
-    }
-}
-
 #[derive(Properties, PartialEq)]
 pub struct BoardProps {
     // pub children: Children,
@@ -68,57 +54,7 @@ pub fn board() -> Html {
     let GameSetupContext { reset, .. } = use_game_setup();
     let game = use_context::<GameContext>().unwrap();
     let card_style = get_card_style(&game.card_type);
-    let back_card_style = get_back_card_style(&game.card_type);
     let board_grid = get_board_grid(&game.card_type);
-    let success_ref = use_node_ref();
-    let error_ref = use_node_ref();
-
-    {
-        let success_ref = success_ref.clone();
-        let error_ref = error_ref.clone();
-
-        use_effect_with_deps(
-            |(success_ref, error_ref)| {
-                let window = window().unwrap();
-
-                let success_ref = success_ref.clone();
-                let error_ref = error_ref.clone();
-
-                let callback = Closure::<dyn Fn(CustomEvent)>::new(move |e: CustomEvent| {
-                    let success_audio = success_ref
-                        .cast::<HtmlAudioElement>()
-                        .expect("success_ref not attached to div element");
-
-                    let error_audio = error_ref
-                        .cast::<HtmlAudioElement>()
-                        .expect("error_ref not attached to div element");
-
-                    if let Some(detail) = e.detail().as_string() {
-                        let audio = match detail.as_str() {
-                            "error" => Some(error_audio),
-                            "success" => Some(success_audio),
-                            _ => None,
-                        };
-
-                        if let Some(audio) = audio {
-                            audio.set_current_time(0.0);
-                            audio.play().unwrap();
-                        }
-                    }
-                });
-
-                window
-                    .add_event_listener_with_callback(
-                        "play-sound",
-                        callback.as_ref().unchecked_ref(),
-                    )
-                    .unwrap();
-
-                callback.forget();
-            },
-            (success_ref, error_ref),
-        );
-    };
 
     use_effect_with_deps(
         |card_type| {
@@ -208,9 +144,6 @@ pub fn board() -> Html {
                     {for board}
                 </div>
             </div>
-
-            <audio ref={success_ref} src="./public/audio/success.mp3"></audio>
-            <audio ref={error_ref} src="./public/audio/error.mp3"></audio>
 
             <div class="-cartoon flex gap-2 w-full justify-between  -bg-green-100 rounded">
                 <button class="btn bg-green-200" onclick={on_reset}>

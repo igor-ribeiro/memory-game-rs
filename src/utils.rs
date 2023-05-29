@@ -12,6 +12,7 @@ pub fn play_sound(sound: Sound) {
     let sound_type = match sound {
         Sound::Success => "success",
         Sound::Error => "error",
+        Sound::Start => "start",
     };
 
     let event = CustomEvent::new_with_event_init_dict(

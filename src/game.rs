@@ -12,6 +12,7 @@ use crate::constants::{
 pub enum Sound {
     Success,
     Error,
+    Start,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, EnumIter, Copy)]
@@ -63,6 +64,7 @@ impl Player {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Game {
+    pub id: String,
     pub game_over: bool,
     pub points_type: ScoreType,
     pub mode: GameMode,
@@ -363,6 +365,7 @@ impl Game {
         let cards_count = get_cards_count(card_type);
 
         Self {
+            id: Uuid::new_v4().to_string(),
             game_started: false,
             game_over: false,
             points_type: ScoreType::Hits { point_per_hit: 1 },
@@ -380,6 +383,7 @@ impl Game {
 
     pub fn reset(&mut self) -> Self {
         Self {
+            id: Uuid::new_v4().to_string(),
             game_started: false,
             game_over: false,
             guess: (None, None),
