@@ -28,17 +28,6 @@ pub fn card(props: &Props) -> Html {
     let has_first_guess = Some(position) == game.guess.0;
     let has_second_guess = Some(position) == game.guess.1;
     let was_guessed = has_first_guess || has_second_guess;
-    let _is_wrong = match game.guess {
-        (Some(first), Some(second)) => first != position || second != position,
-        _ => false,
-    };
-
-    let should_dim = game.guess.0.is_some()
-        && game.guess.1.is_some()
-        && Some(position) != game.guess.0
-        && Some(position) != game.guess.1;
-
-    // let should_dim = !card.flipped;
 
     let should_animate = card.flipped && !was_guessed && !game.flip_all;
 
@@ -51,11 +40,6 @@ pub fn card(props: &Props) -> Html {
             class={classes!(
                 "card".to_string(),
                 game.game_started.then_some("").or(Some("opacity-0 animate-start")),
-                // was_guessed
-                //     .then_some("")
-                //     .or(Some("border-gray-400")),
-                should_dim
-                    .then_some("opacity-40 scale-[85%]"),
                 should_animate
                     .then_some("is-correct")
                     .or(Some("cursor-pointer")),

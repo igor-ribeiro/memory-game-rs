@@ -22,16 +22,20 @@ module.exports = {
         },
         start: {
           "0%": {
-            transform: "scale(0.2)",
+            transform: "scale(0.2) rotateZ(-45deg)",
             opacity: 0,
           },
-          "100%": { transform: "scale(1) translateY(0)", opacity: 1 },
+          "100%": {
+            transform: "scale(1) translateY(0) rotateZ(0)",
+            opacity: 1,
+          },
         },
       },
       animation: {
         wiggle: "wiggle .2s ease-in-out 3",
         success: "success .5s ease-in 1",
-        start: "start .4s ease-out var(--animation-column-delay, 0) 1 forwards",
+        start:
+          "start .4s ease-in-out var(--animation-column-delay, 0) 1 forwards",
       },
     },
   },

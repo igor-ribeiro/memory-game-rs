@@ -9,6 +9,11 @@ use crate::constants::{
     ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS, WRONG_GUESS_TIMEOUT,
 };
 
+pub enum Sound {
+    Success,
+    Error,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, EnumIter, Copy)]
 pub enum CardType {
     Colors,
@@ -69,6 +74,7 @@ pub struct Game {
     pub next_action: Option<NextAction>,
     pub flip_all: bool,
     pub game_started: bool,
+    pub correct_guess: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -179,6 +185,8 @@ impl Reducible for Game {
 
                 let mut next_points: Option<i32> = None;
                 let mut next_turn: Option<bool> = None;
+
+                state.correct_guess = is_correct_guess;
 
                 if let Some(false) = is_correct_guess {
                     state.next_action = Some(NextAction {
@@ -366,6 +374,7 @@ impl Game {
             card_type,
             next_action: None,
             flip_all: false,
+            correct_guess: None,
         }
     }
 

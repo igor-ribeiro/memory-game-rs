@@ -1,7 +1,9 @@
 use crate::{
     components::game_setup::{context::GameSetupContext, provider::use_game_setup},
-    game::{Game, GameMode, ScoreType},
+    game::{Game, GameMode, ScoreType, Sound},
+    utils::play_sound,
 };
+use log::info;
 use std::borrow::BorrowMut;
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::window;
@@ -38,6 +40,19 @@ pub fn game_provider(Props { children }: &Props) -> Html {
     let mut timeout_callback = use_mut_ref::<Option<Closure<dyn Fn()>>, _>(|| None);
 
     let dispatcher = game.dispatcher();
+
+    use_effect_with_deps(
+        |correct_guess| {
+            if let Some(correct_guess) = correct_guess {
+                play_sound(if *correct_guess {
+                    Sound::Success
+                } else {
+                    Sound::Error
+                });
+            }
+        },
+        game.correct_guess,
+    );
 
     use_effect_with_deps(
         move |next_action| {

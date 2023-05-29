@@ -12,6 +12,10 @@ getrandom = { version = "0.2", features = ["js"] }
 wasm-bindgen = "0.2.84"
 wasm-logger = "0.2.0"
 web-sys = { version = "0.3.61", features = [
+  "CustomEventInit",
+  "CustomEvent",
+  "Event",
+  "HtmlAudioElement",
   "HtmlInputElement",
   "HtmlFormElement",
   "EventTarget",
