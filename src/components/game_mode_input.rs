@@ -29,9 +29,9 @@ pub fn game_mode_input() -> Html {
         on_set_value.reform(move |_| GameSetupField::Mode(GameMode::MultiPlayer));
 
     html! {
-        <div class="text-center">
+        <div class="text-center flex flex-col items-center">
             <h2 class="font-bold text-xl">{"Jogar sozinho"}</h2>
-            <div class="btn-group">
+            <div class="btn-group btn-group-responsive">
                 <button
                     type="button"
                     data-active={is_single_player.to_string()}

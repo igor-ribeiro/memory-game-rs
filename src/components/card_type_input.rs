@@ -48,9 +48,9 @@ pub fn game_mode_input() -> Html {
     });
 
     html! {
-        <div class="text-center">
+        <div class="text-center flex flex-col items-center">
             <h2 class="font-bold text-xl">{"Tipo de cartas"}</h2>
-            <div class="btn-group">
+            <div class="btn-group btn-group-responsive">
                 {for card_types}
             </div>
         </div>

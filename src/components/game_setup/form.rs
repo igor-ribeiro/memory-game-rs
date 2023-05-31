@@ -8,7 +8,7 @@ use crate::components::{
 #[function_component(GameSetupForm)]
 pub fn game_setup_form() -> Html {
     html! {
-        <div class="bg-green-200 rounded p-4 cartoon w-fit mx-auto flex flex-col gap-4 items-center">
+        <div class="bg-green-200 rounded p-4 cartoon w-full max-w-fit mx-auto flex flex-col gap-4 items-center">
             <h1 class="uppercase font-black text-3xl">{"Jogo da memória"}</h1>
             <GameModeInput />
             <ScoreTypeInput />

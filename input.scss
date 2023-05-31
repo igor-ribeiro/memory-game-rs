@@ -37,15 +37,7 @@
     @apply w-fit flex bg-yellow-100 items-center rounded-full overflow-hidden cartoon;
 
     button {
-      @apply py-2 px-4 bg-transparent font-black uppercase;
-
-      &:first-child {
-        @apply rounded-l-full;
-      }
-
-      &:last-child {
-        @apply rounded-r-full;
-      }
+      @apply py-2 px-4 bg-transparent font-black uppercase w-full whitespace-nowrap;
     }
   }
 
@@ -92,6 +84,18 @@
 }
 
 @layer utilities {
+  .btn-group-responsive {
+    @apply btn-group-vertical sm:btn-group-horizontal;
+  }
+
+  .btn-group-vertical {
+    @apply flex-col rounded-lg;
+  }
+
+  .btn-group-horizontal {
+    @apply flex-row rounded-full;
+  }
+
   .btn-group button {
     @apply hover:bg-black/10;
 
