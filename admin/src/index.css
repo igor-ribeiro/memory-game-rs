@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* cardsprite — Tailwind v4 theme
+ * Usage: in your main CSS file
+ *   @import "tailwindcss";
+ *   @import "./cardsprite-theme.css";
+ * Load the font in index.html:
+ *   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+ */
+
+@theme {
+  /* Reset default palette so only these tokens exist (remove this line to keep Tailwind's colors) */
+  --color-*: initial;
+
+  /* Surfaces */
+  --color-bg: #0b0c0e; /* app background, inputs */
+  --color-panel: #111215; /* control bars, code blocks */
+  --color-raised: #181a1f; /* selected rows, active tabs */
+  --color-checker: #15171b; /* transparency checkerboard base */
+  --color-checker-alt: #1c1f24;
+
+  /* Lines */
+  --color-line: #25282f; /* panel dividers, default borders */
+  --color-line-strong: #3a3e47; /* dashed drop zone, secondary buttons */
+
+  /* Text */
+  --color-fg: #e7e8ea; /* primary text */
+  --color-fg-code: #c9ccd1; /* code snippets */
+  --color-muted: #8d929b; /* labels, meta (≥ 4.5:1 on bg) */
+
+  /* Accent */
+  --color-accent: #c6f35a; /* primary action, selection, crop box */
+  --color-accent-hover: #ddff8a;
+  --color-on-accent: #0b0c0e; /* text on accent */
+  --color-warn: #f2a65a;
+
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Type */
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-mono); /* everything is mono */
+
+  --text-label: 12px; /* section headers, meta */
+  --text-label--letter-spacing: 0.12em;
+  --text-code: 12px;
+  --text-code--line-height: 1.6;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+
+  /* Shape: square everything */
+  --radius-none: 0;
+  --radius-full: 9999px; /* only for the round thumbnails */
+
+  /* Fixed sizes used across the UI */
+  --spacing-control: 32px; /* h-control: inputs, pills, icon buttons */
+  --spacing-action: 36px; /* h-action: primary/secondary buttons, list rows */
+  --spacing-header: 56px; /* h-header */
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-line, currentcolor);
+  }
+}
+
+/* Transparency checkerboard: class="bg-checker" */
+@utility bg-checker {
+  background-color: var(--color-checker);
+  background-image:
+    linear-gradient(
+      45deg,
+      var(--color-checker-alt) 25%,
+      transparent 25%,
+      transparent 75%,
+      var(--color-checker-alt) 75%
+    ),
+    linear-gradient(
+      45deg,
+      var(--color-checker-alt) 25%,
+      transparent 25%,
+      transparent 75%,
+      var(--color-checker-alt) 75%
+    );
+  background-size: 20px 20px;
+  background-position:
+    0 0,
+    10px 10px;
+}
+
+/* Section header: class="label" → THEMES, IMAGES, EXPORT */
+@utility label {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Slider: class="range-accent" on <input type="range"> */
+@utility range-accent {
+  appearance: none;
+  height: 2px;
+  background: #2e3139;
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--color-accent);
+    border: 0;
+  }
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--color-accent);
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* Example markup
+ *  Primary button : h-action px-4 bg-accent text-on-accent font-bold hover:bg-accent-hover
+ *  Secondary      : h-action px-4 border border-line-strong text-fg
+ *  Input          : h-control px-2 bg-bg border border-line text-fg
+ *  Panel divider  : border-line (border-r / border-b)
+ *  Selected row   : bg-raised border border-accent
+ *  Crop dim       : shadow-[0_0_0_9999px_rgb(11_12_14/0.72)]
+ */
+
+@layer base {
+  html,
+  body {
+    color-scheme: dark;
+    font-family: var(--font-mono);
+    scrollbar-gutter: stable;
+  }
+  body {
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  :focus-visible {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
