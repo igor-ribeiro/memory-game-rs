@@ -6,9 +6,10 @@ import {
   useState,
 } from "react";
 import { Header } from "./components/Header";
-import { ThemePanel } from "./components/ThemePanel";
-import { tv } from "tailwind-variants";
 import { ThemeCards } from "./components/ThemeCards";
+import { Route, Routes } from "react-router";
+import { HomePage } from "./pages/HomePage";
+import { EditorPage } from "./pages/EditorPage";
 
 type Size = { width: number; height: number };
 
@@ -23,17 +24,18 @@ const DEFAULT_POSITION: Position = {
   y: 0,
 };
 
-const page = tv({
-  base: "h-full",
-  variants: {
-    page: {
-      home: "",
-      editor: "grid grid-cols-[350px_1fr]",
-    },
-  },
-});
-
 function App() {
+  return (
+    <div className="flex h-full flex-col">
+      <Routes>
+        <Route index element={<HomePage />} />
+        <Route path="/:id" element={<EditorPage />} />
+      </Routes>
+    </div>
+  );
+}
+
+function _App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [image, setImage] = useState<ImageBitmap | null>(null);
@@ -110,7 +112,7 @@ function App() {
   return (
     <div className="flex h-full flex-col">
       <Header />
-      <div className={page({ page: "home" })}>
+      <div className="flex-1">
         <ThemeCards />
         <div className="hidden p-6">
           <h1 className="text-3xl font-bold">Memory Game Admin</h1>
