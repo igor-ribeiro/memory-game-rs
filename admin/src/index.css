@@ -47,6 +47,8 @@
   --text-code: 12px;
   --text-code--line-height: 1.6;
   --text-base: 14px;
+  --text-sm: 12px;
+  --text-xs: 11px;
   --text-base--line-height: 1.5;
 
   /* Shape: square everything */
