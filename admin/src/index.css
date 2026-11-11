@@ -146,8 +146,10 @@
   html,
   body {
     color-scheme: dark;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
     font-family: var(--font-mono);
-    scrollbar-gutter: stable;
+    overflow: hidden;
   }
   body {
     font-size: var(--text-base);

@@ -1,10 +1,18 @@
-import Logo from "../cardsprite-icon.svg?react";
+import { ReactNode } from "react";
+import { cn } from "tailwind-variants";
 
-export function Header() {
+export function Header({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return (
-    <header className="flex items-center gap-4 border-b p-5">
-      <Logo />
-      <span className="text-xl font-bold">cardsprite</span>
+    <header
+      className={cn("flex h-20 shrink-0 items-center border-b px-5", className)}
+    >
+      {children}
     </header>
   );
 }

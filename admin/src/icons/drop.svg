@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="44" height="44" viewBox="678 375.5 44 44">
+  <g id="svg1" mask="url(#mask-for-svg11)">
+    <mask id="mask-for-svg11">
+      <rect width="44" height="44" x="678" y="375.5" fill="#ffffff" />
+    </mask>
+    <g transform="matrix(1 0 0 1 678 375.5)">
+      <rect x="4" y="10" width="26" height="26" color="rgb(231, 232, 234)" fill="none" stroke="rgb(198, 243, 90)" stroke-width="1.5px" />
+      <rect x="14" y="4" width="26" height="26" stroke-dasharray="3px, 3px" color="rgb(231, 232, 234)" fill="none" stroke="rgb(198, 243, 90)" stroke-width="1.5px" />
+      <path d="M27 13v10M22 18h10" color="rgb(231, 232, 234)" fill="none" stroke="rgb(198, 243, 90)" stroke-width="1.5px" />
+    </g>
+  </g>
+</svg>
