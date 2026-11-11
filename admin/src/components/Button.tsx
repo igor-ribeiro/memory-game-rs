@@ -24,7 +24,11 @@ export function Button({
   ...props
 }: VariantProps<typeof button> & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button disabled className={button({ variant, fill, disabled })} {...props}>
+    <button
+      disabled={disabled}
+      className={button({ variant, fill, disabled })}
+      {...props}
+    >
       {children}
     </button>
   );
