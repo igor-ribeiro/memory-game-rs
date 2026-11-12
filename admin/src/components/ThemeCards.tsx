@@ -1,44 +1,24 @@
-import { cn, tv } from "tailwind-variants";
-import { Button } from "./Button";
-import { FormEvent } from "react";
-import { default as toSlug } from "slug";
-import { db, ImageEntity, ThemeEntity } from "../db";
-import { useLiveQuery } from "dexie-react-hooks";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useLiveQuery } from "dexie-react-hooks";
+import { FormEvent } from "react";
+import { useNavigate } from "react-router";
+import { default as toSlug } from "slug";
+import { cn, tv } from "tailwind-variants";
+import { db } from "../db";
+import {
+  getThemesWithImageCount,
+  ThemeWithImageCount,
+  useNewThemeNavigate,
+} from "../domain/theme";
 import { pluralize } from "../utils";
-
-type ThemeWithImageCount = ThemeEntity & {
-  imagesCount: number;
-};
-
-async function getThemesWithImages() {
-  const themes = await db.themes.orderBy("updatedAt").toArray();
-  const result: Record<number, ThemeWithImageCount> = {};
-  const ids: number[] = [];
-  for (const theme of themes) {
-    ids.push(theme.id);
-    result[theme.id] = {
-      ...theme,
-      imagesCount: 0,
-    };
-  }
-
-  await db.images
-    .where("themeId")
-    .anyOf(ids)
-    .each((image) => {
-      if (image.themeId in result) {
-        result[image.themeId].imagesCount++;
-      }
-    });
-
-  return Object.values(result);
-}
+import { Button } from "./Button";
 
 export function ThemeCards() {
-  const themes = useLiveQuery(getThemesWithImages);
+  const themes = useLiveQuery(getThemesWithImageCount);
   const themesCount = themes?.length ?? 0;
+  const newTheme = useNewThemeNavigate();
+
   return (
     <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
       <header className="flex items-center justify-between">
@@ -46,7 +26,11 @@ export function ThemeCards() {
           <h1 className="text-2xl font-bold">Temas</h1>
           <span className="text-muted font-bold">{themesCount}</span>
         </div>
-        {themesCount > 0 && <Button variant="primary">+ Novo Tema</Button>}
+        {themesCount > 0 && (
+          <Button variant="primary" onClick={() => newTheme()}>
+            + Novo Tema
+          </Button>
+        )}
       </header>
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {themes == null || themes.length < 1 ? (
@@ -90,6 +74,8 @@ function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
 }
 
 function CreateCard() {
+  const navigate = useNavigate();
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -107,6 +93,7 @@ function CreateCard() {
       console.info(`Theme "${name}" created, id=${id}`);
 
       form.reset();
+      navigate(`/${id}`);
     } catch (e) {
       console.error(`Unable to create theme: ${e}`);
     }

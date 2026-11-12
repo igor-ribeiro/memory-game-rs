@@ -1,35 +1,50 @@
+import { useLiveQuery } from "dexie-react-hooks";
 import { FormEvent } from "react";
+import { NavLink, useParams } from "react-router";
 import { AppLogo } from "../components/AppLogo";
 import { Button } from "../components/Button";
-import { Header } from "../components/Header";
-import { ThemesPanel } from "../components/ThemesPanel";
-import { ImagesPanel } from "../components/ImagesPanel";
-import DropIcon from "../icons/drop.svg?react";
 import { ExportPanel } from "../components/ExportPanel";
+import { Header } from "../components/Header";
+import { ImagesPanel } from "../components/ImagesPanel";
+import { ThemesPanel } from "../components/ThemesPanel";
+import { findThemeById, renameTheme } from "../domain/theme";
+import DropIcon from "../icons/drop.svg?react";
 
 export function EditorPage() {
-  function onRename(e: FormEvent<HTMLFormElement>) {
+  const params = useParams();
+  const theme = useLiveQuery(
+    () => findThemeById(Number(params.id)),
+    [params.id],
+  );
+
+  async function onRename(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    console.log(form.theme_name.value);
+    const name = form.theme_name.value;
+
+    if (!theme) return;
+
+    await renameTheme(theme.id, name);
   }
+
+  if (!theme) return null;
 
   return (
     <>
       <Header className="justify-between">
         <form className="flex items-center gap-4 text-lg" onSubmit={onRename}>
-          <a href="/#">
+          <NavLink to="/">
             <AppLogo />
-          </a>
+          </NavLink>
           <span className="text-muted">/</span>
           <input
             type="text"
+            key={theme.id}
             name="theme_name"
             className="h-10 border p-2 font-bold"
-            defaultValue="sem titulo"
+            defaultValue={theme.name}
           />
         </form>
-        <span className="text-muted">salvo</span>
       </Header>
       <main
         className="grid flex-1 grid-cols-2 grid-rows-2 overflow-hidden [grid-template-areas:var(--area-mobile)] xl:grid-cols-[minmax(250px,300px)_minmax(560px,1fr)_minmax(250px,300px)] xl:grid-rows-1 xl:[grid-template-areas:var(--area-desktop)]"
