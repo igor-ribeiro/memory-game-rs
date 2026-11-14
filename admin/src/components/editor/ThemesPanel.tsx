@@ -1,9 +1,12 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
-import { getThemesWithImageCount, useNewThemeNavigate } from "../domain/theme";
-import { Button } from "./Button";
-import { ThemeEntity } from "../db";
+import {
+  getThemesWithImageCount,
+  useNewThemeNavigate,
+} from "../../domain/theme";
+import { Button } from "../Button";
+import { ThemeEntity } from "../../db";
 
 export function ThemesPanel() {
   const themes = useLiveQuery(getThemesWithImageCount);

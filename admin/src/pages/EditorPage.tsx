@@ -1,119 +1,22 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { FormEvent, useCallback } from "react";
-import { NavLink, useNavigate, useParams } from "react-router";
-import { AppLogo } from "../components/AppLogo";
+import { useParams } from "react-router";
 import { Button } from "../components/Button";
-import { ExportPanel } from "../components/ExportPanel";
-import { Header } from "../components/Header";
-import { ImagesPanel } from "../components/ImagesPanel";
-import { ThemesPanel } from "../components/ThemesPanel";
-import {
-  Popover,
-  PopoverActions,
-  PopoverClose,
-  PopoverContent,
-  PopoverDescription,
-  PopoverTitle,
-  PopoverTrigger,
-} from "../components/ui/Popover";
-import { toast } from "../components/ui/Toast";
-import {
-  deleteTheme,
-  getThemeById as getThemeBySlug,
-  renameTheme,
-} from "../domain/theme";
-import DeleteIcon from "../icons/delete.svg?react";
+import { EditorHeader } from "../components/editor/EditorHeader";
+import { ExportPanel } from "../components/editor/ExportPanel";
+import { ImagesPanel } from "../components/editor/ImagesPanel";
+import { ThemesPanel } from "../components/editor/ThemesPanel";
+import { getThemeById as getThemeBySlug } from "../domain/theme";
 import DropIcon from "../icons/drop.svg?react";
 
 export function EditorPage() {
   const params = useParams();
   const theme = useLiveQuery(() => getThemeBySlug(params.slug!), [params.slug]);
-  const navigate = useNavigate();
-
-  async function onRename(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const name = form.theme_name.value;
-    const id = form.theme_id.value;
-
-    const theme = await renameTheme(Number(id), name);
-    navigate(`/${theme.slug}`);
-  }
-
-  const onDelete = useCallback(async () => {
-    if (!theme) return;
-
-    navigate("/");
-
-    toast.promise<void>(deleteTheme(theme.id), {
-      loading: {
-        description: "Excluíndo thema...",
-        data: {
-          close: false,
-        },
-      },
-      success() {
-        return {
-          timeout: 3000,
-          data: { icon: "delete" },
-          description: `Tema "${theme.name}" excluído`,
-          actionProps: {
-            children: "Desfazer",
-            onClick: () => console.log("undo"),
-          },
-        };
-      },
-      error(e) {
-        console.error("[delete-theme]:", e);
-        return {
-          type: "error",
-          title: `Não foi possível excluir o tema "${theme.name}"`,
-        };
-      },
-    });
-  }, [theme]);
 
   if (!theme) return null;
 
   return (
     <>
-      <Header className="justify-between">
-        <form className="flex items-center gap-4 text-lg" onSubmit={onRename}>
-          <NavLink to="/">
-            <AppLogo />
-          </NavLink>
-          <span className="text-muted">/</span>
-          <input
-            type="text"
-            key={theme.id}
-            name="theme_name"
-            className="h-10 border p-2 font-bold"
-            defaultValue={theme.name}
-          />
-          <input type="hidden" name="theme_id" value={theme.id} />
-        </form>
-        <Popover>
-          <PopoverTrigger render={<Button icon />}>
-            <DeleteIcon />
-          </PopoverTrigger>
-          <PopoverContent align="end">
-            <PopoverTitle>Excluir "{theme.name}"?</PopoverTitle>
-            <PopoverDescription>
-              As X imagens deste tema serão removidas.
-            </PopoverDescription>
-            <PopoverActions>
-              <PopoverClose render={<Button>Cancelar</Button>} />
-              <PopoverClose
-                render={
-                  <Button variant="danger" onClick={onDelete}>
-                    Excluir
-                  </Button>
-                }
-              />
-            </PopoverActions>
-          </PopoverContent>
-        </Popover>
-      </Header>
+      <EditorHeader theme={theme} />
       <main
         className="grid flex-1 grid-cols-2 grid-rows-2 overflow-hidden [grid-template-areas:var(--area-mobile)] xl:grid-cols-[minmax(250px,300px)_minmax(560px,1fr)_minmax(250px,300px)] xl:grid-rows-1 xl:[grid-template-areas:var(--area-desktop)]"
         style={{
@@ -122,7 +25,7 @@ export function EditorPage() {
           // @ts-ignore
           "--area-mobile":
             '"canvas canvas" \
-          "panel export"',
+            "panel export"',
         }}
       >
         <aside className="space-y-2 overflow-y-scroll border-r [grid-area:panel]">

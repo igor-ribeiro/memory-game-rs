@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import { Button } from "./Button";
+import { Button } from "../Button";
 
 export function ExportPanel() {
   function onExport(e: FormEvent<HTMLFormElement>) {
