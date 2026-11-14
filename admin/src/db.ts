@@ -13,6 +13,11 @@ export type ImageEntity = {
   id: number;
   name: string;
   themeId: number;
+  order: number;
+  width: number;
+  height: number;
+  offsetX: number;
+  offsetY: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -34,10 +39,10 @@ const db = new Dexie("cardsprite") as Dexie & {
   sprites: EntityTable<SpriteEntity, "id">;
 };
 
-db.version(2).stores({
-  themes: "++id, &name, &slug, createdAt, updatedAt, deletedAt",
-  images: "++id, name, themeId, createdAt, updatedAt, deletedAt",
-  sprites: "++id, themeId, createdAt, updatedAt, deletedAt",
+db.version(3).stores({
+  themes: "++id, &name, &slug, updatedAt",
+  images: "++id, themeId, order",
+  sprites: "++id, themeId",
 });
 
 export { db };
