@@ -34,7 +34,7 @@ const db = new Dexie("cardsprite") as Dexie & {
   sprites: EntityTable<SpriteEntity, "id">;
 };
 
-db.version(1).stores({
+db.version(2).stores({
   themes: "++id, &name, &slug, createdAt, updatedAt, deletedAt",
   images: "++id, name, themeId, createdAt, updatedAt, deletedAt",
   sprites: "++id, themeId, createdAt, updatedAt, deletedAt",
