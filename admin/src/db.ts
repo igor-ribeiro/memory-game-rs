@@ -6,6 +6,7 @@ export type ThemeEntity = {
   slug: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 };
 
 export type ImageEntity = {
@@ -14,6 +15,7 @@ export type ImageEntity = {
   themeId: number;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
   blob: Blob;
 };
 
@@ -22,6 +24,7 @@ export type SpriteEntity = {
   themeId: number;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
   blob: Blob;
 };
 
@@ -32,9 +35,9 @@ const db = new Dexie("cardsprite") as Dexie & {
 };
 
 db.version(1).stores({
-  themes: "++id, &name, &slug, createdAt, updatedAt",
-  images: "++id, name, themeId, createdAt, updatedAt",
-  sprites: "++id, themeId, createdAt, updatedAt",
+  themes: "++id, &name, &slug, createdAt, updatedAt, deletedAt",
+  images: "++id, name, themeId, createdAt, updatedAt, deletedAt",
+  sprites: "++id, themeId, createdAt, updatedAt, deletedAt",
 });
 
 export { db };

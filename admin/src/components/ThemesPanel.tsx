@@ -3,6 +3,7 @@ import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
 import { getThemesWithImageCount, useNewThemeNavigate } from "../domain/theme";
 import { Button } from "./Button";
+import { ThemeEntity } from "../db";
 
 export function ThemesPanel() {
   const themes = useLiveQuery(getThemesWithImageCount);
@@ -35,11 +36,11 @@ const themeItem = tv({
 function ThemeItem({
   theme,
 }: VariantProps<typeof themeItem> & {
-  theme: { id: number; name: string; imagesCount: number };
+  theme: ThemeEntity & { imagesCount: number };
 }) {
   return (
     <NavLink
-      to={`/${theme.id}`}
+      to={`/${theme.slug}`}
       className={({ isActive }) => themeItem({ selected: isActive })}
     >
       <span>{theme.name}</span>

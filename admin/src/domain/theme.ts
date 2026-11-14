@@ -8,7 +8,12 @@ export type ThemeWithImageCount = ThemeEntity & {
 };
 
 export async function getThemesWithImageCount() {
-  const themes = await db.themes.orderBy("updatedAt").reverse().toArray();
+  const themes = await db.themes
+    .orderBy("updatedAt")
+    .reverse()
+    .filter((theme) => theme.deletedAt == null)
+    .toArray();
+
   const result: Record<number, ThemeWithImageCount> = {};
   const ids: number[] = [];
   for (const theme of themes) {
@@ -20,8 +25,7 @@ export async function getThemesWithImageCount() {
   }
 
   await db.images
-    .where("themeId")
-    .anyOf(ids)
+    .filter((image) => ids.includes(image.themeId) && image.deletedAt == null)
     .each((image) => {
       if (image.themeId in result) {
         result[image.themeId].imagesCount++;
@@ -31,16 +35,24 @@ export async function getThemesWithImageCount() {
   return ids.map((id) => result[id]);
 }
 
-export async function findThemeById(id: number) {
-  return db.themes.get(id);
+export async function getThemeById(slug: string) {
+  return db.themes
+    .filter((theme) => theme.slug === slug && theme.deletedAt == null)
+    .first();
 }
 
-export async function renameTheme(id: number, name: string) {
+export async function renameTheme(
+  id: number,
+  name: string,
+): Promise<ThemeEntity> {
   await db.themes.update(id, {
     name,
     slug: slug(name),
     updatedAt: new Date(),
   });
+  const theme = await db.themes.get(id);
+  if (!theme) throw new Error(`theme not found ${id}`);
+  return theme;
 }
 
 export function useNewThemeNavigate() {
@@ -48,14 +60,15 @@ export function useNewThemeNavigate() {
   return useCallback(
     async (name?: string) => {
       try {
-        const id = await db.themes.add({
+        const theme = {
           name: name ?? "Sem Nome",
           slug: name ? slug(name) : "sem-nome",
           createdAt: new Date(),
           updatedAt: new Date(),
-        });
+        };
+        await db.themes.add(theme);
 
-        navigate(`/${id}`);
+        navigate(`/${theme.slug}`);
       } catch (e) {
         alert(`Não foi possível criar o tema`);
         console.error(`[new-empty-theme]: ${e}`);
@@ -63,4 +76,20 @@ export function useNewThemeNavigate() {
     },
     [navigate],
   );
+}
+
+export async function deleteTheme(id: number) {
+  await db.transaction("rw", db.themes, db.images, db.sprites, () => {
+    return Promise.all([
+      db.themes.update(id, {
+        deletedAt: new Date(),
+      }),
+      db.images.where("themeId").equals(id).modify({
+        deletedAt: new Date(),
+      }),
+      db.sprites.where("themeId").equals(id).modify({
+        deletedAt: new Date(),
+      }),
+    ]);
+  });
 }

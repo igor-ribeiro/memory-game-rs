@@ -34,6 +34,10 @@
   --color-on-accent: #0b0c0e; /* text on accent */
   --color-warn: #f2a65a;
 
+  --color-danger: #f26d5b;
+  --color-danger-hover: #ff8676;
+  --color-on-danger: #0b0c0e; /* text on accent */
+
   --color-white: #ffffff;
   --color-transparent: transparent;
   --color-current: currentColor;
@@ -59,6 +63,19 @@
   --spacing-control: 32px; /* h-control: inputs, pills, icon buttons */
   --spacing-action: 36px; /* h-action: primary/secondary buttons, list rows */
   --spacing-header: 56px; /* h-header */
+
+  --animate-progress: progress 1s linear forwards;
+
+  @keyframes progress {
+    0% {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    100% {
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+  }
 }
 
 /*

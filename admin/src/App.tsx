@@ -5,11 +5,13 @@ import {
   useRef,
   useState,
 } from "react";
+import { Route, Routes } from "react-router";
+import { AppLogo } from "./components/AppLogo";
 import { Header } from "./components/Header";
 import { ThemeCards } from "./components/ThemeCards";
-import { Route, Routes } from "react-router";
-import { HomePage } from "./pages/HomePage";
+import { Toaster } from "./components/ui/Toast";
 import { EditorPage } from "./pages/EditorPage";
+import { HomePage } from "./pages/HomePage";
 
 type Size = { width: number; height: number };
 
@@ -29,8 +31,9 @@ function App() {
     <div className="flex h-full flex-col">
       <Routes>
         <Route index element={<HomePage />} />
-        <Route path="/:id" element={<EditorPage />} />
+        <Route path="/:slug" element={<EditorPage />} />
       </Routes>
+      <Toaster />
     </div>
   );
 }
@@ -111,7 +114,9 @@ function _App() {
 
   return (
     <div className="flex h-full flex-col">
-      <Header />
+      <Header>
+        <AppLogo />
+      </Header>
       <div className="flex-1">
         <ThemeCards />
         <div className="hidden p-6">

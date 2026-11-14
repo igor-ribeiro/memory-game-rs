@@ -2,10 +2,8 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useLiveQuery } from "dexie-react-hooks";
 import { FormEvent } from "react";
-import { useNavigate } from "react-router";
-import { default as toSlug } from "slug";
+import { NavLink } from "react-router";
 import { cn, tv } from "tailwind-variants";
-import { db } from "../db";
 import {
   getThemesWithImageCount,
   ThemeWithImageCount,
@@ -53,7 +51,7 @@ const card = tv({
 
 function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
   return (
-    <div className={card.slots.base}>
+    <NavLink to={`/${theme.slug}`} className={card.slots.base}>
       <div className={card.slots.image}></div>
       <div className={card.slots.info}>
         <h3 className="font-bold">{theme.name}</h3>
@@ -69,31 +67,21 @@ function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
           })}
         </span>
       </div>
-    </div>
+    </NavLink>
   );
 }
 
 function CreateCard() {
-  const navigate = useNavigate();
+  const newTheme = useNewThemeNavigate();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const name = (form.theme_name as HTMLInputElement).value;
-    const slug = toSlug(name);
 
     try {
-      const id = await db.themes.add({
-        name,
-        slug,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      console.info(`Theme "${name}" created, id=${id}`);
-
+      await newTheme(name);
       form.reset();
-      navigate(`/${id}`);
     } catch (e) {
       console.error(`Unable to create theme: ${e}`);
     }
