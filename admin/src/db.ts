@@ -16,6 +16,7 @@ export type ImageEntity = {
   order: number;
   width: number;
   height: number;
+  scale: number;
   offsetX: number;
   offsetY: number;
   createdAt: Date;

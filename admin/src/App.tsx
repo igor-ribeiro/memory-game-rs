@@ -31,7 +31,7 @@ function App() {
     <div className="flex h-full flex-col">
       <Routes>
         <Route index element={<HomePage />} />
-        <Route path="/:slug/:image?" element={<EditorPage />} />
+        <Route path="/:slug/:imageId?" element={<EditorPage />} />
       </Routes>
       <Toaster />
     </div>

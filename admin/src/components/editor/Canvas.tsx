@@ -1,101 +1,113 @@
-import { Button } from "../Button";
-import DropIcon from "../../icons/drop.svg?react";
+import { useEffect, useRef, useState } from "react";
+import { SPRITE_SIZE } from "../../config";
 import { db, ImageEntity, ThemeEntity } from "../../db";
-import { ChangeEvent, useCallback, useEffect, useRef } from "react";
-import { toast } from "../ui/Toast";
-
-type ThemeImageEdit = {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-};
-
-type State = {
-  edits: Record<string, ThemeImageEdit>;
-};
-
-const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
+import DropIcon from "../../icons/drop.svg?react";
+import { Button } from "../Button";
+import { UploadImages } from "./UploadImages";
 
 export function Canvas({ image }: { image: ImageEntity }) {
   const canvasRef = useRef<HTMLCanvasElement>();
   const ctxRef = useRef<CanvasRenderingContext2D>();
+  const [scale, setScale] = useState(image.scale);
+  const [offsetX, setOffsetX] = useState(image.offsetX);
+  const [offsetY, setOffsetY] = useState(image.offsetY);
+  const timeoutId = useRef(-1);
+
+  useEffect(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId.current);
+    }
+
+    timeoutId.current = setTimeout(() => {
+      db.images.update(image.id, {
+        scale,
+        offsetX,
+        offsetY,
+      });
+    }, 500);
+  }, [image.id, scale, offsetX, offsetY]);
 
   useEffect(() => {
     const ctx = ctxRef.current!;
     const c = canvasRef.current!;
 
+    function center(value: number, size: number) {
+      return c.width / 2 + value - size / 2;
+    }
+
     ctx.clearRect(0, 0, c.width, c.height);
     createImageBitmap(image.blob).then((img) => {
-      ctx.drawImage(img, 0, 0);
+      const w = image.width * scale;
+      const h = image.height * scale;
+      ctx.drawImage(img, center(offsetX, w), center(offsetY, h), w, h);
     });
-  }, [image]);
+  }, [image.blob, image.width, image.height, scale, offsetX, offsetY]);
 
   return (
-    <canvas
-      key={image.id}
-      width={image.width}
-      height={image.height}
-      ref={(el) => {
-        if (!el) return;
-        canvasRef.current = el;
-        const ctx = el.getContext("2d");
-        if (!ctx) throw new Error("unable to get canvas context");
-        ctxRef.current = ctx;
-      }}
-    ></canvas>
+    <>
+      <canvas
+        key={image.id}
+        className="bg-checker-alt relative border"
+        width={SPRITE_SIZE * 2}
+        height={SPRITE_SIZE * 2}
+        ref={(el) => {
+          if (!el) return;
+          canvasRef.current = el;
+          const ctx = el.getContext("2d");
+          if (!ctx) throw new Error("unable to get canvas context");
+          ctxRef.current = ctx;
+        }}
+      ></canvas>
+      <div
+        style={{
+          width: `${SPRITE_SIZE}px`,
+          height: `${SPRITE_SIZE}px`,
+        }}
+        className="border-accent absolute top-1/2 left-1/2 z-10 aspect-square -translate-x-1/2 -translate-y-1/2 border"
+      />
+      <div className="bg-panel absolute bottom-0 flex h-20 w-full gap-4 p-4">
+        <label className="inline-flex flex-1 items-center gap-2">
+          <span>Tamanho:</span>
+          <input
+            type="range"
+            className="w-full"
+            min={0}
+            max={1}
+            step={0.01}
+            value={scale}
+            onChange={(e) => setScale(e.target.valueAsNumber)}
+          />
+        </label>
+        <label className="inline-flex flex-1 items-center gap-2">
+          <span>X:</span>
+          <input
+            type="range"
+            className="w-full"
+            min={SPRITE_SIZE * -2}
+            max={SPRITE_SIZE * 2}
+            step={0.1}
+            value={offsetX}
+            onChange={(e) => setOffsetX(e.target.valueAsNumber)}
+          />
+        </label>
+        <label className="inline-flex flex-1 items-center gap-2">
+          <span>Y:</span>
+          <input
+            type="range"
+            className="w-full"
+            min={SPRITE_SIZE * -2}
+            max={SPRITE_SIZE * 2}
+            step={0.1}
+            value={offsetY}
+            onChange={(e) => setOffsetY(e.target.valueAsNumber)}
+          />
+        </label>
+      </div>
+    </>
   );
 }
 
 export function CanvasPlaceholder({ theme }: { theme: ThemeEntity }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  async function onSelectFiles(e: ChangeEvent<HTMLInputElement>) {
-    let files = e.target.files;
-    if (files == null || files.length === 0) {
-      toast.add({
-        type: "error",
-        description: "Nenhuma imagem selecionada",
-      });
-      return;
-    }
-
-    const toCreate: Omit<ImageEntity, "id">[] = [];
-    const images: File[] = [];
-
-    for (const file of files) {
-      if (ACCEPTED.includes(file.type)) {
-        images.push(file);
-      }
-    }
-
-    const order = await db.images.where("themeId").equals(theme.id).count();
-
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
-      const bitmap = await createImageBitmap(image);
-      toCreate.push({
-        name: image.name,
-        themeId: theme.id,
-        height: bitmap.height,
-        width: bitmap.width,
-        offsetX: 0,
-        offsetY: 0,
-        blob: image,
-        order: order + i,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      bitmap.close();
-    }
-
-    await db.images.bulkAdd(toCreate);
-  }
-
-  const onOpenFiles = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
-
   return (
     <div className="border-accent bg-bg absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 border border-dashed px-12 py-16 text-center">
       <DropIcon />
@@ -103,16 +115,9 @@ export function CanvasPlaceholder({ theme }: { theme: ThemeEntity }) {
       <span className="text-muted text-sm">
         png · jpg · webp — uma imagem por carta
       </span>
-      <input
-        type="file"
-        className="hidden"
-        accept={ACCEPTED.join(",")}
-        ref={inputRef}
-        onChange={onSelectFiles}
-      />
-      <Button variant="primary" onClick={onOpenFiles}>
-        Escolher arquivos
-      </Button>
+      <UploadImages themeId={theme.id}>
+        <Button variant="primary">Escolher arquivos</Button>
+      </UploadImages>
       <span className="text-muted hidden text-sm">
         ou cole da área de transferência · ctrl/⌘ + v
       </span>

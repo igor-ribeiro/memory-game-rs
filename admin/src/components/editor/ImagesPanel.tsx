@@ -3,8 +3,15 @@ import { ImageEntity } from "../../db";
 import { Button } from "../Button";
 import { NavLink, useParams } from "react-router";
 import { cn } from "tailwind-variants";
+import { UploadImages } from "./UploadImages";
 
-export function ImagesPanel({ images }: { images: ImageEntity[] }) {
+export function ImagesPanel({
+  themeId,
+  images,
+}: {
+  themeId: number;
+  images: ImageEntity[];
+}) {
   return (
     <div className="space-y-4 p-4">
       <header className="flex items-center justify-between">
@@ -12,7 +19,9 @@ export function ImagesPanel({ images }: { images: ImageEntity[] }) {
           <span className="label">Imagens</span>
           <span className="label">{images.length}</span>
         </div>
-        <Button>+</Button>
+        <UploadImages themeId={themeId}>
+          <Button>+</Button>
+        </UploadImages>
       </header>
       <div className="grid grid-cols-3 gap-4">
         {images.length === 0 ? (
@@ -37,7 +46,7 @@ function ImageCard({ image }: { image: ImageEntity }) {
       to={`/${slug}/${image.id}`}
       className={({ isActive }) =>
         cn(
-          "text-muted/50 relative aspect-square w-full border bg-cover bg-center",
+          "relative aspect-square w-full border bg-cover bg-center",
           isActive && "border-accent",
         )
       }
@@ -45,9 +54,14 @@ function ImageCard({ image }: { image: ImageEntity }) {
         backgroundImage: `url(${url})`,
       }}
     >
-      <span className="bg-bg absolute h-fit w-fit px-2">
-        {String(image.order + 1).padStart(2, "0")}
-      </span>
+      {({ isActive }) => (
+        <span
+          data-active={isActive}
+          className="bg-bg data-[active=true]:bg-accent text-line-strong absolute h-fit w-fit px-2"
+        >
+          {String(image.order + 1).padStart(2, "0")}
+        </span>
+      )}
     </NavLink>
   );
 }

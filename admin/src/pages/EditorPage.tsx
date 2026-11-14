@@ -1,17 +1,21 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { useParams } from "react-router";
-import { CanvasPlaceholder } from "../components/editor/Canvas";
+import { Canvas, CanvasPlaceholder } from "../components/editor/Canvas";
 import { EditorHeader } from "../components/editor/EditorHeader";
 import { ExportPanel } from "../components/editor/ExportPanel";
 import { ImagesPanel } from "../components/editor/ImagesPanel";
 import { ThemesPanel } from "../components/editor/ThemesPanel";
 import { getThemeById as getThemeBySlug } from "../domain/theme";
 import { useGetImages } from "../domain/image";
+import { useMemo } from "react";
 
 export function EditorPage() {
-  const params = useParams();
-  const theme = useLiveQuery(() => getThemeBySlug(params.slug!), [params.slug]);
+  const { slug, imageId } = useParams();
+  const theme = useLiveQuery(() => getThemeBySlug(slug!), [slug]);
   const images = useGetImages(theme?.id);
+  const image = useMemo(() => {
+    return images.find((image) => image.id === Number(imageId));
+  }, [images, imageId]);
 
   if (!theme) return null;
 
@@ -33,10 +37,14 @@ export function EditorPage() {
         <aside className="space-y-2 border-r [grid-area:panel]">
           <ThemesPanel />
           <hr />
-          <ImagesPanel images={images} />
+          <ImagesPanel themeId={theme.id} images={images} />
         </aside>
-        <div className="bg-checker relative [grid-area:canvas]">
-          <CanvasPlaceholder theme={theme} />
+        <div className="bg-checker relative flex items-center justify-center [grid-area:canvas]">
+          {image ? (
+            <Canvas key={image.id} image={image} />
+          ) : (
+            <CanvasPlaceholder theme={theme} />
+          )}
         </div>
         <aside className="border-l p-4 [grid-area:export]">
           <ExportPanel />
