@@ -1,45 +1,13 @@
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useLiveQuery } from "dexie-react-hooks";
+import { useAtomValue } from "jotai";
 import { FormEvent } from "react";
 import { NavLink } from "react-router";
 import { cn, tv } from "tailwind-variants";
-import {
-  getThemesWithImageCount,
-  ThemeWithImageCount,
-  useNewThemeNavigate,
-} from "../domain/theme";
+import { ThemeWithImageCount } from "../domain/theme";
+import { createThemeAndOpen, themesAtom } from "../state/theme";
 import { pluralize } from "../utils";
 import { Button } from "./Button";
-
-export function ThemeCards() {
-  const themes = useLiveQuery(getThemesWithImageCount);
-  const themesCount = themes?.length ?? 0;
-  const newTheme = useNewThemeNavigate();
-
-  return (
-    <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
-      <header className="flex items-center justify-between">
-        <div className="flex h-10 items-baseline gap-4">
-          <h1 className="text-2xl font-bold">Temas</h1>
-          <span className="text-muted font-bold">{themesCount}</span>
-        </div>
-        {themesCount > 0 && (
-          <Button variant="primary" onClick={() => newTheme()}>
-            + Novo Tema
-          </Button>
-        )}
-      </header>
-      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        {themes == null || themes.length < 1 ? (
-          <Placeholder />
-        ) : (
-          themes.map((theme) => <ThemeCard key={theme.id} theme={theme} />)
-        )}
-      </div>
-    </div>
-  );
-}
 
 const card = tv({
   slots: {
@@ -48,6 +16,33 @@ const card = tv({
     info: "p-2 flex flex-col justify-between flex-1",
   },
 });
+
+export function ThemeCards() {
+  const themes = useAtomValue(themesAtom);
+
+  return (
+    <div className="w-full space-y-4 p-4 xl:max-w-7xl">
+      <header className="flex items-center justify-between">
+        <div className="flex h-10 items-baseline gap-4">
+          <h1 className="text-2xl font-bold">Temas</h1>
+          <span className="text-muted font-bold">{themes.length}</span>
+        </div>
+        {themes.length > 0 && (
+          <Button variant="primary" onClick={() => createThemeAndOpen()}>
+            + Novo Tema
+          </Button>
+        )}
+      </header>
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        {themes == null || themes.length < 1 ? (
+          <EmptyState />
+        ) : (
+          themes.map((theme) => <ThemeCard key={theme.id} theme={theme} />)
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
   return (
@@ -72,15 +67,13 @@ function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
 }
 
 function CreateCard() {
-  const newTheme = useNewThemeNavigate();
-
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const name = (form.theme_name as HTMLInputElement).value;
 
     try {
-      await newTheme(name);
+      await createThemeAndOpen(name);
       form.reset();
     } catch (e) {
       console.error(`Unable to create theme: ${e}`);
@@ -111,7 +104,25 @@ function CreateCard() {
   );
 }
 
-function Placeholder() {
+export function ThemesPlaceholder() {
+  return (
+    <div className="w-full space-y-4 p-4 xl:max-w-7xl">
+      <header className="flex items-center justify-between">
+        <div className="flex h-10 items-baseline gap-4">
+          <h1 className="text-2xl font-bold">Temas</h1>
+        </div>
+      </header>
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <PlaceholderCard />
+        <PlaceholderCard className="opacity-60" />
+        <PlaceholderCard className="opacity-30" />
+        <PlaceholderCard className="opacity-10" />
+      </div>
+    </div>
+  );
+}
+
+function EmptyState() {
   return (
     <>
       <CreateCard />

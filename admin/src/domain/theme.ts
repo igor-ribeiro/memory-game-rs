@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router";
 import { ThemeEntity, db } from "../db";
 
 export type ThemeWithImageCount = ThemeEntity & {
@@ -7,11 +5,7 @@ export type ThemeWithImageCount = ThemeEntity & {
 };
 
 export async function getThemesWithImageCount() {
-  const themes = await db.themes
-    .orderBy("updatedAt")
-    .reverse()
-    .filter((theme) => theme.deletedAt == null)
-    .toArray();
+  const themes = await db.themes.orderBy("updatedAt").reverse().toArray();
 
   const result: Record<number, ThemeWithImageCount> = {};
   const ids: number[] = [];
@@ -24,7 +18,8 @@ export async function getThemesWithImageCount() {
   }
 
   await db.crops
-    .filter((image) => ids.includes(image.themeId) && image.deletedAt == null)
+    .where("themeId")
+    .anyOf(ids)
     .each((image) => {
       if (image.themeId in result) {
         result[image.themeId].imagesCount++;
@@ -35,57 +30,5 @@ export async function getThemesWithImageCount() {
 }
 
 export async function getThemeById(id: number) {
-  return db.themes
-    .filter((theme) => theme.id === id && theme.deletedAt == null)
-    .first();
-}
-
-export async function renameTheme(
-  id: number,
-  name: string,
-): Promise<ThemeEntity> {
-  await db.themes.update(id, {
-    name,
-    updatedAt: new Date(),
-  });
-  const theme = await db.themes.get(id);
-  if (!theme) throw new Error(`theme not found ${id}`);
-  return theme;
-}
-
-export function useNewThemeNavigate() {
-  const navigate = useNavigate();
-  return useCallback(
-    async (name?: string) => {
-      try {
-        const id = await db.themes.add({
-          name: name ?? "Sem Nome",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-
-        navigate(`/${id}`);
-      } catch (e) {
-        alert(`Não foi possível criar o tema`);
-        console.error(`[new-empty-theme]: ${e}`);
-      }
-    },
-    [navigate],
-  );
-}
-
-export async function deleteTheme(id: number) {
-  await db.transaction("rw", db.themes, db.crops, db.sprites, () => {
-    return Promise.all([
-      db.themes.update(id, {
-        deletedAt: new Date(),
-      }),
-      db.crops.where("themeId").equals(id).modify({
-        deletedAt: new Date(),
-      }),
-      db.sprites.where("themeId").equals(id).modify({
-        deletedAt: new Date(),
-      }),
-    ]);
-  });
+  return db.themes.where("id").equals(id).first();
 }

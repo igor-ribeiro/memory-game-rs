@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
 import { ThemeEntity } from "../db";
-import { deleteTheme } from "../domain/theme";
 import DeleteIcon from "../icons/delete.svg?react";
+import { deleteTheme } from "../state/theme";
 import { Button } from "./Button";
 import {
   Popover,

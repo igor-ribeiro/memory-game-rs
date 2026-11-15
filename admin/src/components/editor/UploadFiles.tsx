@@ -59,8 +59,6 @@ export function UploadFiles({
       db.crops.where("themeId").equals(themeId).count(),
     ]);
 
-    console.log({ ids, order });
-
     const cropsToCreate: Omit<CropEntity, "id">[] = [];
 
     for (let i = 0; i < ids.length; i++) {

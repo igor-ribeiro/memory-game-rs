@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import { AppLogo } from "../components/AppLogo";
 import { Header } from "../components/Header";
-import { ThemeCards } from "../components/ThemeCards";
+import { ThemeCards, ThemesPlaceholder } from "../components/ThemeCards";
 
 export function HomePage() {
   return (
@@ -9,7 +10,9 @@ export function HomePage() {
         <AppLogo />
       </Header>
       <div className="flex-1">
-        <ThemeCards />
+        <Suspense fallback={<ThemesPlaceholder />}>
+          <ThemeCards />
+        </Suspense>
       </div>
     </>
   );

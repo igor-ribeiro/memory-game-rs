@@ -1,10 +1,10 @@
 import { FormEvent } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { renameTheme } from "../../domain/theme";
+import { ThemeEntity } from "../../db";
 import { AppLogo } from "../AppLogo";
 import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
-import { ThemeEntity } from "../../db";
+import { renameTheme } from "../../state/theme";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
   const navigate = useNavigate();
@@ -14,9 +14,8 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
     const form = e.target as HTMLFormElement;
     const name = form.theme_name.value;
     const id = form.theme_id.value;
-
-    const theme = await renameTheme(Number(id), name);
-    navigate(`/${theme.id}`);
+    await renameTheme(Number(id), name);
+    navigate(`/${id}`);
   }
 
   return (
