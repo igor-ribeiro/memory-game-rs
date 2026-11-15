@@ -1,5 +1,6 @@
 import { listenEvent } from "@ribeirolabs/events";
 import { useEffect, useState } from "react";
+import slug from "slug";
 import { SPRITE_SIZE } from "../../config";
 import { CropEntity, ImageEntity, ThemeEntity } from "../../db";
 import { invariant } from "../../utils";
@@ -34,7 +35,7 @@ export function PreviewCanvas({
           type: "type/jpg",
         }),
       );
-      a.download = `${theme.slug}.jpg`;
+      a.download = `${slug(theme.name)}.jpg`;
       a.click();
     });
 

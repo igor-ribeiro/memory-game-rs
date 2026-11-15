@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
-import slug from "slug";
 import { ThemeEntity, db } from "../db";
 
 export type ThemeWithImageCount = ThemeEntity & {
@@ -47,7 +46,6 @@ export async function renameTheme(
 ): Promise<ThemeEntity> {
   await db.themes.update(id, {
     name,
-    slug: slug(name),
     updatedAt: new Date(),
   });
   const theme = await db.themes.get(id);
@@ -62,7 +60,6 @@ export function useNewThemeNavigate() {
       try {
         const id = await db.themes.add({
           name: name ?? "Sem Nome",
-          slug: name ? slug(name) : "sem-nome",
           createdAt: new Date(),
           updatedAt: new Date(),
         });

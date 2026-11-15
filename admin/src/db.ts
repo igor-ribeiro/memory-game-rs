@@ -3,7 +3,6 @@ import Dexie, { EntityTable } from "dexie";
 export type ThemeEntity = {
   id: number;
   name: string;
-  slug: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -50,8 +49,8 @@ const db = new Dexie("cardsprite") as Dexie & {
   sprites: EntityTable<SpriteEntity, "id">;
 };
 
-db.version(6).stores({
-  themes: "++id, &name, &slug, updatedAt",
+db.version(7).stores({
+  themes: "++id, &name, updatedAt",
   images: "++id, themeId",
   crops: "++id, themeId, imageId, order",
   sprites: "++id, themeId",
