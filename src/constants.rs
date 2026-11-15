@@ -38,6 +38,9 @@ pub const NBA_LOGOS: [&str; 20] = [
                                                                   // "https://cdn.nba.com/logos/nba/1610612759/global/L/logo.svg", // spurs
 ];
 
+pub const KPOP_IMAGE: &str = "public/kpop.jpg";
+pub const KPOP_COUNT: i32 = 4;
+
 pub const ANIMALS_IMAGE: &str = "public/animals.jpg";
 pub const ANIMALS_COUNT: i32 = 20;
 

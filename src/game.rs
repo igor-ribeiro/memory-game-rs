@@ -6,7 +6,8 @@ use uuid::Uuid;
 use yew::Reducible;
 
 use crate::constants::{
-    ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, NBA_LOGOS, WRONG_GUESS_TIMEOUT,
+    ANIMALS_COUNT, COLORS, DISNEY_COUNT, HARRY_POTTER_COUNT, KPOP_COUNT, NBA_LOGOS,
+    WRONG_GUESS_TIMEOUT,
 };
 
 pub enum Sound {
@@ -20,6 +21,7 @@ pub enum CardType {
     Colors,
     NbaTeams,
     Animals,
+    Kpop,
     Disney,
     HarryPotter,
 }
@@ -348,6 +350,7 @@ fn get_cards_count(card_type: CardType) -> i32 {
         CardType::NbaTeams => NBA_LOGOS.len() as i32,
         CardType::Colors => COLORS.len() as i32,
         CardType::Animals => ANIMALS_COUNT,
+        CardType::Kpop => KPOP_COUNT,
         CardType::Disney => DISNEY_COUNT,
         CardType::HarryPotter => HARRY_POTTER_COUNT,
     };

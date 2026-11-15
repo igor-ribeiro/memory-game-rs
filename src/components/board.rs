@@ -5,7 +5,7 @@ use crate::{
         game_setup::{context::GameSetupContext, provider::use_game_setup},
     },
     constants::{
-        ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, HARRY_POTTER_COUNT,
+        KPOP_COUNT, KPOP_IMAGE, ANIMALS_COUNT, ANIMALS_IMAGE, COLORS, DISNEY_COUNT, DISNEY_IMAGE, HARRY_POTTER_COUNT,
         HARRY_POTTER_IMAGE, NBA_LOGOS,
     },
     game::{get_board_grid, Action, CardType},
@@ -31,6 +31,9 @@ fn get_card_style(card_type: &CardType) -> Vec<String> {
         CardType::Colors => COLORS
             .iter()
             .map(|color| format!("background-color: {color}"))
+            .collect::<Vec<_>>(),
+        CardType::Kpop => (0..=KPOP_COUNT)
+            .map(|i| get_background_image_style(KPOP_IMAGE, KPOP_COUNT, i))
             .collect::<Vec<_>>(),
         CardType::Animals => (0..=ANIMALS_COUNT)
             .map(|i| get_background_image_style(ANIMALS_IMAGE, ANIMALS_COUNT, i))
