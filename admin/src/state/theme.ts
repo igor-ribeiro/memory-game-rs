@@ -1,6 +1,7 @@
 import { atom, getDefaultStore } from "jotai";
 import { db } from "../db";
 import { getThemesWithImageCount, ThemeWithImageCount } from "../domain/theme";
+import { router } from "../router";
 import { invariant } from "../utils";
 
 const cacheThemesAtom = atom<ThemeWithImageCount[] | null>(null);
@@ -77,7 +78,7 @@ const createThemeAtom = atom(null, async (get, set, name?: string) => {
   invariant(theme, "theme not created");
   const themes = await get(themesAtom);
   set(themesAtom, [{ ...theme, imagesCount: 0 }].concat(themes));
-  window.location.hash = `/${id}`;
+  await router.navigate(`/${id}`);
 });
 
 export async function createThemeAndOpen(name?: string) {

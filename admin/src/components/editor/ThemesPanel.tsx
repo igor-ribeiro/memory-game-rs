@@ -1,22 +1,19 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
-import {
-  getThemesWithImageCount,
-  useNewThemeNavigate,
-} from "../../domain/theme";
+import { getThemesWithImageCount } from "../../domain/theme";
+import { createThemeAndOpen } from "../../state/theme";
 import { Button } from "../Button";
 import { ThemeEntity } from "../../db";
 
 export function ThemesPanel() {
   const themes = useLiveQuery(getThemesWithImageCount);
-  const newTheme = useNewThemeNavigate();
 
   return (
     <div className="space-y-4 p-4">
       <header className="flex h-10 items-center justify-between">
         <span className="label uppercase">Temas</span>
-        <Button onClick={() => newTheme()}>+</Button>
+        <Button onClick={() => createThemeAndOpen()}>+</Button>
       </header>
       <div>
         {themes?.map((theme) => (

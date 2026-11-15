@@ -5,13 +5,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { Route, Routes } from "react-router";
+import { Outlet } from "react-router";
 import { AppLogo } from "./components/AppLogo";
 import { Header } from "./components/Header";
 import { ThemeCards } from "./components/ThemeCards";
 import { Toaster } from "./components/ui/Toast";
-import { EditorPage } from "./pages/EditorPage";
-import { HomePage } from "./pages/HomePage";
 
 type Size = { width: number; height: number };
 
@@ -29,10 +27,7 @@ const DEFAULT_POSITION: Position = {
 function App() {
   return (
     <div className="flex h-full flex-col">
-      <Routes>
-        <Route index element={<HomePage />} />
-        <Route path="/:themeId/:cropId?" element={<EditorPage />} />
-      </Routes>
+      <Outlet />
       <Toaster />
     </div>
   );
