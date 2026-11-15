@@ -13,11 +13,6 @@ import { Toaster } from "./components/ui/Toast";
 
 type Size = { width: number; height: number };
 
-const DEFAULT_SIZE: Size = {
-  width: 0,
-  height: 0,
-};
-
 type Position = { x: number; y: number };
 const DEFAULT_POSITION: Position = {
   x: 0,
@@ -33,6 +28,7 @@ function App() {
   );
 }
 
+// @ts-ignore
 function _App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);

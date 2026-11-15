@@ -15,13 +15,7 @@ export function useImagesGroupedById(imageIds: number[]) {
 }
 
 async function getImagesByTheme(themeId: number) {
-  return (
-    (await db.images
-      .where("themeId")
-      .equals(themeId)
-      .filter((image) => image.deletedAt == null)
-      .toArray()) ?? []
-  );
+  return (await db.images.where("themeId").equals(themeId).toArray()) ?? [];
 }
 
 export function useGetImages(themeId?: number) {
