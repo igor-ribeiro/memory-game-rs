@@ -1,2 +1,2 @@
 [watch]
-ignore = ["node_modules", "pnpm-lock.yaml"]
+ignore = ["node_modules", "pnpm-lock.yaml", "admin"]
