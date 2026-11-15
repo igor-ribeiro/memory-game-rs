@@ -39,7 +39,9 @@ export function Canvas({ image }: { image: ImageEntity }) {
     createImageBitmap(image.blob).then((img) => {
       const w = image.width * scale;
       const h = image.height * scale;
-      ctx.drawImage(img, center(offsetX, w), center(offsetY, h), w, h);
+      const x = c.width / 2 - (image.width / 2 + offsetX) * scale;
+      const y = c.height / 2 - (image.height / 2 + offsetY) * scale;
+      ctx.drawImage(img, x, y, w, h);
     });
   }, [image.blob, image.width, image.height, scale, offsetX, offsetY]);
 
@@ -65,6 +67,7 @@ export function Canvas({ image }: { image: ImageEntity }) {
         }}
         className="border-accent absolute top-1/2 left-1/2 z-10 aspect-square -translate-x-1/2 -translate-y-1/2 border"
       />
+
       <div className="bg-panel absolute bottom-0 flex h-20 w-full gap-4 p-4">
         <label className="inline-flex flex-1 items-center gap-2">
           <span>Tamanho:</span>
@@ -72,7 +75,7 @@ export function Canvas({ image }: { image: ImageEntity }) {
             type="range"
             className="w-full"
             min={0}
-            max={1}
+            max={1.5}
             step={0.01}
             value={scale}
             onChange={(e) => setScale(e.target.valueAsNumber)}
@@ -83,9 +86,9 @@ export function Canvas({ image }: { image: ImageEntity }) {
           <input
             type="range"
             className="w-full"
-            min={SPRITE_SIZE * -2}
-            max={SPRITE_SIZE * 2}
-            step={0.1}
+            min={-image.width / 2}
+            max={image.width / 2}
+            step={1}
             value={offsetX}
             onChange={(e) => setOffsetX(e.target.valueAsNumber)}
           />
@@ -95,13 +98,23 @@ export function Canvas({ image }: { image: ImageEntity }) {
           <input
             type="range"
             className="w-full"
-            min={SPRITE_SIZE * -2}
-            max={SPRITE_SIZE * 2}
-            step={0.1}
+            min={-image.height / 2}
+            max={image.height / 2}
+            step={1}
             value={offsetY}
             onChange={(e) => setOffsetY(e.target.valueAsNumber)}
           />
         </label>
+        <Button
+          onClick={() =>
+            db.images.add({
+              ...image,
+              id: undefined,
+            })
+          }
+        >
+          Duplicate
+        </Button>
       </div>
     </>
   );

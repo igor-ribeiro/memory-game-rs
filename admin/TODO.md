@@ -1,2 +1,4 @@
 - [ ] Creating a theme fails on duplicate name/slug (unique index, incl. soft-deleted themes; e.g. second "Sem Nome")
 - [ ] Implement "Desfazer" (undo) on theme delete toast
+- [ ] Separate image edits so we can reuse the image with different crops
+o

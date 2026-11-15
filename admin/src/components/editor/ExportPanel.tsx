@@ -1,5 +1,6 @@
 import { FormEvent } from "react";
 import { Button } from "../Button";
+import { dispatchCustomEvent } from "@ribeirolabs/events";
 
 export function ExportPanel() {
   function onExport(e: FormEvent<HTMLFormElement>) {
@@ -21,7 +22,12 @@ export function ExportPanel() {
             autoComplete="off"
           />
         </label>
-        <Button type="submit" variant="primary" fill>
+        <Button
+          type="submit"
+          variant="primary"
+          fill
+          onClick={() => dispatchCustomEvent("export", {})}
+        >
           Exportar
         </Button>
       </form>

@@ -1,6 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { useParams } from "react-router";
-import { Canvas, CanvasPlaceholder } from "../components/editor/Canvas";
+import { NavLink, useParams, useSearchParams } from "react-router";
+import { Canvas, CanvasPlaceholder } from "../components/editor/EditorCanvas";
 import { EditorHeader } from "../components/editor/EditorHeader";
 import { ExportPanel } from "../components/editor/ExportPanel";
 import { ImagesPanel } from "../components/editor/ImagesPanel";
@@ -8,9 +8,11 @@ import { ThemesPanel } from "../components/editor/ThemesPanel";
 import { getThemeById as getThemeBySlug } from "../domain/theme";
 import { useGetImages } from "../domain/image";
 import { useMemo } from "react";
+import { PreviewCanvas } from "../components/editor/PreviewCanvas";
 
 export function EditorPage() {
   const { slug, imageId } = useParams();
+  const [search] = useSearchParams();
   const theme = useLiveQuery(() => getThemeBySlug(slug!), [slug]);
   const images = useGetImages(theme?.id);
   const image = useMemo(() => {
@@ -40,7 +42,14 @@ export function EditorPage() {
           <ImagesPanel themeId={theme.id} images={images} />
         </aside>
         <div className="bg-checker relative flex items-center justify-center [grid-area:canvas]">
-          {image ? (
+          <div className="bg-panel absolute top-2 right-2 flex gap-4 border p-2">
+            <NavLink to="?mode=edit">Edit</NavLink>
+            <NavLink to="?mode=preview">Preview</NavLink>
+          </div>
+
+          {search.get("mode") === "preview" ? (
+            <PreviewCanvas theme={theme} images={images} />
+          ) : image ? (
             <Canvas key={image.id} image={image} />
           ) : (
             <CanvasPlaceholder theme={theme} />
