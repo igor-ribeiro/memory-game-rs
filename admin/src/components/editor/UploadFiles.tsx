@@ -16,7 +16,7 @@ export function UploadFiles({
   children,
 }: {
   themeId: number;
-  children: ReactElement;
+  children: ReactElement<{ onClick: Function }>;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 

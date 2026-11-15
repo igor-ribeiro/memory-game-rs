@@ -14,8 +14,8 @@ export function Canvas({
   image: ImageEntity;
 }) {
   const navigate = useNavigate();
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const ctxRef = useRef<CanvasRenderingContext2D>();
+  const canvasRef = useRef<HTMLCanvasElement | undefined>(undefined);
+  const ctxRef = useRef<CanvasRenderingContext2D | undefined>(undefined);
   const [scale, setScale] = useState(crop.scale);
   const [offsetX, setOffsetX] = useState(crop.offsetX);
   const [offsetY, setOffsetY] = useState(crop.offsetY);
