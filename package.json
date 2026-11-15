@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "run-p dev:css dev:app",
-    "dev:app": "bonnie run frontend",
-    "dev:css": "bonnie run tailwind",
+    "dev": "make dev-app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

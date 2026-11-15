@@ -4,7 +4,7 @@
 set -e
 
 # build
-bonnie build
+make build
 
 # navigate into the build output directory
 cd dist
