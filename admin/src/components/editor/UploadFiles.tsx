@@ -6,12 +6,12 @@ import {
   useRef,
 } from "react";
 import { SPRITE_SIZE } from "../../config";
-import { ImageEntity, db } from "../../db";
+import { ImageEntity, CropEntity, db } from "../../db";
 import { toast } from "../ui/Toast";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 
-export function UploadImages({
+export function UploadFiles({
   themeId,
   children,
 }: {
@@ -30,7 +30,6 @@ export function UploadImages({
       return;
     }
 
-    const toCreate: Omit<ImageEntity, "id">[] = [];
     const images: File[] = [];
 
     for (const file of files) {
@@ -39,28 +38,47 @@ export function UploadImages({
       }
     }
 
-    const order = await db.images.where("themeId").equals(themeId).count();
+    const imagesToCreate: Omit<ImageEntity, "id">[] = [];
 
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
+    for (const image of images) {
       const bitmap = await createImageBitmap(image);
-      toCreate.push({
+      imagesToCreate.push({
         name: image.name,
         themeId: themeId,
         height: bitmap.height,
         width: bitmap.width,
-        scale: SPRITE_SIZE / Math.max(bitmap.width, bitmap.height),
-        offsetX: 0,
-        offsetY: 0,
         blob: image,
-        order: order + i,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
       bitmap.close();
     }
 
-    await db.images.bulkAdd(toCreate);
+    const [ids, order] = await Promise.all([
+      db.images.bulkAdd(imagesToCreate, { allKeys: true }),
+      db.crops.where("themeId").equals(themeId).count(),
+    ]);
+
+    console.log({ ids, order });
+
+    const cropsToCreate: Omit<CropEntity, "id">[] = [];
+
+    for (let i = 0; i < ids.length; i++) {
+      const imageId = ids[i];
+      const image = imagesToCreate[i];
+      cropsToCreate.push({
+        themeId: themeId,
+        imageId,
+        scale: SPRITE_SIZE / Math.max(image.width, image.height),
+        offsetX: 0,
+        offsetY: 0,
+        order: order + i,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+    await db.crops.bulkAdd(cropsToCreate);
   }
 
   const onOpenFiles = useCallback(() => {

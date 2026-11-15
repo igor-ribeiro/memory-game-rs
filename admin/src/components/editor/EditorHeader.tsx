@@ -16,7 +16,7 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
     const id = form.theme_id.value;
 
     const theme = await renameTheme(Number(id), name);
-    navigate(`/${theme.slug}`);
+    navigate(`/${theme.id}`);
   }
 
   return (

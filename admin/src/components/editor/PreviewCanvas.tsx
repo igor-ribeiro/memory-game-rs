@@ -1,7 +1,7 @@
 import { listenEvent } from "@ribeirolabs/events";
 import { useEffect, useState } from "react";
 import { SPRITE_SIZE } from "../../config";
-import { ImageEntity, ThemeEntity } from "../../db";
+import { CropEntity, ImageEntity, ThemeEntity } from "../../db";
 import { invariant } from "../../utils";
 
 declare global {
@@ -12,14 +12,16 @@ declare global {
 
 export function PreviewCanvas({
   theme,
+  crops,
   images,
 }: {
   theme: ThemeEntity;
-  images: ImageEntity[];
+  crops: CropEntity[];
+  images: Record<string, ImageEntity>;
 }) {
   const [image, setImage] = useState("");
   useEffect(() => {
-    const c = new OffscreenCanvas(SPRITE_SIZE * images.length, SPRITE_SIZE);
+    const c = new OffscreenCanvas(SPRITE_SIZE * crops.length, SPRITE_SIZE);
     const ctx = c.getContext("2d");
 
     listenEvent("export", async () => {
@@ -39,16 +41,17 @@ export function PreviewCanvas({
     async function run() {
       invariant(ctx, "failed to get offscree canvas ctx");
       ctx.clearRect(0, 0, c.width, c.height);
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
+      for (let i = 0; i < crops.length; i++) {
+        const crop = crops[i];
+        const image = images[crop.imageId];
         const bitmap = await createImageBitmap(image.blob);
 
-        const w = SPRITE_SIZE / image.scale;
+        const w = SPRITE_SIZE / crop.scale;
 
         ctx.drawImage(
           bitmap,
-          image.width / 2 + image.offsetX - w / 2,
-          image.height / 2 + image.offsetY - w / 2,
+          image.width / 2 + crop.offsetX - w / 2,
+          image.height / 2 + crop.offsetY - w / 2,
           w,
           w,
           SPRITE_SIZE * i,
@@ -63,10 +66,10 @@ export function PreviewCanvas({
       setImage(window.URL.createObjectURL(blob));
     }
 
-    if (images.length) {
+    if (crops.length) {
       run();
     }
-  }, [images]);
+  }, [crops]);
 
   return <div className="bg-bg h-50">{image && <img src={image} />}</div>;
 }

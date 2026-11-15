@@ -1,5 +1,18 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "../db";
+import { db, ImageEntity } from "../db";
+
+export async function getImagesGroupById(imageIds: number[]) {
+  const imagesById: Record<string, ImageEntity> = {};
+  const images = await db.images.where("id").anyOf(imageIds).toArray();
+  images.forEach((image) => {
+    imagesById[image.id] = image;
+  });
+  return imagesById;
+}
+
+export function useImagesGroupedById(imageIds: number[]) {
+  return useLiveQuery(() => getImagesGroupById(imageIds), [imageIds]) ?? {};
+}
 
 async function getImagesByTheme(themeId: number) {
   return (

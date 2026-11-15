@@ -13,16 +13,25 @@ export type ImageEntity = {
   id: number;
   name: string;
   themeId: number;
-  order: number;
   width: number;
   height: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  blob: Blob;
+};
+
+export type CropEntity = {
+  id: number;
+  themeId: number;
+  imageId: number;
+  order: number;
   scale: number;
   offsetX: number;
   offsetY: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  blob: Blob;
 };
 
 export type SpriteEntity = {
@@ -37,12 +46,14 @@ export type SpriteEntity = {
 const db = new Dexie("cardsprite") as Dexie & {
   themes: EntityTable<ThemeEntity, "id">;
   images: EntityTable<ImageEntity, "id">;
+  crops: EntityTable<CropEntity, "id">;
   sprites: EntityTable<SpriteEntity, "id">;
 };
 
-db.version(3).stores({
+db.version(6).stores({
   themes: "++id, &name, &slug, updatedAt",
-  images: "++id, themeId, order",
+  images: "++id, themeId",
+  crops: "++id, themeId, imageId, order",
   sprites: "++id, themeId",
 });
 

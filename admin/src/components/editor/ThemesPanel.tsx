@@ -43,7 +43,7 @@ function ThemeItem({
 }) {
   return (
     <NavLink
-      to={`/${theme.slug}`}
+      to={`/${theme.id}`}
       className={({ isActive }) => themeItem({ selected: isActive })}
     >
       <span>{theme.name}</span>

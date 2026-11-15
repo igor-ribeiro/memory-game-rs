@@ -1,16 +1,24 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { SPRITE_SIZE } from "../../config";
-import { db, ImageEntity, ThemeEntity } from "../../db";
+import { CropEntity, db, ImageEntity, ThemeEntity } from "../../db";
 import DropIcon from "../../icons/drop.svg?react";
 import { Button } from "../Button";
-import { UploadImages } from "./UploadImages";
+import { UploadFiles } from "./UploadFiles";
 
-export function Canvas({ image }: { image: ImageEntity }) {
+export function Canvas({
+  crop,
+  image,
+}: {
+  crop: CropEntity;
+  image: ImageEntity;
+}) {
+  const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>();
   const ctxRef = useRef<CanvasRenderingContext2D>();
-  const [scale, setScale] = useState(image.scale);
-  const [offsetX, setOffsetX] = useState(image.offsetX);
-  const [offsetY, setOffsetY] = useState(image.offsetY);
+  const [scale, setScale] = useState(crop.scale);
+  const [offsetX, setOffsetX] = useState(crop.offsetX);
+  const [offsetY, setOffsetY] = useState(crop.offsetY);
   const timeoutId = useRef(-1);
 
   useEffect(() => {
@@ -19,21 +27,17 @@ export function Canvas({ image }: { image: ImageEntity }) {
     }
 
     timeoutId.current = setTimeout(() => {
-      db.images.update(image.id, {
+      db.crops.update(crop.id, {
         scale,
         offsetX,
         offsetY,
       });
     }, 500);
-  }, [image.id, scale, offsetX, offsetY]);
+  }, [crop.id, scale, offsetX, offsetY]);
 
   useEffect(() => {
     const ctx = ctxRef.current!;
     const c = canvasRef.current!;
-
-    function center(value: number, size: number) {
-      return c.width / 2 + value - size / 2;
-    }
 
     ctx.clearRect(0, 0, c.width, c.height);
     createImageBitmap(image.blob).then((img) => {
@@ -48,7 +52,7 @@ export function Canvas({ image }: { image: ImageEntity }) {
   return (
     <>
       <canvas
-        key={image.id}
+        key={crop.id}
         className="bg-checker-alt relative border"
         width={SPRITE_SIZE * 2}
         height={SPRITE_SIZE * 2}
@@ -107,10 +111,20 @@ export function Canvas({ image }: { image: ImageEntity }) {
         </label>
         <Button
           onClick={() =>
-            db.images.add({
-              ...image,
-              id: undefined,
-            })
+            db.crops
+              .add({
+                themeId: crop.themeId,
+                imageId: crop.imageId,
+                offsetY: crop.offsetY,
+                offsetX: crop.offsetX,
+                scale: crop.scale,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                order: crop.order + 1,
+              })
+              .then((id) => {
+                navigate(`/${crop.themeId}/${id}`);
+              })
           }
         >
           Duplicate
@@ -128,9 +142,9 @@ export function CanvasPlaceholder({ theme }: { theme: ThemeEntity }) {
       <span className="text-muted text-sm">
         png · jpg · webp — uma imagem por carta
       </span>
-      <UploadImages themeId={theme.id}>
+      <UploadFiles themeId={theme.id}>
         <Button variant="primary">Escolher arquivos</Button>
-      </UploadImages>
+      </UploadFiles>
       <span className="text-muted hidden text-sm">
         ou cole da área de transferência · ctrl/⌘ + v
       </span>

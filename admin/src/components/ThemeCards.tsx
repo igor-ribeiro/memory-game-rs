@@ -51,7 +51,7 @@ const card = tv({
 
 function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
   return (
-    <NavLink to={`/${theme.slug}`} className={card.slots.base}>
+    <NavLink to={`/${theme.id}`} className={card.slots.base}>
       <div className={card.slots.image}></div>
       <div className={card.slots.info}>
         <h3 className="font-bold">{theme.name}</h3>
