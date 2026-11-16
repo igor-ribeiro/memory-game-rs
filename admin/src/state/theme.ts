@@ -1,16 +1,16 @@
-import { atom, getDefaultStore } from "jotai";
+import { atom, getDefaultStore, useAtomValue } from "jotai";
+import { focusAtom } from "jotai-optics";
 import { db } from "../db";
 import { getThemesWithImageCount, ThemeWithImageCount } from "../domain/theme";
 import { router } from "../router";
 import { invariant } from "../utils";
 
-const cacheThemesAtom = atom<ThemeWithImageCount[] | null>(null);
+const cacheThemesAtom = atom<Promise<ThemeWithImageCount[]> | null>(null);
 
 export const themesAtom = atom(
-  async (get) => {
-    return get(cacheThemesAtom) ?? getThemesWithImageCount();
-  },
-  (_get, set, themes: ThemeWithImageCount[]) => set(cacheThemesAtom, themes),
+  (get) => get(cacheThemesAtom) ?? getThemesWithImageCount(),
+  (_get, set, themes: Promise<ThemeWithImageCount[]> | ThemeWithImageCount[]) =>
+    set(cacheThemesAtom, Promise.resolve(themes)),
 );
 
 const deleteThemeAtom = atom(null, async (get, set, id: number) => {
@@ -29,11 +29,7 @@ const deleteThemeAtom = atom(null, async (get, set, id: number) => {
     ]);
   });
 
-  const themes = await get(themesAtom);
-  set(
-    themesAtom,
-    themes.filter((theme) => theme.id !== id),
-  );
+  set(themesAtom, await getThemesWithImageCount());
 });
 
 export function deleteTheme(id: number) {
@@ -49,18 +45,8 @@ const renameThemeAtom = atom(
       updatedAt: new Date(),
     };
     await db.themes.update(id, partial);
-    set(
-      themesAtom,
-      themes.map((t) => {
-        if (t.id === id) {
-          return {
-            ...t,
-            ...partial,
-          };
-        }
-        return t;
-      }),
-    );
+
+    set(themesAtom, await getThemesWithImageCount());
   },
 );
 
@@ -83,4 +69,22 @@ const createThemeAtom = atom(null, async (get, set, name?: string) => {
 
 export async function createThemeAndOpen(name?: string) {
   return getDefaultStore().set(createThemeAtom, name);
+}
+
+const makeThemeAtom = (id: number) =>
+  focusAtom(themesAtom, (o) => o.find((t) => t.id === id));
+
+// ponytail: never evicts, one small atom per theme id visited; fine for an admin tool
+const themeAtomCache = new Map<number, ReturnType<typeof makeThemeAtom>>();
+
+export function useTheme(id: number) {
+  let themeAtom = themeAtomCache.get(id);
+  if (!themeAtom) themeAtomCache.set(id, (themeAtom = makeThemeAtom(id)));
+  return useAtomValue(themeAtom);
+}
+
+export function useThemeRequired(id: number) {
+  const theme = useTheme(id);
+  invariant(theme, "theme not found");
+  return theme;
 }

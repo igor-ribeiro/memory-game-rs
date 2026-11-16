@@ -1,13 +1,12 @@
-import { useLiveQuery } from "dexie-react-hooks";
+import { useAtomValue } from "jotai";
 import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
-import { getThemesWithImageCount } from "../../domain/theme";
-import { createThemeAndOpen } from "../../state/theme";
-import { Button } from "../Button";
 import { ThemeEntity } from "../../db";
+import { createThemeAndOpen, themesAtom } from "../../state/theme";
+import { Button } from "../Button";
 
 export function ThemesPanel() {
-  const themes = useLiveQuery(getThemesWithImageCount);
+  const themes = useAtomValue(themesAtom);
 
   return (
     <div className="space-y-4 p-4">

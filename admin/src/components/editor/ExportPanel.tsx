@@ -1,6 +1,6 @@
+import { dispatchCustomEvent } from "@ribeirolabs/events";
 import { FormEvent } from "react";
 import { Button } from "../Button";
-import { dispatchCustomEvent } from "@ribeirolabs/events";
 
 export function ExportPanel() {
   function onExport(e: FormEvent<HTMLFormElement>) {
@@ -8,7 +8,7 @@ export function ExportPanel() {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <header className="h-10">
         <span className="label">Exportar</span>
       </header>
@@ -25,7 +25,7 @@ export function ExportPanel() {
         <Button
           type="submit"
           variant="primary"
-          fill
+          className="w-full"
           onClick={() => dispatchCustomEvent("export", {})}
         >
           Exportar

@@ -8,9 +8,6 @@ const button = tv({
       primary: "bg-accent border-accent text-on-accent hover:bg-accent-hover",
       danger: "bg-danger border-danger text-on-danger hover:bg-danger-hover",
     },
-    fill: {
-      true: "w-full",
-    },
     disabled: {
       true: "text-fg/40 bg-line/50 cursor-not-allowed",
     },
@@ -20,15 +17,21 @@ const button = tv({
     size: {
       sm: "text-sm h-8",
     },
-    ghost: {
-      true: "border-transparent",
+    appearance: {
+      ghost: "border-transparent",
+      outline: "bg-transparent border",
     },
   },
   compoundVariants: [
     {
       variant: "primary",
-      ghost: true,
+      appearance: "ghost",
       className: "bg-transparent text-accent hover:bg-accent/10",
+    },
+    {
+      variant: "primary",
+      appearance: "outline",
+      className: "border-accent text-accent hover:bg-accent/10",
     },
   ],
 });
@@ -37,11 +40,10 @@ export const Button = forwardRef(function Button(
   {
     children,
     variant,
-    fill,
     disabled,
     icon,
     size,
-    ghost,
+    appearance,
     type = "button",
     className,
     ...props
@@ -54,11 +56,10 @@ export const Button = forwardRef(function Button(
       disabled={disabled}
       className={button({
         variant,
-        fill,
         disabled,
         icon,
         size,
-        ghost,
+        appearance,
         className,
       })}
       type={type}

@@ -88,7 +88,7 @@ function ToastAction({ className, ...props }: ToastPrimitive.Action.Props) {
   return (
     <ToastPrimitive.Action
       data-slot="toast-action"
-      render={<Button variant="primary" ghost />}
+      render={<Button variant="primary" appearance="ghost" />}
       className={cn("shrink-0", className)}
       {...props}
     />
@@ -104,7 +104,7 @@ function ToastClose({
     <ToastPrimitive.Close
       data-slot="toast-close"
       aria-label="Close toast"
-      render={<Button icon ghost className="text-muted" />}
+      render={<Button icon appearance="ghost" className="text-muted" />}
       className={cn(
         "text-muted hover:text-fg relative shrink-0 after:absolute after:-inset-2 after:content-['']",
         className,

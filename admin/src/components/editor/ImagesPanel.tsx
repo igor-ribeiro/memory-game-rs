@@ -25,7 +25,7 @@ export function ImagesPanel({
           <Button>+</Button>
         </UploadFiles>
       </header>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 xl:gap-4">
         {crops.length === 0 || Object.keys(images).length === 0 ? (
           <ImagesPlaceholder />
         ) : (

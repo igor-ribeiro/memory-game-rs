@@ -97,7 +97,7 @@ function CreateCard() {
           autoFocus
         />
       </label>
-      <Button variant="primary" fill>
+      <Button variant="primary" className="w-full">
         + Criar primeiro tema
       </Button>
     </form>

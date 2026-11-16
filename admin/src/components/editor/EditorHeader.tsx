@@ -1,19 +1,19 @@
-import { FormEvent } from "react";
+import { SubmitEvent } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { ThemeEntity } from "../../db";
+import { renameTheme } from "../../state/theme";
 import { AppLogo } from "../AppLogo";
+import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
-import { renameTheme } from "../../state/theme";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
   const navigate = useNavigate();
 
-  async function onRename(e: FormEvent<HTMLFormElement>) {
+  async function onRename(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const name = form.theme_name.value;
-    const id = form.theme_id.value;
+    const name = e.target.theme_name.value;
+    const id = e.target.theme_id.value;
     await renameTheme(Number(id), name);
     navigate(`/${id}`);
   }
@@ -29,12 +29,18 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
           type="text"
           key={theme.id}
           name="theme_name"
-          className="h-10 border p-2 font-bold"
+          autoComplete="off"
+          className="focus:bg-raised hover:bg-raised h-10 p-2 font-bold"
           defaultValue={theme.name}
         />
         <input type="hidden" name="theme_id" value={theme.id} />
       </form>
-      <DeleteThemePopover theme={theme} />
+      <div className="flex items-center gap-2">
+        <Button variant="primary" appearance="outline">
+          + Novo tema
+        </Button>
+        <DeleteThemePopover theme={theme} />
+      </div>
     </Header>
   );
 }
