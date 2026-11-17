@@ -1,9 +1,8 @@
 import { SubmitEvent } from "react";
 import { NavLink } from "react-router";
 import { ThemeEntity } from "../../db";
-import { createThemeAndOpen } from "../../domain/theme";
+import { createThemeAndOpen, renameTheme } from "../../domain/theme";
 import { router } from "../../router";
-import { renameTheme } from "../../state/theme";
 import { AppLogo } from "../AppLogo";
 import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";

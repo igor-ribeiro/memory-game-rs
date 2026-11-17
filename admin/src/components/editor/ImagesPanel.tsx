@@ -2,17 +2,16 @@ import { useMemo } from "react";
 import { NavLink, useParams } from "react-router";
 import { cn } from "tailwind-variants";
 import { CropEntity, ImageEntity } from "../../db";
+import { CropEntityWithImage } from "../../domain/crop";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
 
 export function ImagesPanel({
   themeId,
   crops,
-  images,
 }: {
   themeId: number;
-  crops: CropEntity[];
-  images: Record<string, ImageEntity>;
+  crops: CropEntityWithImage[];
 }) {
   return (
     <div className="space-y-4 p-4">
@@ -26,11 +25,11 @@ export function ImagesPanel({
         </UploadFiles>
       </header>
       <div className="grid grid-cols-3 gap-2 xl:gap-4">
-        {crops.length === 0 || Object.keys(images).length === 0 ? (
+        {crops.length === 0 ? (
           <ImagesPlaceholder />
         ) : (
           crops.map((crop) => (
-            <ImageCard key={crop.id} crop={crop} image={images[crop.imageId]} />
+            <ImageCard key={crop.id} crop={crop} image={crop.image} />
           ))
         )}
       </div>

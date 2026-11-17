@@ -1,4 +1,4 @@
-import { memo, Suspense, useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router";
 import { AppLogo } from "../components/AppLogo";
 import { Canvas, CanvasEmptyState } from "../components/editor/EditorCanvas";
@@ -10,10 +10,9 @@ import {
 } from "../components/editor/ImagesPanel";
 import { PreviewCanvas } from "../components/editor/PreviewCanvas";
 import { Header } from "../components/Header";
-import { CropEntity, ThemeEntity } from "../db";
-import { useCrops } from "../domain/crop";
-import { useImagesGroupedById } from "../domain/image";
-import { useThemeRequired } from "../state/theme";
+import { ThemeEntity } from "../db";
+import { useCropsWithImage } from "../domain/crop";
+import { useThemeById } from "../domain/theme";
 
 export function EditorPage() {
   return (
@@ -26,7 +25,8 @@ export function EditorPage() {
 export function Editor() {
   const { themeId } = useParams();
 
-  const theme = useThemeRequired(Number(themeId));
+  const theme = useThemeById(Number(themeId));
+  if (!theme) return <EditorPlaceholder />;
 
   return (
     <>
@@ -42,19 +42,12 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
   const [search] = useSearchParams();
   const mode = search.get("mode") ?? "edit";
 
-  const crops = useCrops(theme.id);
+  const crops = useCropsWithImage(theme.id);
 
   const { cropId } = useParams();
   const crop = useMemo(() => {
     return crops.find((crop) => crop.id === Number(cropId));
   }, [crops, cropId]);
-
-  const imageIds = useMemo(() => {
-    return crops.map((crop) => crop.imageId);
-  }, [crops]);
-  const imagesById = useImagesGroupedById(imageIds);
-
-  const image = crop ? imagesById[crop.imageId] : null;
 
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">
@@ -65,9 +58,9 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
         </div>
 
         {mode === "preview" ? (
-          <PreviewCanvas theme={theme} crops={crops} images={imagesById} />
-        ) : crop && image ? (
-          <Canvas key={crop.id} crop={crop} image={image} />
+          <PreviewCanvas theme={theme} crops={crops} />
+        ) : crop?.image ? (
+          <Canvas key={crop.id} crop={crop} image={crop.image} />
         ) : (
           <CanvasEmptyState theme={theme} />
         )}
@@ -76,7 +69,7 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
         {mode === "preview" ? (
           <ExportPanel />
         ) : (
-          <ImagesPanel themeId={theme.id} crops={crops} images={imagesById} />
+          <ImagesPanel themeId={theme.id} crops={crops} />
         )}
       </aside>
     </main>

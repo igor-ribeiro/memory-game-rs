@@ -1,12 +1,11 @@
-import { useAtomValue } from "jotai";
 import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
 import { ThemeEntity } from "../../db";
-import { createThemeAndOpen, themesAtom } from "../../state/theme";
+import { createThemeAndOpen, useThemes } from "../../domain/theme";
 import { Button } from "../Button";
 
 export function ThemesPanel() {
-  const themes = useAtomValue(themesAtom);
+  const themes = useThemes();
 
   return (
     <div className="space-y-4 p-4">
@@ -15,7 +14,7 @@ export function ThemesPanel() {
         <Button onClick={() => createThemeAndOpen()}>+</Button>
       </header>
       <div>
-        {themes?.map((theme) => (
+        {themes.map((theme) => (
           <ThemeItem key={theme.id} theme={theme} />
         ))}
       </div>

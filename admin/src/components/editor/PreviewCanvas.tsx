@@ -2,7 +2,8 @@ import { listenEvent } from "@ribeirolabs/events";
 import { useEffect, useState } from "react";
 import slug from "slug";
 import { SPRITE_SIZE } from "../../config";
-import { CropEntity, ImageEntity, ThemeEntity } from "../../db";
+import { ThemeEntity } from "../../db";
+import { CropEntityWithImage } from "../../domain/crop";
 import { invariant } from "../../utils";
 
 declare global {
@@ -14,11 +15,9 @@ declare global {
 export function PreviewCanvas({
   theme,
   crops,
-  images,
 }: {
   theme: ThemeEntity;
-  crops: CropEntity[];
-  images: Record<string, ImageEntity>;
+  crops: CropEntityWithImage[];
 }) {
   const [image, setImage] = useState("");
   useEffect(() => {
@@ -44,7 +43,7 @@ export function PreviewCanvas({
       ctx.clearRect(0, 0, c.width, c.height);
       for (let i = 0; i < crops.length; i++) {
         const crop = crops[i];
-        const image = images[crop.imageId];
+        const image = crop.image;
         const bitmap = await createImageBitmap(image.blob);
 
         const w = SPRITE_SIZE / crop.scale;

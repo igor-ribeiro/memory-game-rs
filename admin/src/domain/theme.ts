@@ -35,8 +35,12 @@ export async function getThemeById(id: number) {
   return db.themes.get(id);
 }
 
+export function useThemeById(id: number) {
+  return useSuspendingLiveQuery(() => getThemeById(id), ["theme", id]);
+}
+
 export function useThemes() {
-  return useSuspendingLiveQuery(getThemesWithImageCount, []);
+  return useSuspendingLiveQuery(getThemesWithImageCount, ["themes"]);
 }
 
 export async function deleteTheme(id: number) {
@@ -63,4 +67,11 @@ export async function createThemeAndOpen(name?: string) {
     updatedAt: new Date(),
   });
   await router.navigate(`/${id}`);
+}
+
+export async function renameTheme(id: number, name: string) {
+  await db.themes.update(id, {
+    name,
+    updatedAt: new Date(),
+  });
 }

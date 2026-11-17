@@ -10,8 +10,7 @@ export async function getCropsWithImage(
   themeId: number,
 ): Promise<CropEntityWithImage[]> {
   const crops = await db.crops.where("themeId").equals(themeId).toArray();
-  const imageIds = Array.from(new Set(crops.map((crop) => crop.imageId)));
-  const imagesById = await getImagesGroupById(imageIds);
+  const imagesById = await getImagesGroupById(themeId);
   return crops.map((crop) => ({
     ...crop,
     image: imagesById[crop.imageId],
@@ -19,7 +18,10 @@ export async function getCropsWithImage(
 }
 
 export function useCropsWithImage(themeId: number) {
-  return useSuspendingLiveQuery(() => getCropsWithImage(themeId), [themeId]);
+  return useSuspendingLiveQuery(
+    () => getCropsWithImage(themeId),
+    ["crops-image", themeId],
+  );
 }
 
 function getCrops(themeId: number) {
@@ -27,5 +29,5 @@ function getCrops(themeId: number) {
 }
 
 export function useCrops(themeId: number) {
-  return useSuspendingLiveQuery(() => getCrops(themeId), [themeId]);
+  return useSuspendingLiveQuery(() => getCrops(themeId), ["crops", themeId]);
 }
