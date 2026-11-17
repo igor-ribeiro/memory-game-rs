@@ -2,7 +2,6 @@ import { atom, getDefaultStore, useAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
 import { db } from "../db";
 import { getThemesWithImageCount, ThemeWithImageCount } from "../domain/theme";
-import { router } from "../router";
 import { invariant } from "../utils";
 
 const cacheThemesAtom = atom<Promise<ThemeWithImageCount[]> | null>(null);
@@ -12,29 +11,6 @@ export const themesAtom = atom(
   (_get, set, themes: Promise<ThemeWithImageCount[]> | ThemeWithImageCount[]) =>
     set(cacheThemesAtom, Promise.resolve(themes)),
 );
-
-const deleteThemeAtom = atom(null, async (get, set, id: number) => {
-  const [cropsToDelete, imagesToDelete, spritesToDelete] = await Promise.all([
-    db.crops.where("themeId").equals(id).toArray(),
-    db.images.where("themeId").equals(id).toArray(),
-    db.sprites.where("themeId").equals(id).toArray(),
-  ]);
-
-  await db.transaction("rw", db.themes, db.crops, db.images, db.sprites, () => {
-    return Promise.all([
-      db.themes.delete(id),
-      db.crops.bulkDelete(cropsToDelete.map((i) => i.id)),
-      db.images.bulkDelete(imagesToDelete.map((i) => i.id)),
-      db.sprites.bulkDelete(spritesToDelete.map((i) => i.id)),
-    ]);
-  });
-
-  set(themesAtom, await getThemesWithImageCount());
-});
-
-export function deleteTheme(id: number) {
-  return getDefaultStore().set(deleteThemeAtom, id);
-}
 
 const renameThemeAtom = atom(
   null,
@@ -52,23 +28,6 @@ const renameThemeAtom = atom(
 
 export function renameTheme(id: number, name: string) {
   return getDefaultStore().set(renameThemeAtom, id, name);
-}
-
-const createThemeAtom = atom(null, async (get, set, name?: string) => {
-  const id = await db.themes.add({
-    name: name ?? "Sem Nome",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-  const theme = await db.themes.get(id);
-  invariant(theme, "theme not created");
-  const themes = await get(themesAtom);
-  set(themesAtom, [{ ...theme, imagesCount: 0 }].concat(themes));
-  await router.navigate(`/${id}`);
-});
-
-export async function createThemeAndOpen(name?: string) {
-  return getDefaultStore().set(createThemeAtom, name);
 }
 
 const makeThemeAtom = (id: number) =>

@@ -34,7 +34,7 @@ function PopoverContent({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "bg-panel border-line-strong max-w-[300px] space-y-2 border p-4",
+            "bg-panel border-line-strong max-w-80 space-y-2 border p-4",
             className,
           )}
           {...props}

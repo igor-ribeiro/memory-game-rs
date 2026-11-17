@@ -1,11 +1,13 @@
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useAtomValue } from "jotai";
-import { FormEvent } from "react";
+import { SubmitEvent } from "react";
 import { NavLink } from "react-router";
 import { cn, tv } from "tailwind-variants";
-import { ThemeWithImageCount } from "../domain/theme";
-import { createThemeAndOpen, themesAtom } from "../state/theme";
+import {
+  createThemeAndOpen,
+  ThemeWithImageCount,
+  useThemes,
+} from "../domain/theme";
 import { pluralize } from "../utils";
 import { Button } from "./Button";
 
@@ -18,7 +20,7 @@ const card = tv({
 });
 
 export function ThemeCards() {
-  const themes = useAtomValue(themesAtom);
+  const themes = useThemes();
 
   return (
     <div className="w-full space-y-4 p-4 xl:max-w-7xl">
@@ -67,7 +69,7 @@ function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
 }
 
 function CreateCard() {
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const name = (form.theme_name as HTMLInputElement).value;

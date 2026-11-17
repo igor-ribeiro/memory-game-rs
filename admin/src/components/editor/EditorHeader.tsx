@@ -1,6 +1,8 @@
 import { SubmitEvent } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router";
 import { ThemeEntity } from "../../db";
+import { createThemeAndOpen } from "../../domain/theme";
+import { router } from "../../router";
 import { renameTheme } from "../../state/theme";
 import { AppLogo } from "../AppLogo";
 import { Button } from "../Button";
@@ -8,14 +10,12 @@ import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
-  const navigate = useNavigate();
-
   async function onRename(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const name = e.target.theme_name.value;
     const id = e.target.theme_id.value;
     await renameTheme(Number(id), name);
-    navigate(`/${id}`);
+    router.navigate(`/${id}`);
   }
 
   return (
@@ -36,7 +36,11 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
         <input type="hidden" name="theme_id" value={theme.id} />
       </form>
       <div className="flex items-center gap-2">
-        <Button variant="primary" appearance="outline">
+        <Button
+          variant="primary"
+          appearance="outline"
+          onClick={() => createThemeAndOpen()}
+        >
           + Novo tema
         </Button>
         <DeleteThemePopover theme={theme} />
