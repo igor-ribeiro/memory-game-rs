@@ -23,7 +23,7 @@ export function ThemeCards() {
   const themes = useThemes();
 
   return (
-    <div className="w-full space-y-4 p-4 xl:max-w-7xl">
+    <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
       <header className="flex items-center justify-between">
         <div className="flex h-10 items-baseline gap-4">
           <h1 className="text-2xl font-bold">Temas</h1>
@@ -108,7 +108,7 @@ function CreateCard() {
 
 export function ThemesPlaceholder() {
   return (
-    <div className="w-full space-y-4 p-4 xl:max-w-7xl">
+    <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
       <header className="flex items-center justify-between">
         <div className="flex h-10 items-baseline gap-4">
           <h1 className="text-2xl font-bold">Temas</h1>
@@ -139,8 +139,9 @@ function PlaceholderCard({ className }: { className?: string }) {
   return (
     <div className={cn(card.slots.base, className)}>
       <div className={card.slots.image}></div>
-      <div className="h-32 space-y-2 p-4">
+      <div className={card.slots.info}>
         <div className="bg-line h-4 w-2/3"></div>
+        <div className="bg-line/50 h-3 w-1/4"></div>
         <div className="bg-line/50 h-3 w-1/3"></div>
       </div>
     </div>

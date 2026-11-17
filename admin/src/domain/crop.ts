@@ -1,4 +1,4 @@
-import { useLiveQuery } from "dexie-react-hooks";
+import { useSuspendingLiveQuery } from "dexie-react-hooks";
 import { CropEntity, db, ImageEntity } from "../db";
 import { getImagesGroupById } from "./image";
 
@@ -19,14 +19,13 @@ export async function getCropsWithImage(
 }
 
 export function useCropsWithImage(themeId: number) {
-  return useLiveQuery(() => getCropsWithImage(themeId), [themeId]) ?? [];
+  return useSuspendingLiveQuery(() => getCropsWithImage(themeId), [themeId]);
+}
+
+function getCrops(themeId: number) {
+  return db.crops.where("themeId").equals(themeId).toArray();
 }
 
 export function useCrops(themeId: number) {
-  return (
-    useLiveQuery(
-      () => db.crops.where("themeId").equals(themeId).toArray(),
-      [themeId],
-    ) ?? []
-  );
+  return useSuspendingLiveQuery(() => getCrops(themeId), [themeId]);
 }

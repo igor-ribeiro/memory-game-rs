@@ -134,17 +134,24 @@ export function Canvas({
   );
 }
 
-export function CanvasPlaceholder({ theme }: { theme: ThemeEntity }) {
+export function CanvasEmptyState({ theme }: { theme?: ThemeEntity }) {
   return (
-    <div className="border-accent bg-bg absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 border border-dashed px-12 py-16 text-center">
+    <div
+      data-disabled={theme == null}
+      className="border-accent bg-bg absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 border border-dashed px-12 py-16 text-center data-[disabled=true]:border-transparent"
+    >
       <DropIcon />
       <h3 className="text-xl font-bold">Solte as imagens aqui</h3>
       <span className="text-muted text-sm">
         png · jpg · webp — uma imagem por carta
       </span>
-      <UploadFiles themeId={theme.id}>
-        <Button variant="primary">Escolher arquivos</Button>
-      </UploadFiles>
+      {theme ? (
+        <UploadFiles themeId={theme.id}>
+          <Button variant="primary">Escolher arquivos</Button>
+        </UploadFiles>
+      ) : (
+        <Button disabled>Escolher arquivos</Button>
+      )}
       <span className="text-muted hidden text-sm">
         ou cole da área de transferência · ctrl/⌘ + v
       </span>

@@ -1,4 +1,4 @@
-import { useLiveQuery } from "dexie-react-hooks";
+import { useSuspendingLiveQuery } from "dexie-react-hooks";
 import { db, ImageEntity } from "../db";
 
 export async function getImagesGroupById(imageIds: number[]) {
@@ -11,7 +11,7 @@ export async function getImagesGroupById(imageIds: number[]) {
 }
 
 export function useImagesGroupedById(imageIds: number[]) {
-  return useLiveQuery(() => getImagesGroupById(imageIds), [imageIds]) ?? {};
+  return useSuspendingLiveQuery(() => getImagesGroupById(imageIds), imageIds);
 }
 
 async function getImagesByTheme(themeId: number) {
@@ -19,8 +19,8 @@ async function getImagesByTheme(themeId: number) {
 }
 
 export function useGetImages(themeId?: number) {
-  return (
-    useLiveQuery(() => (themeId ? getImagesByTheme(themeId) : []), [themeId]) ??
-    []
+  return useSuspendingLiveQuery(
+    () => (themeId ? getImagesByTheme(themeId) : []),
+    [themeId],
   );
 }

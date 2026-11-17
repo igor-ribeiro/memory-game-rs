@@ -70,6 +70,22 @@ function ImageCard({ crop, image }: { crop: CropEntity; image: ImageEntity }) {
   );
 }
 
+export function ImagesPanelPlaceholder() {
+  return (
+    <div className="space-y-4 p-4">
+      <header className="flex items-center justify-between">
+        <div className="space-x-2">
+          <span className="label">Imagens</span>
+        </div>
+        <Button disabled>+</Button>
+      </header>
+      <div className="grid grid-cols-3 gap-2 xl:gap-4">
+        <ImagesPlaceholder />
+      </div>
+    </div>
+  );
+}
+
 function ImagesPlaceholder() {
   return (
     <>

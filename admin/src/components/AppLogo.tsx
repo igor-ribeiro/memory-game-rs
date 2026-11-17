@@ -4,7 +4,7 @@ export function AppLogo() {
   return (
     <div className="flex items-center gap-4">
       <Logo />
-      <span className="font-bold">cardsprite</span>
+      <span className="text-lg font-bold">cardsprite</span>
     </div>
   );
 }
