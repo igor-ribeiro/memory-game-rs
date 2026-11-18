@@ -39,7 +39,7 @@ pub const NBA_LOGOS: [&str; 20] = [
 ];
 
 pub const KPOP_IMAGE: &str = "public/kpop.jpg";
-pub const KPOP_COUNT: i32 = 4;
+pub const KPOP_COUNT: i32 = 12;
 
 pub const ANIMALS_IMAGE: &str = "public/animals.jpg";
 pub const ANIMALS_COUNT: i32 = 20;

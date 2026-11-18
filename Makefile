@@ -1,4 +1,4 @@
-.PHONY: build dev-all dev-app dev-css dev-frontend dev-admin
+.PHONY: build dev-all dev-game dev-css dev-frontend dev-admin
 
 TAILWIND = npx tailwindcss --postcss -c ./tailwind.config.js -i ./input.scss -o ./.css/output.css
 
@@ -10,7 +10,7 @@ build:
 dev-all:
 	$(MAKE) -j3 dev-css dev-frontend dev-admin
 
-dev-app:
+dev-game:
 	$(MAKE) -j2 dev-css dev-frontend
 
 dev-css:

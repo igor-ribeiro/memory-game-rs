@@ -341,6 +341,7 @@ fn get_cards(total: i32) -> Vec<Card> {
 pub fn get_board_grid(card_type: &CardType) -> (i32, i32) {
     match card_type {
         CardType::Colors => (6, 4),
+        CardType::Kpop => (6, 4),
         _ => (8, 5),
     }
 }
