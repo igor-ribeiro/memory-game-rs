@@ -1,9 +1,8 @@
-import { Suspense, useMemo } from "react";
-import { NavLink, useParams, useSearchParams } from "react-router";
+import { Suspense, useEffect, useMemo } from "react";
+import { Navigate, useParams } from "react-router";
 import { AppLogo } from "../components/AppLogo";
 import { Canvas, CanvasEmptyState } from "../components/editor/EditorCanvas";
 import { EditorHeader } from "../components/editor/EditorHeader";
-import { ExportPanel } from "../components/editor/ExportPanel";
 import {
   ImagesPanel,
   ImagesPanelPlaceholder,
@@ -12,6 +11,7 @@ import { PreviewCanvas } from "../components/editor/PreviewCanvas";
 import { Header } from "../components/Header";
 import { ThemeEntity } from "../db";
 import { useCropsWithImage } from "../domain/crop";
+import { generateSpriteDebounced } from "../domain/sprite";
 import { useThemeById } from "../domain/theme";
 
 export function EditorPage() {
@@ -26,7 +26,7 @@ export function Editor() {
   const { themeId } = useParams();
 
   const theme = useThemeById(Number(themeId));
-  if (!theme) return <EditorPlaceholder />;
+  if (!theme) return <Navigate to="/" />;
 
   return (
     <>
@@ -39,15 +39,16 @@ export function Editor() {
 }
 
 function EditorCanvas({ theme }: { theme: ThemeEntity }) {
-  const [search] = useSearchParams();
-  const mode = search.get("mode") ?? "edit";
-
   const crops = useCropsWithImage(theme.id);
 
   const { cropId } = useParams();
   const crop = useMemo(() => {
     return crops.find((crop) => crop.id === Number(cropId));
   }, [crops, cropId]);
+
+  useEffect(() => {
+    generateSpriteDebounced(theme.id, crops);
+  }, [theme.id, crops]);
 
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">
@@ -58,14 +59,10 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
           <CanvasEmptyState theme={theme} />
         )}
 
-        <PreviewCanvas theme={theme} crops={crops} />
+        <PreviewCanvas theme={theme} />
       </div>
       <aside className="border-l">
-        {mode === "preview" ? (
-          <ExportPanel />
-        ) : (
-          <ImagesPanel themeId={theme.id} crops={crops} />
-        )}
+        <ImagesPanel themeId={theme.id} crops={crops} />
       </aside>
     </main>
   );
@@ -86,10 +83,8 @@ function EditorMainPlaceholder() {
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">
       <div className="bg-checker flex flex-col items-center justify-center">
-        <div className="relative w-full flex-1">
-          <CanvasEmptyState />
-        </div>
-        <div className="bg-panel h-50 w-full border-t">&nbsp;</div>
+        <CanvasEmptyState />
+        <div className="bg-panel h-40 w-full border-t">&nbsp;</div>
       </div>
       <aside className="border-l">
         <ImagesPanelPlaceholder />

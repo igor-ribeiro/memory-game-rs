@@ -8,6 +8,7 @@ import {
 import { SPRITE_SIZE } from "../../config";
 import { ImageEntity, CropEntity, db } from "../../db";
 import { toast } from "../ui/Toast";
+import { router } from "../../router";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 
@@ -76,7 +77,8 @@ export function UploadFiles({
       });
     }
 
-    await db.crops.bulkAdd(cropsToCreate);
+    const cropId = await db.crops.bulkAdd(cropsToCreate);
+    router.navigate(`/${themeId}/${cropId}`);
   }
 
   const onOpenFiles = useCallback(() => {

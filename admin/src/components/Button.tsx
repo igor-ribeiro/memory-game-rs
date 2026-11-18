@@ -9,7 +9,7 @@ const button = tv({
       danger: "bg-danger border-danger text-on-danger hover:bg-danger-hover",
     },
     disabled: {
-      true: "text-fg/40 bg-line/50 cursor-not-allowed",
+      true: "opacity-30 cursor-not-allowed pointer-events-none",
     },
     icon: {
       true: "aspect-square p-0",

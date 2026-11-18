@@ -9,7 +9,7 @@ export type CropEntityWithImage = CropEntity & {
 export async function getCropsWithImage(
   themeId: number,
 ): Promise<CropEntityWithImage[]> {
-  const crops = await db.crops.where("themeId").equals(themeId).toArray();
+  const crops = await db.crops.where("themeId").equals(themeId).sortBy("order");
   const imagesById = await getImagesGroupById(themeId);
   return crops.map((crop) => ({
     ...crop,
@@ -25,7 +25,7 @@ export function useCropsWithImage(themeId: number) {
 }
 
 function getCrops(themeId: number) {
-  return db.crops.where("themeId").equals(themeId).toArray();
+  return db.crops.where("themeId").equals(themeId).sortBy("order");
 }
 
 export function useCrops(themeId: number) {

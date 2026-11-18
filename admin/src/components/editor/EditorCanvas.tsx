@@ -5,10 +5,11 @@ import {
   useSetAtom,
   WritableAtom,
 } from "jotai";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { SPRITE_SIZE } from "../../config";
 import { CropEntity, db, ImageEntity, ThemeEntity } from "../../db";
 import DropIcon from "../../icons/drop.svg?react";
+import DeleteIcon from "../../icons/delete.svg?react";
 import { router } from "../../router";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
@@ -146,6 +147,54 @@ function CanvasControls({
 }) {
   const [controls, setControls] = useControls(crop.id);
 
+  const onDelete = useCallback(async () => {
+    db.transaction("rw", db.crops, db.images, async () => {
+      await db.crops.delete(crop.id);
+
+      const cropsWithSameImage = await db.crops
+        .where("imageId")
+        .equals(image.id)
+        .count();
+      if (cropsWithSameImage === 0) {
+        await db.images.delete(image.id);
+      }
+
+      const all = db.crops.where("themeId").equals(crop.themeId);
+
+      let order = 0;
+      all.modify((c) => {
+        c.order = order++;
+      });
+
+      return all.first();
+    }).then((next) => {
+      if (next) {
+        router.navigate(`/${crop.themeId}/${next.id}`);
+      } else {
+        router.navigate(`/${crop.themeId}`);
+      }
+    });
+  }, [crop.id, crop.themeId, image.id]);
+
+  const onDuplicate = useCallback(async () => {
+    const count = await db.crops.where("themeId").equals(crop.themeId).count();
+
+    await db.crops
+      .add({
+        themeId: crop.themeId,
+        imageId: crop.imageId,
+        offsetY: crop.offsetY,
+        offsetX: crop.offsetX,
+        scale: crop.scale,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        order: count,
+      })
+      .then((id) => {
+        router.navigate(`/${crop.themeId}/${id}`);
+      });
+  }, [crop.themeId]);
+
   return (
     <div className="bg-panel absolute top-0 flex h-18 w-full gap-4 border-b p-4">
       <label className="inline-flex flex-1 items-center gap-2">
@@ -184,25 +233,9 @@ function CanvasControls({
           onChange={(e) => setControls({ offsetY: e.target.valueAsNumber })}
         />
       </label>
-      <Button
-        onClick={() =>
-          db.crops
-            .add({
-              themeId: crop.themeId,
-              imageId: crop.imageId,
-              offsetY: crop.offsetY,
-              offsetX: crop.offsetX,
-              scale: crop.scale,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              order: crop.order + 1,
-            })
-            .then((id) => {
-              router.navigate(`/${crop.themeId}/${id}`);
-            })
-        }
-      >
-        Duplicate
+      <Button onClick={onDuplicate}>Duplicate</Button>
+      <Button icon onClick={onDelete}>
+        <DeleteIcon />
       </Button>
     </div>
   );
@@ -210,25 +243,27 @@ function CanvasControls({
 
 export function CanvasEmptyState({ theme }: { theme?: ThemeEntity }) {
   return (
-    <div
-      data-disabled={theme == null}
-      className="border-accent bg-bg absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 border border-dashed px-12 py-16 text-center data-[disabled=true]:border-transparent"
-    >
-      <DropIcon />
-      <h3 className="text-xl font-bold">Solte as imagens aqui</h3>
-      <span className="text-muted text-sm">
-        png · jpg · webp — uma imagem por carta
-      </span>
-      {theme ? (
-        <UploadFiles themeId={theme.id}>
-          <Button variant="primary">Escolher arquivos</Button>
-        </UploadFiles>
-      ) : (
-        <Button disabled>Escolher arquivos</Button>
-      )}
-      <span className="text-muted hidden text-sm">
-        ou cole da área de transferência · ctrl/⌘ + v
-      </span>
+    <div className="relative flex w-full flex-1 items-center justify-center">
+      <div
+        data-disabled={theme == null}
+        className="border-accent bg-bg absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 border border-dashed px-12 py-16 text-center data-[disabled=true]:border-transparent"
+      >
+        <DropIcon />
+        <h3 className="text-xl font-bold">Solte as imagens aqui</h3>
+        <span className="text-muted text-sm">
+          png · jpg · webp — uma imagem por carta
+        </span>
+        {theme ? (
+          <UploadFiles themeId={theme.id}>
+            <Button variant="primary">Escolher arquivos</Button>
+          </UploadFiles>
+        ) : (
+          <Button disabled>Escolher arquivos</Button>
+        )}
+        <span className="text-muted hidden text-sm">
+          ou cole da área de transferência · ctrl/⌘ + v
+        </span>
+      </div>
     </div>
   );
 }
