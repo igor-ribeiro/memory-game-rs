@@ -1,10 +1,10 @@
-import { listenEvent } from "@ribeirolabs/events";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import slug from "slug";
 import { SPRITE_SIZE } from "../../config";
 import { ThemeEntity } from "../../db";
 import { CropEntityWithImage } from "../../domain/crop";
 import { invariant } from "../../utils";
+import { Button } from "../Button";
 
 declare global {
   interface CustomEvents {
@@ -20,26 +20,21 @@ export function PreviewCanvas({
   crops: CropEntityWithImage[];
 }) {
   const [image, setImage] = useState("");
+  const exportName = `theme-${slug(theme.name)}.jpg`;
+
+  const onExport = useCallback(async () => {
+    const a = document.createElement("a");
+    a.href = image;
+    a.download = exportName;
+    a.click();
+  }, [exportName, image]);
+
   useEffect(() => {
     const c = new OffscreenCanvas(SPRITE_SIZE * crops.length, SPRITE_SIZE);
     const ctx = c.getContext("2d");
 
-    listenEvent("export", async () => {
-      console.log("export");
-
-      const a = document.createElement("a");
-      a.href = window.URL.createObjectURL(
-        await c.convertToBlob({
-          quality: 1,
-          type: "type/jpg",
-        }),
-      );
-      a.download = `${slug(theme.name)}.jpg`;
-      a.click();
-    });
-
     async function run() {
-      invariant(ctx, "failed to get offscree canvas ctx");
+      invariant(ctx, "failed to get offscreen canvas ctx");
       ctx.clearRect(0, 0, c.width, c.height);
       for (let i = 0; i < crops.length; i++) {
         const crop = crops[i];
@@ -62,7 +57,11 @@ export function PreviewCanvas({
         bitmap.close();
       }
 
-      const blob = await c.convertToBlob();
+      const blob = await c.convertToBlob({
+        type: "image/jpeg",
+        quality: 1,
+      });
+
       setImage(window.URL.createObjectURL(blob));
     }
 
@@ -71,5 +70,19 @@ export function PreviewCanvas({
     }
   }, [crops]);
 
-  return <div className="bg-bg h-50">{image && <img src={image} />}</div>;
+  return (
+    <div className="bg-panel overflow-x-[overlay] flex h-50 w-full flex-col overflow-y-hidden border-t">
+      <header className="text-muted flex h-14 w-full items-center gap-6 px-2 text-sm lowercase">
+        <span>{exportName}</span>
+        <span>{crops.length} imagens</span>
+        <span>
+          {SPRITE_SIZE * crops.length}x{SPRITE_SIZE}
+        </span>
+        <Button variant="primary" className="ml-auto" onClick={onExport}>
+          Exportar
+        </Button>
+      </header>
+      <div>{image && <img src={image} className="h-36" />}</div>
+    </div>
+  );
 }

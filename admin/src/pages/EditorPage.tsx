@@ -51,21 +51,16 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
 
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">
-      <div className="bg-checker relative flex items-center justify-center">
-        <div className="bg-panel absolute top-2 right-2 flex gap-4 border p-2">
-          <NavLink to="?mode=edit">Edit</NavLink>
-          <NavLink to="?mode=preview">Preview</NavLink>
-        </div>
-
-        {mode === "preview" ? (
-          <PreviewCanvas theme={theme} crops={crops} />
-        ) : crop?.image ? (
+      <div className="bg-checker relative flex flex-col items-center justify-between">
+        {crop?.image ? (
           <Canvas key={crop.id} crop={crop} image={crop.image} />
         ) : (
           <CanvasEmptyState theme={theme} />
         )}
+
+        <PreviewCanvas theme={theme} crops={crops} />
       </div>
-      <aside>
+      <aside className="border-l">
         {mode === "preview" ? (
           <ExportPanel />
         ) : (
@@ -90,10 +85,13 @@ function EditorPlaceholder() {
 function EditorMainPlaceholder() {
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">
-      <div className="bg-checker relative flex items-center justify-center">
-        <CanvasEmptyState />
+      <div className="bg-checker flex flex-col items-center justify-center">
+        <div className="relative w-full flex-1">
+          <CanvasEmptyState />
+        </div>
+        <div className="bg-panel h-50 w-full border-t">&nbsp;</div>
       </div>
-      <aside>
+      <aside className="border-l">
         <ImagesPanelPlaceholder />
       </aside>
     </main>

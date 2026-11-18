@@ -16,8 +16,13 @@
   --color-bg: #0b0c0e; /* app background, inputs */
   --color-panel: #111215; /* control bars, code blocks */
   --color-raised: #181a1f; /* selected rows, active tabs */
-  --color-checker: #15171b; /* transparency checkerboard base */
+  /**
+  --color-checker: #15171b; 
   --color-checker-alt: #1c1f24;
+  */
+
+  --color-checker: #0e0f12;
+  --color-checker-alt: #101114;
 
   /* Lines */
   --color-line: #25282f; /* panel dividers, default borders */
