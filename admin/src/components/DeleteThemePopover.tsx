@@ -25,8 +25,7 @@ export function DeleteThemePopover({ theme }: { theme: ThemeEntity }) {
 
     toast.promise<void>(deleteTheme(theme.id), {
       loading: {
-        description: "Excluindo tema...",
-        title: "",
+        title: "Excluindo tema...",
         data: {
           close: false,
         },
@@ -35,14 +34,14 @@ export function DeleteThemePopover({ theme }: { theme: ThemeEntity }) {
         return {
           timeout: 3000,
           data: { icon: "delete" },
-          description: `Tema "${theme.name}" excluído`,
+          title: `Tema "${theme.name}" excluído`,
         };
       },
       error(e) {
         console.error("[delete-theme]:", e);
         return {
           type: "error",
-          description: `Não foi possível excluir o tema "${theme.name}"`,
+          title: `Não foi possível excluir o tema "${theme.name}"`,
         };
       },
     });

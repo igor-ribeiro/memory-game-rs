@@ -2,6 +2,7 @@ import { Toast as ToastPrimitive } from "@base-ui/react/toast";
 import { cn } from "tailwind-variants";
 import CloseIcon from "../../icons/close.svg?react";
 import DeleteIcon from "../../icons/delete.svg?react";
+import ErrorIcon from "../../icons/error.svg?react";
 import { LoaderIcon } from "../../icons/Loader";
 import { Button } from "../Button";
 
@@ -23,7 +24,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
     <ToastPrimitive.Viewport
       data-slot="toast-viewport"
       className={cn(
-        "pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-md outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
+        "pointer-events-none fixed inset-x-4 bottom-4 z-60 mx-auto w-auto max-w-md outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
         className,
       )}
       {...props}
@@ -31,7 +32,11 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
   );
 }
 
-function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
+function Toast({
+  type,
+  className,
+  ...props
+}: ToastPrimitive.Root.Props & { type?: string }) {
   return (
     <ToastPrimitive.Root
       data-slot="toast"
@@ -51,6 +56,7 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
         "data-expanded:data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
         "data-expanded:data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
         "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
+        type === "error" && "border-danger",
         className,
       )}
       {...props}
@@ -71,6 +77,16 @@ function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
   );
 }
 
+function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
+  return (
+    <ToastPrimitive.Title
+      data-slot="toast-title"
+      className={cn("font-bold", className)}
+      {...props}
+    />
+  );
+}
+
 function ToastDescription({
   className,
   ...props
@@ -78,7 +94,7 @@ function ToastDescription({
   return (
     <ToastPrimitive.Description
       data-slot="toast-description"
-      className={cn("font-bold", className)}
+      className={cn("text-muted text-sm", className)}
       {...props}
     />
   );
@@ -119,6 +135,10 @@ function ToastClose({
 function ToastIcon({ type }: { type: string | undefined }) {
   let icon: React.ReactNode = null;
 
+  if (type === "error") {
+    icon = <ErrorIcon aria-hidden="true" className="text-danger" />;
+  }
+
   if (type === "delete") {
     icon = <DeleteIcon aria-hidden="true" />;
   }
@@ -157,24 +177,30 @@ function ToastTimeout({ timeout }: { timeout: number }) {
 function ToastList() {
   const { toasts } = ToastPrimitive.useToastManager();
 
-  return toasts.map((item) => (
-    <Toast key={item.id} toast={item}>
-      <ToastContent>
-        <div className="flex min-w-0 flex-1 items-center gap-1">
-          <ToastIcon type={item.data?.icon ?? item.type} />
-          <ToastDescription />
-        </div>
-        <ToastAction />
-        {item.data?.close !== false && (
-          <>
-            <span className="bg-line block h-2/3 w-0.5" />
-            <ToastClose />
-          </>
-        )}
-      </ToastContent>
-      {item.timeout && <ToastTimeout timeout={item.timeout} />}
-    </Toast>
-  ));
+  return toasts.map((item) => {
+    const type = item.data?.icon ?? item.type;
+    return (
+      <Toast key={item.id} toast={item} type={type}>
+        <ToastContent>
+          <div className="flex min-w-0 flex-1 items-center gap-1">
+            <ToastIcon type={type} />
+            <div className="flex flex-col">
+              <ToastTitle />
+              <ToastDescription />
+            </div>
+          </div>
+          <ToastAction />
+          {item.data?.close !== false && (
+            <>
+              <span className="bg-line block h-2/3 w-0.5" />
+              <ToastClose />
+            </>
+          )}
+        </ToastContent>
+        {item.timeout && <ToastTimeout timeout={item.timeout} />}
+      </Toast>
+    );
+  });
 }
 
 function Toaster({

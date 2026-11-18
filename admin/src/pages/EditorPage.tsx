@@ -32,7 +32,7 @@ export function Editor() {
     <>
       <EditorHeader theme={theme} />
       <Suspense fallback={<EditorMainPlaceholder />}>
-        <EditorCanvas theme={theme} />
+        <EditorCanvas key={themeId} theme={theme} />
       </Suspense>
     </>
   );

@@ -37,7 +37,7 @@ export function PreviewCanvas({ theme }: { theme: ThemeEntity }) {
         <span>{exportName}</span>
         {sprite && (
           <span>
-            {sprite.width}x{sprite.height}
+            {sprite.width}×{sprite.height}
           </span>
         )}
         <Button

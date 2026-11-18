@@ -1,15 +1,18 @@
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { SubmitEvent } from "react";
+import { SubmitEvent, useMemo } from "react";
 import { NavLink } from "react-router";
 import { cn, tv } from "tailwind-variants";
+import { SPRITE_SIZE } from "../config";
 import {
   createThemeAndOpen,
-  ThemeWithImageCount,
-  useThemes,
+  ThemeWithSprite,
+  useThemesWithSprite,
 } from "../domain/theme";
+import UploadIcon from "../icons/upload.svg?react";
 import { pluralize } from "../utils";
 import { Button } from "./Button";
+import { ImportThemeDialog } from "./ImportThemeDialog";
 
 const card = tv({
   slots: {
@@ -20,7 +23,7 @@ const card = tv({
 });
 
 export function ThemeCards() {
-  const themes = useThemes();
+  const themes = useThemesWithSprite();
 
   return (
     <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
@@ -29,11 +32,21 @@ export function ThemeCards() {
           <h1 className="text-2xl font-bold">Temas</h1>
           <span className="text-muted font-bold">{themes.length}</span>
         </div>
-        {themes.length > 0 && (
-          <Button variant="primary" onClick={() => createThemeAndOpen()}>
-            + Novo Tema
-          </Button>
-        )}
+
+        <div className="flex items-center gap-2">
+          <ImportThemeDialog>
+            <Button>
+              <UploadIcon />
+              Importar
+            </Button>
+          </ImportThemeDialog>
+
+          {themes.length > 0 && (
+            <Button variant="primary" onClick={() => createThemeAndOpen()}>
+              + Novo Tema
+            </Button>
+          )}
+        </div>
       </header>
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {themes == null || themes.length < 1 ? (
@@ -46,16 +59,26 @@ export function ThemeCards() {
   );
 }
 
-function ThemeCard({ theme }: { theme: ThemeWithImageCount }) {
+function ThemeCard({ theme }: { theme: ThemeWithSprite }) {
+  const count = theme.sprite ? theme.sprite.width / SPRITE_SIZE : 0;
+  const thumb = useMemo(() => {
+    return theme.sprite ? window.URL.createObjectURL(theme.sprite.blob) : null;
+  }, [theme.sprite]);
+
   return (
     <NavLink to={`/${theme.id}`} className={card.slots.base}>
-      <div className={card.slots.image}></div>
+      <div
+        className={cn(card.slots.image, "bg-cover")}
+        style={{
+          backgroundImage: thumb ? `url(${thumb})` : undefined,
+        }}
+      />
       <div className={card.slots.info}>
         <h3 className="font-bold">{theme.name}</h3>
         <span className="text-muted">
-          {theme.imagesCount === 0
+          {count === 0
             ? "nenhuma imagem"
-            : pluralize(theme.imagesCount, "imagem", "imagens")}
+            : pluralize(count, "imagem", "imagens")}
         </span>
         <span className="text-muted text-sm">
           editado há{" "}

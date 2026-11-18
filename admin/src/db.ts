@@ -31,7 +31,6 @@ export type CropEntity = {
 };
 
 export type SpriteEntity = {
-  id: number;
   themeId: number;
   width: number;
   height: number;
@@ -44,7 +43,7 @@ const db = new Dexie("cardsprite") as Dexie & {
   themes: EntityTable<ThemeEntity, "id">;
   images: EntityTable<ImageEntity, "id">;
   crops: EntityTable<CropEntity, "id">;
-  sprites: EntityTable<SpriteEntity, "id">;
+  sprites: EntityTable<SpriteEntity, "themeId">;
 };
 
 db.version(10).stores({

@@ -26,7 +26,7 @@ export function UploadFiles({
     if (files == null || files.length === 0) {
       toast.add({
         type: "error",
-        description: "Nenhuma imagem selecionada",
+        title: "Nenhuma imagem selecionada",
       });
       return;
     }

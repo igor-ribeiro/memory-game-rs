@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, ForwardedRef, forwardRef } from "react";
 import { tv, VariantProps } from "tailwind-variants";
 
 const button = tv({
-  base: "justify-center items-center cursor-pointer border inline-flex gap-1 py-2 px-4 hover:bg-raised font-bold h-10",
+  base: "justify-center items-center cursor-pointer border inline-flex gap-2 py-2 px-4 hover:bg-raised font-bold h-10",
   variants: {
     variant: {
       primary: "bg-accent border-accent text-on-accent hover:bg-accent-hover",
