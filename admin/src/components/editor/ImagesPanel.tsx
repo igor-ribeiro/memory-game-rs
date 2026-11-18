@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { cn } from "tailwind-variants";
 import { CropEntity, ImageEntity } from "../../db";
@@ -43,18 +43,26 @@ function ImageCard({ crop, image }: { crop: CropEntity; image: ImageEntity }) {
     () => window.URL.createObjectURL(image.blob),
     [image.blob],
   );
+  const [size, setSize] = useState(0);
 
   return (
     <NavLink
+      ref={(el) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        setSize(rect.width);
+      }}
       to={`/${themeId}/${crop.id}`}
       className={({ isActive }) =>
         cn(
-          "relative aspect-square w-full border bg-cover bg-center",
-          isActive && "border-accent",
+          "ring-line relative aspect-square w-full bg-size-[auto_100%] bg-no-repeat ring",
+          isActive && "ring-accent",
         )
       }
       style={{
         backgroundImage: `url(${url})`,
+        backgroundPositionX: `-${size * crop.order}px`,
+        backgroundPositionY: crop.offsetY,
       }}
     >
       {({ isActive }) => (
