@@ -78,7 +78,7 @@ export function UploadFiles({
     }
 
     const cropId = await db.crops.bulkAdd(cropsToCreate);
-    router.navigate(`/${themeId}/${cropId}`);
+    router.navigate(`/${themeId}/${cropId}`, { flushSync: true });
   }
 
   const onOpenFiles = useCallback(() => {

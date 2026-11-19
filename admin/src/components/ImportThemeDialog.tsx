@@ -73,7 +73,7 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
       try {
         const themeId = await importTheme(name, file);
         handle.close();
-        router.navigate(`/${themeId}`);
+        router.navigate(`/${themeId}`, { flushSync: true });
       } catch (e) {
         console.error("[import-theme]", e);
         toast.add({

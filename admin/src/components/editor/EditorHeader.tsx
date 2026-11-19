@@ -14,7 +14,7 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
     const name = e.target.theme_name.value;
     const id = e.target.theme_id.value;
     await renameTheme(Number(id), name);
-    router.navigate(`/${id}`);
+    router.navigate(`/${id}`, { flushSync: true });
   }
 
   return (

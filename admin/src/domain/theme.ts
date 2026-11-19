@@ -92,7 +92,7 @@ export async function createThemeAndOpen(name?: string) {
     createdAt: new Date(),
     updatedAt: new Date(),
   });
-  await router.navigate(`/${id}`);
+  await router.navigate(`/${id}`, { flushSync: true });
 }
 
 export async function renameTheme(id: number, name: string) {

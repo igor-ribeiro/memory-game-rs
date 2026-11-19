@@ -169,9 +169,9 @@ function CanvasControls({
       return all.first();
     }).then((next) => {
       if (next) {
-        router.navigate(`/${crop.themeId}/${next.id}`);
+        router.navigate(`/${crop.themeId}/${next.id}`, { flushSync: true });
       } else {
-        router.navigate(`/${crop.themeId}`);
+        router.navigate(`/${crop.themeId}`, { flushSync: true });
       }
     });
   }, [crop.id, crop.themeId, image.id]);
@@ -191,7 +191,7 @@ function CanvasControls({
         order: count,
       })
       .then((id) => {
-        router.navigate(`/${crop.themeId}/${id}`);
+        router.navigate(`/${crop.themeId}/${id}`, { flushSync: true });
       });
   }, [crop.themeId]);
 
