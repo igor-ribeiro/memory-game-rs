@@ -69,7 +69,8 @@ export function UploadFiles({
       cropsToCreate.push({
         themeId: themeId,
         imageId,
-        scale: SPRITE_SIZE / Math.max(image.width, image.height),
+        // scale: SPRITE_SIZE / Math.max(image.width, image.height),
+        scale: 1,
         offsetX: 0,
         offsetY: 0,
         order: order + i,

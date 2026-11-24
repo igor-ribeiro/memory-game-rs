@@ -46,8 +46,9 @@ export async function importTheme(name: string, file: File): Promise<number> {
           createdAt: new Date(),
           updatedAt: new Date(),
           scale: 1,
-          offsetX: SPRITE_SIZE * i - bitmap.width / 2 + SPRITE_SIZE / 2,
+          offsetX: i * SPRITE_SIZE,
           offsetY: 0,
+          blob: new Blob([]),
         });
       }
 

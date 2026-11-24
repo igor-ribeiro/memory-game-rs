@@ -11,6 +11,7 @@ import { SPRITE_SIZE } from "../../config";
 import { CropEntity, db, ImageEntity, ThemeEntity } from "../../db";
 import DeleteIcon from "../../icons/delete.svg?react";
 import DropIcon from "../../icons/drop.svg?react";
+import { imageDataToBlob } from "../../utils";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
 
@@ -98,15 +99,30 @@ export function Canvas({
     const ctx = ctxRef.current!;
     const c = canvasRef.current!;
 
-    ctx.clearRect(0, 0, c.width, c.height);
     createImageBitmap(image.blob).then((img) => {
       const w = image.width * controls.scale;
       const h = image.height * controls.scale;
-      const x =
-        c.width / 2 - (image.width / 2 + controls.offsetX) * controls.scale;
-      const y =
-        c.height / 2 - (image.height / 2 + controls.offsetY) * controls.scale;
-      ctx.drawImage(img, x, y, w, h);
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.drawImage(
+        img,
+        -controls.offsetX + SPRITE_SIZE / 2,
+        -controls.offsetY + SPRITE_SIZE / 2,
+        w,
+        h,
+      );
+
+      const imageData = ctx.getImageData(
+        c.width / 2 - SPRITE_SIZE / 2,
+        c.height / 2 - SPRITE_SIZE / 2,
+        SPRITE_SIZE,
+        SPRITE_SIZE,
+      );
+
+      imageDataToBlob(imageData).then((blob) => {
+        db.crops.update(crop.id, {
+          blob,
+        });
+      });
     });
   }, [image.blob, image.width, image.height, controls]);
 
@@ -182,6 +198,7 @@ function CanvasControls({
 
     await db.crops
       .add({
+        order: count,
         themeId: crop.themeId,
         imageId: crop.imageId,
         offsetY: crop.offsetY,
@@ -189,7 +206,7 @@ function CanvasControls({
         scale: crop.scale,
         createdAt: new Date(),
         updatedAt: new Date(),
-        order: count,
+        blob: new Blob([], { type: "image/jpeg" }),
       })
       .then((id) => {
         navigate(`/${crop.themeId}/${id}`);
@@ -197,8 +214,12 @@ function CanvasControls({
   }, [crop.themeId]);
 
   return (
-    <div className="bg-panel absolute top-0 flex h-18 w-full gap-4 border-b p-4">
-      <label className="inline-flex flex-1 items-center gap-2">
+    <div className="bg-panel absolute top-0 flex h-18 w-full items-center gap-4 border-b px-4">
+      <label className="relative inline-flex flex-1 items-center gap-2">
+        <span className="absolute top-full block text-sm">
+          {controls.scale} ({image.width * controls.scale} &times;{" "}
+          {image.height * controls.scale})
+        </span>
         <span>Tamanho:</span>
         <input
           type="range"
@@ -210,25 +231,27 @@ function CanvasControls({
           onChange={(e) => setControls({ scale: e.target.valueAsNumber })}
         />
       </label>
-      <label className="inline-flex flex-1 items-center gap-2">
+      <label className="relative inline-flex flex-1 items-center gap-2">
+        <span className="absolute top-full block">{controls.offsetX}</span>
         <span>X:</span>
         <input
           type="range"
           className="w-full"
-          min={-image.width / 2}
-          max={image.width / 2}
+          min={0}
+          max={image.width * crop.scale - SPRITE_SIZE}
           step={1}
           value={controls.offsetX}
           onChange={(e) => setControls({ offsetX: e.target.valueAsNumber })}
         />
       </label>
-      <label className="inline-flex flex-1 items-center gap-2">
+      <label className="relative inline-flex flex-1 items-center gap-2">
+        <span className="absolute top-full block">{controls.offsetY}</span>
         <span>Y:</span>
         <input
           type="range"
           className="w-full"
-          min={-image.height / 2}
-          max={image.height / 2}
+          min={0}
+          max={image.height * crop.scale - SPRITE_SIZE}
           step={1}
           value={controls.offsetY}
           onChange={(e) => setControls({ offsetY: e.target.valueAsNumber })}

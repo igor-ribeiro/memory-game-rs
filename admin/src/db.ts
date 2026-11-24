@@ -28,6 +28,7 @@ export type CropEntity = {
   offsetY: number;
   createdAt: Date;
   updatedAt: Date;
+  blob: Blob;
 };
 
 export type SpriteEntity = {

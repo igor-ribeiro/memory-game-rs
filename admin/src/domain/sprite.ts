@@ -43,16 +43,14 @@ export async function generateSprite(
   ctx.clearRect(0, 0, c.width, c.height);
   for (let i = 0; i < crops.length; i++) {
     const crop = crops[i];
-    const image = crop.image;
-
-    const w = SPRITE_SIZE / crop.scale;
+    const size = SPRITE_SIZE / crop.scale;
 
     ctx.drawImage(
       imagesById[crop.imageId],
-      image.width / 2 + crop.offsetX - w / 2,
-      image.height / 2 + crop.offsetY - w / 2,
-      w,
-      w,
+      crop.offsetX / crop.scale,
+      crop.offsetY / crop.scale,
+      size,
+      size,
       SPRITE_SIZE * i,
       0,
       SPRITE_SIZE,

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { NavLink, useParams } from "react-router";
 import { cn } from "tailwind-variants";
-import { CropEntity, ImageEntity } from "../../db";
+import { CropEntity } from "../../db";
 import { CropEntityWithImage } from "../../domain/crop";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
@@ -28,41 +28,31 @@ export function ImagesPanel({
         {crops.length === 0 ? (
           <ImagesPlaceholder />
         ) : (
-          crops.map((crop) => (
-            <ImageCard key={crop.id} crop={crop} image={crop.image} />
-          ))
+          crops.map((crop) => <ImageCard key={crop.id} crop={crop} />)
         )}
       </div>
     </div>
   );
 }
 
-function ImageCard({ crop, image }: { crop: CropEntity; image: ImageEntity }) {
+function ImageCard({ crop }: { crop: CropEntity }) {
   const { themeId } = useParams();
   const url = useMemo(
-    () => window.URL.createObjectURL(image.blob),
-    [image.blob],
+    () => (crop.blob ? window.URL.createObjectURL(crop.blob) : ""),
+    [crop.blob],
   );
-  const [size, setSize] = useState(0);
 
   return (
     <NavLink
-      ref={(el) => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        setSize(rect.width);
-      }}
       to={`/${themeId}/${crop.id}`}
       className={({ isActive }) =>
         cn(
-          "ring-line relative aspect-square w-full bg-size-[auto_100%] bg-no-repeat ring",
+          "ring-line relative aspect-square w-full bg-contain bg-no-repeat ring",
           isActive && "ring-accent",
         )
       }
       style={{
         backgroundImage: `url(${url})`,
-        backgroundPositionX: `-${size * crop.order}px`,
-        backgroundPositionY: crop.offsetY,
       }}
     >
       {({ isActive }) => (
