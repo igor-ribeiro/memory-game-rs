@@ -6,7 +6,6 @@ import {
   useRef,
 } from "react";
 import { useNavigate } from "react-router";
-import { SPRITE_SIZE } from "../../config";
 import { CropEntity, ImageEntity, db } from "../../db";
 import { toast } from "../ui/Toast";
 
@@ -65,17 +64,16 @@ export function UploadFiles({
 
     for (let i = 0; i < ids.length; i++) {
       const imageId = ids[i];
-      const image = imagesToCreate[i];
       cropsToCreate.push({
         themeId: themeId,
         imageId,
-        // scale: SPRITE_SIZE / Math.max(image.width, image.height),
         scale: 1,
         offsetX: 0,
         offsetY: 0,
         order: order + i,
         createdAt: new Date(),
         updatedAt: new Date(),
+        blob: new Blob([]),
       });
     }
 

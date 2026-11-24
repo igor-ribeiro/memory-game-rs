@@ -238,7 +238,7 @@ function CanvasControls({
           type="range"
           className="w-full"
           min={0}
-          max={image.width * crop.scale - SPRITE_SIZE}
+          max={image.width * controls.scale - SPRITE_SIZE}
           step={1}
           value={controls.offsetX}
           onChange={(e) => setControls({ offsetX: e.target.valueAsNumber })}
@@ -251,7 +251,7 @@ function CanvasControls({
           type="range"
           className="w-full"
           min={0}
-          max={image.height * crop.scale - SPRITE_SIZE}
+          max={image.height * controls.scale - SPRITE_SIZE}
           step={1}
           value={controls.offsetY}
           onChange={(e) => setControls({ offsetY: e.target.valueAsNumber })}
