@@ -10,7 +10,6 @@ import {
 import { SPRITE_SIZE } from "../config";
 import { importTheme } from "../domain/import";
 import UploadIcon from "../icons/upload.svg?react";
-import { router } from "../router";
 import { invariant } from "../utils";
 import { Button } from "./Button";
 import { InputImage } from "./InputImage";
@@ -24,6 +23,7 @@ import {
   DialogTrigger,
 } from "./ui/Dialog";
 import { toast } from "./ui/Toast";
+import { useNavigate } from "react-router";
 
 const handle = createDialogHandle();
 
@@ -32,6 +32,7 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
   const [images, setImages] = useState(0);
   const [name, setName] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const onSelectImage = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +74,7 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
       try {
         const themeId = await importTheme(name, file);
         handle.close();
-        router.navigate(`/${themeId}`, { flushSync: true });
+        navigate(`/${themeId}`);
       } catch (e) {
         console.error("[import-theme]", e);
         toast.add({

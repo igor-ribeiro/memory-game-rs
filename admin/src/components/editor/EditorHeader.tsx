@@ -1,20 +1,22 @@
 import { SubmitEvent } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { ThemeEntity } from "../../db";
-import { createThemeAndOpen, renameTheme } from "../../domain/theme";
-import { router } from "../../router";
+import { renameTheme, useCreateThemeAndOpen } from "../../domain/theme";
 import { AppLogo } from "../AppLogo";
 import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
+  const createThemeAndOpen = useCreateThemeAndOpen();
+  const navigate = useNavigate();
+
   async function onRename(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const name = e.target.theme_name.value;
     const id = e.target.theme_id.value;
     await renameTheme(Number(id), name);
-    router.navigate(`/${id}`, { flushSync: true });
+    navigate(`/${id}`);
   }
 
   return (

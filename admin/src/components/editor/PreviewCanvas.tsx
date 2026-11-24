@@ -32,7 +32,7 @@ export function PreviewCanvas({ theme }: { theme: ThemeEntity }) {
   }, [exportName, image]);
 
   return (
-    <div className="bg-panel overflow-x-[overlay] flex h-40 w-full flex-col overflow-y-hidden border-t">
+    <div className="bg-panel overflow-x-[overlay] flex h-40 w-full shrink-0 flex-col overflow-y-hidden border-t">
       <header className="text-muted flex h-14 w-full items-center gap-6 px-2 text-sm lowercase">
         <span>{exportName}</span>
         {sprite && (

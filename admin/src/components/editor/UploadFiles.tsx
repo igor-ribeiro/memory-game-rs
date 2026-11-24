@@ -5,10 +5,10 @@ import {
   useCallback,
   useRef,
 } from "react";
+import { useNavigate } from "react-router";
 import { SPRITE_SIZE } from "../../config";
-import { ImageEntity, CropEntity, db } from "../../db";
+import { CropEntity, ImageEntity, db } from "../../db";
 import { toast } from "../ui/Toast";
-import { router } from "../../router";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 
@@ -20,6 +20,7 @@ export function UploadFiles({
   children: ReactElement<{ onClick: Function }>;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   async function onSelectFiles(e: ChangeEvent<HTMLInputElement>) {
     let files = e.target.files;
@@ -78,7 +79,7 @@ export function UploadFiles({
     }
 
     const cropId = await db.crops.bulkAdd(cropsToCreate);
-    router.navigate(`/${themeId}/${cropId}`, { flushSync: true });
+    navigate(`/${themeId}/${cropId}`);
   }
 
   const onOpenFiles = useCallback(() => {

@@ -6,11 +6,11 @@ import {
   WritableAtom,
 } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
 import { SPRITE_SIZE } from "../../config";
 import { CropEntity, db, ImageEntity, ThemeEntity } from "../../db";
-import DropIcon from "../../icons/drop.svg?react";
 import DeleteIcon from "../../icons/delete.svg?react";
-import { router } from "../../router";
+import DropIcon from "../../icons/drop.svg?react";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
 
@@ -146,6 +146,7 @@ function CanvasControls({
   image: ImageEntity;
 }) {
   const [controls, setControls] = useControls(crop.id);
+  const navigate = useNavigate();
 
   const onDelete = useCallback(async () => {
     db.transaction("rw", db.crops, db.images, async () => {
@@ -169,9 +170,9 @@ function CanvasControls({
       return all.first();
     }).then((next) => {
       if (next) {
-        router.navigate(`/${crop.themeId}/${next.id}`, { flushSync: true });
+        navigate(`/${crop.themeId}/${next.id}`);
       } else {
-        router.navigate(`/${crop.themeId}`, { flushSync: true });
+        navigate(`/${crop.themeId}`);
       }
     });
   }, [crop.id, crop.themeId, image.id]);
@@ -191,7 +192,7 @@ function CanvasControls({
         order: count,
       })
       .then((id) => {
-        router.navigate(`/${crop.themeId}/${id}`, { flushSync: true });
+        navigate(`/${crop.themeId}/${id}`);
       });
   }, [crop.themeId]);
 

@@ -1,11 +1,12 @@
 import { NavLink } from "react-router";
 import { tv, VariantProps } from "tailwind-variants";
 import { ThemeEntity } from "../../db";
-import { createThemeAndOpen, useThemes } from "../../domain/theme";
+import { useCreateThemeAndOpen, useThemes } from "../../domain/theme";
 import { Button } from "../Button";
 
 export function ThemesPanel() {
   const themes = useThemes();
+  const createThemeAndOpen = useCreateThemeAndOpen();
 
   return (
     <div className="space-y-4 p-4">

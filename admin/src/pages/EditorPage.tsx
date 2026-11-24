@@ -15,24 +15,23 @@ import { generateSpriteDebounced } from "../domain/sprite";
 import { useThemeById } from "../domain/theme";
 
 export function EditorPage() {
+  const { themeId } = useParams();
   return (
     <Suspense fallback={<EditorPlaceholder />}>
-      <Editor />
+      <Editor themeId={Number(themeId)} />
     </Suspense>
   );
 }
 
-export function Editor() {
-  const { themeId } = useParams();
-
-  const theme = useThemeById(Number(themeId));
+export function Editor({ themeId }: { themeId: number }) {
+  const theme = useThemeById(themeId);
   if (!theme) return <Navigate to="/" />;
 
   return (
     <>
       <EditorHeader theme={theme} />
       <Suspense fallback={<EditorMainPlaceholder />}>
-        <EditorCanvas key={themeId} theme={theme} />
+        <EditorCanvas theme={theme} />
       </Suspense>
     </>
   );

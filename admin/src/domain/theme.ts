@@ -1,6 +1,7 @@
 import { useSuspendingLiveQuery } from "dexie-react-hooks";
+import { useCallback } from "react";
+import { useNavigate } from "react-router";
 import { SpriteEntity, ThemeEntity, db } from "../db";
-import { router } from "../router";
 
 export type ThemeWithImageCount = ThemeEntity & {
   imagesCount: number;
@@ -86,13 +87,21 @@ export async function deleteTheme(id: number) {
   });
 }
 
-export async function createThemeAndOpen(name?: string) {
-  const id = await db.themes.add({
+async function createTheme(name?: string) {
+  return db.themes.add({
     name: name ?? "Sem Nome",
     createdAt: new Date(),
     updatedAt: new Date(),
   });
-  await router.navigate(`/${id}`, { flushSync: true });
+}
+
+export function useCreateThemeAndOpen() {
+  const navigate = useNavigate();
+
+  return useCallback(async (name?: string) => {
+    const id = await createTheme(name);
+    navigate(`/${id}`);
+  }, []);
 }
 
 export async function renameTheme(id: number, name: string) {

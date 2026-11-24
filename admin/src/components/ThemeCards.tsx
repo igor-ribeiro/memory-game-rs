@@ -5,8 +5,8 @@ import { NavLink } from "react-router";
 import { cn, tv } from "tailwind-variants";
 import { SPRITE_SIZE } from "../config";
 import {
-  createThemeAndOpen,
   ThemeWithSprite,
+  useCreateThemeAndOpen,
   useThemesWithSprite,
 } from "../domain/theme";
 import UploadIcon from "../icons/upload.svg?react";
@@ -24,6 +24,7 @@ const card = tv({
 
 export function ThemeCards() {
   const themes = useThemesWithSprite();
+  const createThemeAndOpen = useCreateThemeAndOpen();
 
   return (
     <div className="m-[0_auto] w-full space-y-4 p-4 xl:max-w-7xl">
@@ -92,6 +93,8 @@ function ThemeCard({ theme }: { theme: ThemeWithSprite }) {
 }
 
 function CreateCard() {
+  const createThemeAndOpen = useCreateThemeAndOpen();
+
   async function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
