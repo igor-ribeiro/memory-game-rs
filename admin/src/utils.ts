@@ -1,3 +1,5 @@
+import { useCallback, useMemo, useState } from "react";
+
 export function pluralize(
   count: number,
   word: string,
@@ -23,4 +25,47 @@ export async function imageDataToBlob(imageData: ImageData) {
     type: "image/jpeg",
     quality: 1,
   });
+}
+
+type WorkerConstructor = {
+  new (options?: { name?: string }): Worker;
+};
+
+export function useWorker<S extends any, L extends any>(
+  InitWorker: WorkerConstructor,
+) {
+  const [worker] = useState(() => new InitWorker());
+
+  const send = useCallback(
+    (message: S) => {
+      worker.postMessage(message);
+    },
+    [worker],
+  );
+
+  const listen = useCallback(
+    (listener: (this: Worker, ev: MessageEvent<L>) => any) => {
+      worker.addEventListener("message", listener);
+      return () => worker.removeEventListener("message", listener);
+    },
+    [worker],
+  );
+
+  const onError = useCallback(
+    (listener: (this: Worker, ev: ErrorEvent) => any) => {
+      worker.addEventListener("error", listener);
+      return () => worker.removeEventListener("error", listener);
+    },
+    [worker],
+  );
+
+  return useMemo(
+    () => ({
+      terminate: worker.terminate,
+      onError,
+      send,
+      listen,
+    }),
+    [worker, send, listen, onError],
+  );
 }

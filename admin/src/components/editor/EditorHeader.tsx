@@ -1,15 +1,20 @@
-import { SubmitEvent } from "react";
+import { SubmitEvent, useCallback } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { ThemeEntity } from "../../db";
 import { renameTheme, useCreateThemeAndOpen } from "../../domain/theme";
+import { LoaderIcon } from "../../icons/Loader";
+import UploadIcon from "../../icons/upload.svg?react";
+import { useSpriteWorker } from "../../workers/sprite";
 import { AppLogo } from "../AppLogo";
 import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
+import { toast } from "../ui/Toast";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
   const createThemeAndOpen = useCreateThemeAndOpen();
   const navigate = useNavigate();
+  const worker = useSpriteWorker();
 
   async function onRename(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -18,6 +23,22 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
     await renameTheme(Number(id), name);
     navigate(`/${id}`);
   }
+
+  const onExport = useCallback(async () => {
+    try {
+      const data = await worker.generate(theme.id);
+      const a = document.createElement("a");
+      a.href = window.URL.createObjectURL(data.blob);
+      a.download = data.filename;
+      a.click();
+    } catch (e) {
+      console.error("[sprite-worker/generate]", e);
+      toast.add({
+        type: "error",
+        title: "Não foi possível gerar a sprite",
+      });
+    }
+  }, [theme.id]);
 
   return (
     <Header className="justify-between">
@@ -37,12 +58,16 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
         <input type="hidden" name="theme_id" value={theme.id} />
       </form>
       <div className="flex items-center gap-2">
-        <Button
-          variant="primary"
-          appearance="outline"
-          onClick={() => createThemeAndOpen()}
-        >
+        <Button appearance="outline" onClick={() => createThemeAndOpen()}>
           + Novo tema
+        </Button>
+        <Button variant="primary" onClick={onExport} disabled={worker.loading}>
+          {worker.loading ? (
+            <LoaderIcon className="size-5" />
+          ) : (
+            <UploadIcon className="rotate-180" />
+          )}
+          Exportar
         </Button>
         <DeleteThemePopover theme={theme} />
       </div>

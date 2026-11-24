@@ -7,7 +7,6 @@ import {
   ImagesPanel,
   ImagesPanelPlaceholder,
 } from "../components/editor/ImagesPanel";
-import { PreviewCanvas } from "../components/editor/PreviewCanvas";
 import { Header } from "../components/Header";
 import { ThemeEntity } from "../db";
 import { useCropsWithImage } from "../domain/crop";
@@ -57,8 +56,6 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
         ) : (
           <CanvasEmptyState theme={theme} />
         )}
-
-        <PreviewCanvas theme={theme} />
       </div>
       <aside className="border-l">
         <ImagesPanel themeId={theme.id} crops={crops} />
