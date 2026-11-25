@@ -16,32 +16,37 @@ export function useSpriteWorker() {
   const generate = useCallback(
     async (themeId: number) => {
       setLoading(true);
+      const cleanup: (() => any)[] = [];
+      let timeout = 0;
 
       try {
         worker.send({ type: "generate-sprite/request", themeId });
 
         const data = await Promise.race([
           new Promise<GenerateSpriteResponse>((resolve) => {
-            const unlisten = worker.listen((e) => {
-              if (e.data.type === "generate-sprite/response") {
-                resolve(generateSpriteResponse.parse(e.data));
-                unlisten();
-                return;
-              }
-            });
+            cleanup.push(
+              worker.listen((e) => {
+                if (e.data.type === "generate-sprite/response") {
+                  resolve(generateSpriteResponse.parse(e.data));
+                }
+              }),
+            );
           }),
           new Promise<GenerateSpriteResponse>((_, reject) => {
-            let timeout = setTimeout(() => reject("TIMEOUT"), 3000);
+            timeout = setTimeout(() => reject("TIMEOUT"), 5000);
 
-            worker.onError((e) => {
-              clearTimeout(timeout);
-              reject(e.message);
-            });
+            cleanup.push(
+              () => clearTimeout(timeout),
+              worker.onError((e) => {
+                reject(e.message);
+              }),
+            );
           }),
         ]);
 
         return data;
       } finally {
+        cleanup.map((c) => c());
         setLoading(false);
       }
     },

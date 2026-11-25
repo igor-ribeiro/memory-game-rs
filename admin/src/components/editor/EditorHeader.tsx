@@ -31,6 +31,7 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
       a.href = window.URL.createObjectURL(data.blob);
       a.download = data.filename;
       a.click();
+      setTimeout(() => window.URL.revokeObjectURL(a.href), 1000);
     } catch (e) {
       console.error("[sprite-worker/generate]", e);
       toast.add({
