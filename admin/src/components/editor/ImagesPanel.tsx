@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { NavLink, useParams } from "react-router";
 import { cn } from "tailwind-variants";
 import { CropEntity } from "../../db";
@@ -41,6 +41,10 @@ function ImageCard({ crop }: { crop: CropEntity }) {
     () => (crop.blob ? window.URL.createObjectURL(crop.blob) : ""),
     [crop.blob],
   );
+
+  useEffect(() => {
+    return () => window.URL.revokeObjectURL(url);
+  }, [url]);
 
   return (
     <NavLink
