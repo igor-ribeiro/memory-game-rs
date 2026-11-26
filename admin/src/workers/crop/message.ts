@@ -10,6 +10,12 @@ export const generateCropRequest = z.object({
   cropId: z.number(),
 });
 
+export const generateCropFromImage = z.object({
+  type: z.literal("generate-crop-from-image"),
+  cropId: z.number(),
+  imageData: z.instanceof(ImageData),
+});
+
 export type GenerateThemeCropsRequest = z.infer<
   typeof generateThemeCropsRequest
 >;

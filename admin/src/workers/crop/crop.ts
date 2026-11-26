@@ -8,3 +8,11 @@ export function generateThemeCrops(themeId: number) {
     themeId,
   });
 }
+
+export function generateCrop(cropId: number, imageData?: ImageData) {
+  worker.postMessage({
+    type: "generate-crop-from-image",
+    cropId,
+    imageData,
+  });
+}

@@ -1,25 +1,24 @@
-import slug from "slug";
+import { UpdateSpec } from "dexie";
 import { SPRITE_SIZE } from "../../config";
 import { CropEntity, db, ImageEntity } from "../../db";
 import { invariant } from "../../utils";
-import { generateCropRequest, generateThemeCropsRequest } from "./message";
-import { UpdateSpec } from "dexie";
-
-type ImageWithBitmap = ImageEntity & {
-  bitmap: ImageBitmap;
-};
+import {
+  generateCropFromImage,
+  generateCropRequest,
+  generateThemeCropsRequest,
+} from "./message";
 
 const c = new OffscreenCanvas(SPRITE_SIZE, SPRITE_SIZE);
 const ctx = c.getContext("2d");
 
 async function generateCrop(
   crop: CropEntity,
-  image: ImageWithBitmap,
+  image: ImageBitmap,
 ): Promise<Blob> {
   invariant(ctx, "MISSING_2D_CONTEXT");
   ctx.clearRect(0, 0, c.width, c.height);
   ctx.drawImage(
-    image.bitmap,
+    image,
 
     crop.offsetX,
     crop.offsetY,
@@ -74,12 +73,13 @@ self.addEventListener("message", async (e) => {
       const image = imagesById[crop.imageId];
       if (!image) continue;
 
-      const blob = await generateCrop(crop, image);
+      const blob = await generateCrop(crop, image.bitmap);
 
       cropsToUpdate.push({
         key: crop.id,
         changes: {
           blob,
+          updatedAt: new Date(),
         },
       });
     }
@@ -94,8 +94,19 @@ self.addEventListener("message", async (e) => {
     const image = await db.images.get(crop.imageId);
     invariant(image, "IMAGE_NOT_FOUND");
     const bitmap = await createImageBitmap(image.blob);
-    const blob = await generateCrop(crop, { ...image, bitmap });
-    await db.crops.update(crop.id, { blob });
+    const blob = await generateCrop(crop, bitmap);
+    await db.crops.update(crop.id, { blob, updatedAt: new Date() });
+  }
+
+  if (e.data.type === "generate-crop-from-image") {
+    const data = generateCropFromImage.parse(e.data);
+    invariant(ctx, "MISSING_2D_CONTEXT");
+    ctx.putImageData(data.imageData, 0, 0);
+    const blob = await c.convertToBlob({
+      type: "image/jpeg",
+      quality: 1,
+    });
+    await db.crops.update(data.cropId, { blob, updatedAt: new Date() });
   }
 });
 

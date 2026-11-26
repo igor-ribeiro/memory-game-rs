@@ -11,7 +11,7 @@ import { SPRITE_SIZE } from "../../config";
 import { CropEntity, db, ImageEntity, ThemeEntity } from "../../db";
 import DeleteIcon from "../../icons/delete.svg?react";
 import DropIcon from "../../icons/drop.svg?react";
-import { imageDataToBlob } from "../../utils";
+import { generateCrop } from "../../workers/crop/crop";
 import { Button } from "../Button";
 import { UploadFiles } from "./UploadFiles";
 
@@ -125,11 +125,7 @@ export function Canvas({
       }
 
       cropTimeout.current = setTimeout(() => {
-        imageDataToBlob(imageData).then((blob) => {
-          db.crops.update(crop.id, {
-            blob,
-          });
-        });
+        generateCrop(crop.id, imageData);
       }, 1000);
     });
   }, [image.blob, image.width, image.height, controls]);
