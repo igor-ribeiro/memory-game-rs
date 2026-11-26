@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { Navigate, useParams } from "react-router";
 import { AppLogo } from "../components/AppLogo";
 import { Canvas, CanvasEmptyState } from "../components/editor/EditorCanvas";
@@ -10,7 +10,6 @@ import {
 import { Header } from "../components/Header";
 import { ThemeEntity } from "../db";
 import { useCropsWithImage } from "../domain/crop";
-import { generateSpriteDebounced } from "../domain/sprite";
 import { useThemeById } from "../domain/theme";
 
 export function EditorPage() {
@@ -43,10 +42,6 @@ function EditorCanvas({ theme }: { theme: ThemeEntity }) {
   const crop = useMemo(() => {
     return crops.find((crop) => crop.id === Number(cropId));
   }, [crops, cropId]);
-
-  useEffect(() => {
-    generateSpriteDebounced(theme.id, crops);
-  }, [theme.id, crops]);
 
   return (
     <main className="grid flex-1 grid-cols-[minmax(720px,1fr)_minmax(200px,350px)] overflow-hidden">

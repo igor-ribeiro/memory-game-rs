@@ -95,6 +95,8 @@ export function Canvas({
     }, 500);
   }, [crop.id, controls]);
 
+  const cropTimeout = useRef(0);
+
   useEffect(() => {
     const ctx = ctxRef.current!;
     const c = canvasRef.current!;
@@ -118,11 +120,17 @@ export function Canvas({
         SPRITE_SIZE,
       );
 
-      imageDataToBlob(imageData).then((blob) => {
-        db.crops.update(crop.id, {
-          blob,
+      if (cropTimeout.current) {
+        clearTimeout(cropTimeout.current);
+      }
+
+      cropTimeout.current = setTimeout(() => {
+        imageDataToBlob(imageData).then((blob) => {
+          db.crops.update(crop.id, {
+            blob,
+          });
         });
-      });
+      }, 1000);
     });
   }, [image.blob, image.width, image.height, controls]);
 

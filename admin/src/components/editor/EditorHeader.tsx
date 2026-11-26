@@ -10,6 +10,7 @@ import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";
 import { Header } from "../Header";
 import { toast } from "../ui/Toast";
+import { generateThemeCrops } from "../../workers/crop/crop";
 
 export function EditorHeader({ theme }: { theme: ThemeEntity }) {
   const createThemeAndOpen = useCreateThemeAndOpen();
@@ -61,6 +62,12 @@ export function EditorHeader({ theme }: { theme: ThemeEntity }) {
       <div className="flex items-center gap-2">
         <Button appearance="outline" onClick={() => createThemeAndOpen()}>
           + Novo tema
+        </Button>
+        <Button
+          appearance="outline"
+          onClick={() => generateThemeCrops(theme.id)}
+        >
+          Generate crops
         </Button>
         <Button variant="primary" onClick={onExport} disabled={worker.loading}>
           {worker.loading ? (

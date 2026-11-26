@@ -1,12 +1,13 @@
 import { SPRITE_SIZE } from "../config";
 import { CropEntity, db } from "../db";
+import { generateThemeCrops } from "../workers/crop/crop";
 
 export async function importTheme(name: string, file: File): Promise<number> {
   const bitmap = await createImageBitmap(file);
   const count = bitmap.width / SPRITE_SIZE;
   const crops: Omit<CropEntity, "id">[] = [];
 
-  return db.transaction(
+  const themeId = await db.transaction(
     "rw",
     db.themes,
     db.images,
@@ -56,4 +57,8 @@ export async function importTheme(name: string, file: File): Promise<number> {
       return themeId;
     },
   );
+
+  generateThemeCrops(themeId);
+
+  return themeId;
 }
