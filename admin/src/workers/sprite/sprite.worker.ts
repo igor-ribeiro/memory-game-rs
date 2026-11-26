@@ -1,7 +1,7 @@
 import slug from "slug";
-import { SPRITE_SIZE } from "../config";
-import { db } from "../db";
-import { invariant } from "../utils";
+import { SPRITE_SIZE } from "../../config";
+import { db } from "../../db";
+import { invariant } from "../../utils";
 import { generateSpriteRequest, generateSpriteResponse } from "./message";
 
 self.addEventListener("message", async (e) => {

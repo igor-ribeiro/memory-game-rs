@@ -4,7 +4,7 @@ import { ThemeEntity } from "../../db";
 import { renameTheme, useCreateThemeAndOpen } from "../../domain/theme";
 import { LoaderIcon } from "../../icons/Loader";
 import UploadIcon from "../../icons/upload.svg?react";
-import { useSpriteWorker } from "../../workers/sprite";
+import { useSpriteWorker } from "../../workers/sprite/sprite";
 import { AppLogo } from "../AppLogo";
 import { Button } from "../Button";
 import { DeleteThemePopover } from "../DeleteThemePopover";

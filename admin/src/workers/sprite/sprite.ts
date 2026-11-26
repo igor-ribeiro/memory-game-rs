@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useWorker } from "../utils";
+import { useWorker } from "../../utils";
 import {
   GenerateSpriteRequest,
   generateSpriteResponse,
