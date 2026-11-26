@@ -144,7 +144,9 @@ export function Canvas({
         ref={(el) => {
           if (!el) return;
           canvasRef.current = el;
-          const ctx = el.getContext("2d");
+          const ctx = el.getContext("2d", {
+            willReadFrequently: true,
+          });
           if (!ctx) throw new Error("unable to get canvas context");
           ctxRef.current = ctx;
         }}

@@ -10,12 +10,7 @@ export const generateCropRequest = z.object({
   cropId: z.number(),
 });
 
-// export const generateCropResponse = z.object({
-//   type: z.literal("generate-crop/response"),
-//   blob: z.instanceof(Blob),
-//   filename: z.string(),
-// });
-
-export type GenerateThemeCropsRequest = z.infer<typeof generateCropRequest>;
+export type GenerateThemeCropsRequest = z.infer<
+  typeof generateThemeCropsRequest
+>;
 export type GenerateCropRequest = z.infer<typeof generateCropRequest>;
-// export type GenerateCropResponse = z.infer<typeof generateCropResponse>;
