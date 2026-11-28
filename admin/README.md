@@ -123,6 +123,22 @@ npm run dev
 
 <!-- Adjust the commands above to match the project's package manager and scripts. -->
 
+### AI theme name suggestions (optional)
+
+When you pick a sprite in *Importar tema*, a local [Ollama](https://ollama.com) model suggests theme names. The model used is `qwen3-vl:8b-instruct`.
+
+```bash
+ollama pull qwen3-vl:8b-instruct
+cp .env.example .env
+```
+
+```dotenv
+VITE_LLM_API=http://localhost:11434
+VITE_LLM_MODEL=qwen3-vl:8b-instruct
+```
+
+Restart `npm run dev` after editing `.env`. Leave the variables empty to turn suggestions off.
+
 ## License
 
 <!-- Add a license. -->
