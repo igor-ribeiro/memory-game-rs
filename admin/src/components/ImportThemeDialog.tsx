@@ -1,16 +1,22 @@
 import {
   ChangeEvent,
+  Fragment,
   ReactElement,
   SubmitEvent,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router";
+import { cn } from "tailwind-variants";
 import { SPRITE_SIZE } from "../config";
 import { importTheme } from "../domain/import";
+import AIIcon from "../icons/ai.svg?react";
 import UploadIcon from "../icons/upload.svg?react";
 import { invariant } from "../utils";
+import Worker from "./../workers/ai/theme-name-suggestion.worker?worker";
 import { Button } from "./Button";
 import { InputImage } from "./InputImage";
 import {
@@ -23,16 +29,23 @@ import {
   DialogTrigger,
 } from "./ui/Dialog";
 import { toast } from "./ui/Toast";
-import { useNavigate } from "react-router";
+import { LoaderIcon } from "../icons/Loader";
 
 const handle = createDialogHandle();
+
+type Suggestion = {
+  id: number;
+  value: string;
+};
 
 export function ImportThemeDialog({ children }: { children: ReactElement }) {
   const [file, setFile] = useState<File | null>(null);
   const [images, setImages] = useState(0);
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const suggestions = useAISuggestions();
 
   const onSelectImage = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -47,12 +60,20 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
         });
         return;
       }
-      setImages(image.width / SPRITE_SIZE);
-      setFile(file);
+      setLoading(true);
+      setName("");
+      setFile(null);
+      setTimeout(() => {
+        setLoading(false);
+        setImages(image.width / SPRITE_SIZE);
+        setFile(file);
+        image.close();
+      }, 1500);
+
+      suggestions.requestSuggestions(file);
       nameRef.current?.focus();
-      image.close();
     },
-    [],
+    [suggestions.requestSuggestions],
   );
 
   const imageUrl = useMemo(
@@ -122,13 +143,19 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
           ) : (
             <InputImage onChange={onSelectImage}>
               <div className="bg-bg flex h-24 cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-4">
-                <UploadIcon className="text-accent text-xl" />
-                <span className="font-bold">Escolha um arquivo</span>
+                {loading ? (
+                  <LoaderIcon />
+                ) : (
+                  <>
+                    <UploadIcon className="text-accent text-xl" />
+                    <span className="font-bold">Escolha um arquivo</span>
+                  </>
+                )}
               </div>
             </InputImage>
           )}
 
-          <label className="flex flex-col gap-1">
+          <label className="relative flex flex-col gap-1">
             <span className="label">Nome do tema</span>
             <input
               ref={nameRef}
@@ -138,6 +165,13 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+            {suggestions.enabled && (
+              <AISuggestions
+                suggestions={suggestions.values}
+                loading={suggestions.loading}
+                onSelect={(name) => setName(name)}
+              />
+            )}
           </label>
 
           <DialogFooter>
@@ -149,5 +183,88 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function useAISuggestions() {
+  const [worker] = useState(() => new Worker());
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [loading, setLoading] = useState(false);
+  const enabled =
+    import.meta.env.VITE_LLM_API && import.meta.env.VITE_LLM_MODEL;
+
+  useEffect(() => {
+    function listener(e: MessageEvent<any>) {
+      if (e.data.type === "theme-name-suggestion/response") {
+        if (Array.isArray(e.data.names)) {
+          setSuggestions(
+            e.data.names.map((value: string, i: number) => ({
+              id: i + 1,
+              value,
+            })),
+          );
+        } else {
+          setSuggestions([]);
+        }
+
+        setLoading(false);
+      }
+    }
+
+    worker.addEventListener("message", listener);
+    return () => {
+      worker.removeEventListener("message", listener);
+    };
+  }, [worker]);
+
+  const requestSuggestions = useCallback(
+    async (file: File) => {
+      if (!enabled) return;
+      setSuggestions([]);
+      setLoading(true);
+      worker.postMessage({
+        type: "theme-name-suggestion/request",
+        image: new Blob([await file.arrayBuffer()], {
+          type: file.type,
+        }),
+      });
+    },
+    [worker, enabled],
+  );
+
+  return {
+    enabled,
+    values: suggestions,
+    loading,
+    requestSuggestions,
+  };
+}
+
+function AISuggestions({
+  loading,
+  suggestions,
+  onSelect,
+}: {
+  loading: boolean;
+  suggestions: Suggestion[];
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <div className="text-muted flex items-center gap-4 py-1 text-sm">
+      <AIIcon className={cn("size-3", loading && "animate-spin")} />
+      {suggestions.map((suggestion, i) => (
+        <Fragment key={suggestion.id}>
+          <button
+            onClick={() => onSelect(suggestion.value)}
+            type="button"
+            className="cursor-pointer hover:underline"
+          >
+            {suggestion.value}
+          </button>
+
+          {i < suggestions.length - 1 && <span>&bull;</span>}
+        </Fragment>
+      ))}
+    </div>
   );
 }
