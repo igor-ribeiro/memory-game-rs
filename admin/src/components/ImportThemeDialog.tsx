@@ -63,17 +63,23 @@ export function ImportThemeDialog({ children }: { children: ReactElement }) {
       setLoading(true);
       setName("");
       setFile(null);
-      setTimeout(() => {
-        setLoading(false);
-        setImages(image.width / SPRITE_SIZE);
-        setFile(file);
-        image.close();
-      }, 1500);
+      // Hold the image preview back while the LLM works on name suggestions,
+      // so the suggestions don't feel slow compared to an instant preview.
+      // No delay when AI suggestions are disabled.
+      setTimeout(
+        () => {
+          setLoading(false);
+          setImages(image.width / SPRITE_SIZE);
+          setFile(file);
+          image.close();
+        },
+        suggestions.enabled ? 1500 : 0,
+      );
 
       suggestions.requestSuggestions(file);
       nameRef.current?.focus();
     },
-    [suggestions.requestSuggestions],
+    [suggestions.requestSuggestions, suggestions.enabled],
   );
 
   const imageUrl = useMemo(
